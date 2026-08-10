@@ -63,9 +63,10 @@ function build(): Match[] {
       const a = flip ? home[i] : away[i];
       const played = w < 14;
       const seed = (w * 7 + i * 13) % 11;
-      const hg = played ? (seed % 5) + (i % 2) : undefined;
-      const ag = played ? ((seed * 3) % 5) + ((w + i) % 2) : undefined;
-      out.push({
+      const hg = (seed % 5) + (i % 2);
+      const ag0 = ((seed * 3) % 5) + ((w + i) % 2);
+      const ag = hg === ag0 ? ag0 + 1 : ag0;
+      const base = {
         id: `w${w + 1}-${i}`,
         week: w + 1,
         date: d.toISOString().slice(0, 10),
@@ -73,14 +74,10 @@ function build(): Match[] {
         venue: V[(w + i) % V.length]!,
         homeId: h!,
         awayId: a!,
-        ...(played
-          ? {
-              homeGoals: hg,
-              awayGoals: hg === ag ? (ag ?? 0) + 1 : ag,
-              overtime: hg === ag,
-            }
-          : {}),
-      });
+      };
+      out.push(
+        played ? { ...base, homeGoals: hg, awayGoals: ag, overtime: hg === ag0 } : base,
+      );
     }
   }
   return out;
