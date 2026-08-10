@@ -69,10 +69,10 @@ function build(): Match[] {
         id: `w${w + 1}-${i}`,
         week: w + 1,
         date: d.toISOString().slice(0, 10),
-        time: ["18:00", "19:30", "20:15", "17:00", "19:00"][i % 5],
-        venue: V[(w + i) % V.length],
-        homeId: h,
-        awayId: a,
+        time: ["18:00", "19:30", "20:15", "17:00", "19:00"][i % 5]!,
+        venue: V[(w + i) % V.length]!,
+        homeId: h!,
+        awayId: a!,
         ...(played
           ? {
               homeGoals: hg,
