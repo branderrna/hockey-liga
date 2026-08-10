@@ -90,7 +90,7 @@ export const isPlayed = (m: Match) => m.homeGoals !== undefined && m.awayGoals !
 export const playedMatches = matches.filter(isPlayed);
 export const upcomingMatches = matches.filter((m) => !isPlayed(m));
 
-export const currentWeek = upcomingMatches[0]?.week ?? matches[matches.length - 1].week;
+export const currentWeek = upcomingMatches[0]?.week ?? matches[matches.length - 1]?.week ?? 1;
 
 export const weeks = Array.from(new Set(matches.map((m) => m.week)));
 
