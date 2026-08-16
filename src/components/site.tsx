@@ -43,7 +43,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-16 border-t border-border py-8">
       <div className="mx-auto max-w-6xl px-4 text-xs text-muted-foreground">
-        {SEASON.name} · {SEASON.subtitle} · Jan 10 – Jun 27, 2026
+        {SEASON.name} · {SEASON.subtitle} · Aug 2 – Nov 29, 2026
       </div>
     </footer>
   );
