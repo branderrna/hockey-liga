@@ -142,7 +142,7 @@ function FixturesPage() {
           </article>
         ))}
         {games.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No games scheduled on this date.</p>
+          <p className="text-sm text-muted-foreground">No games match this selection.</p>
         ) : null}
       </div>
 
