@@ -35,7 +35,7 @@ export type Match = {
 
 export const SEASON = {
   name: "Hockey Liga 2026",
-  subtitle: "Women's · Premier · Youth (U21) — three concurrent ligas",
+  subtitle: "\n",
   start: "2026-08-02",
   end: "2026-11-29",
 };

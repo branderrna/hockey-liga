@@ -59,7 +59,7 @@ function FixturesPage() {
     <PageShell
       eyebrow="Fixtures & Results"
       title="Fixtures & Results"
-      intro={`${SEASON.subtitle}. Scores appear once a game has been played — upcoming games stay blank.`}
+      intro="Scores appear once a game has been played — upcoming games stay blank."
     >
       <DivisionTabs value={div} onChange={(d) => { setDiv(d); setDate(null); setTeam("all"); }} />
 
