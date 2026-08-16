@@ -69,8 +69,37 @@ function FixturesPage() {
         <Stat label="Leader" value={leader && leader.gp > 0 ? leader.team.name : "—"} />
       </div>
 
-      <div className="surface mt-8 overflow-x-auto p-3">
+      <div className="surface mt-8 flex flex-wrap items-center gap-3 p-4">
+        <label htmlFor="team" className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
+          Filter by team
+        </label>
+        <select
+          id="team"
+          value={team}
+          onChange={(e) => setTeam(e.target.value)}
+          className="rounded-md border border-border bg-secondary px-3 py-2 text-sm"
+        >
+          <option value="all">All teams</option>
+          {teamsOf(div).map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="surface mt-4 overflow-x-auto p-3">
         <div className="flex gap-2">
+          <button
+            onClick={() => setDate("all")}
+            className={`shrink-0 rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
+              active === "all"
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            All dates
+          </button>
           {dates.map((d) => (
             <button
               key={d}
