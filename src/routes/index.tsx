@@ -18,16 +18,16 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Hockey Liga 2026 — Schedule for Women's, Premier & U21" },
+      { title: "Hockey Liga 2026 — Fixtures & Results" },
       {
         name: "description",
         content:
-          "Match schedule for the three concurrent 2026 Hockey Ligas: Women's, Premier and Youth U21 (Girls & Boys) — dates, times, venues and fixtures.",
+          "Fixtures and results for the three concurrent 2026 Hockey Ligas: Women's, Premier and Youth U21 — dates, times, venues and final scores.",
       },
-      { property: "og:title", content: "Hockey Liga 2026 — Match Schedule" },
+      { property: "og:title", content: "Hockey Liga 2026 — Fixtures & Results" },
       {
         property: "og:description",
-        content: "Fixtures, venues and push-back times across the Women's, Premier and Youth U21 ligas.",
+        content: "Fixtures, venues, push-back times and scores across the Women's, Premier and Youth U21 ligas.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

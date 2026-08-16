@@ -13,9 +13,11 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <Link to="/" className="flex items-center gap-3">
-          <span className="grid h-9 w-9 place-items-center rounded-md bg-primary font-display text-lg text-primary-foreground">
-            HL
-          </span>
+          <img
+            src={logo.url}
+            alt="Hockey Liga logo"
+            className="h-9 w-9 rounded-md bg-white object-contain p-0.5"
+          />
           <span className="leading-tight">
             <span className="block font-display text-xl tracking-wide">{SEASON.name}</span>
             <span className="block text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
