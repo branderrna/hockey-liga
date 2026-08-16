@@ -18,7 +18,7 @@ export function SiteHeader() {
           <span className="leading-tight">
             <span className="block font-display text-xl tracking-wide">{SEASON.name}</span>
             <span className="block text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              Season 2026 · 3 Ligas
+              {"\n"}
             </span>
           </span>
         </Link>
