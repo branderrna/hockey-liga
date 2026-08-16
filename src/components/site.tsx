@@ -13,12 +13,12 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <Link to="/" className="flex items-center gap-3">
           <span className="grid h-9 w-9 place-items-center rounded-md bg-primary font-display text-lg text-primary-foreground">
-            NIC
+            HL
           </span>
           <span className="leading-tight">
             <span className="block font-display text-xl tracking-wide">{SEASON.name}</span>
             <span className="block text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              Season 2026
+              Season 2026 · 3 Ligas
             </span>
           </span>
         </Link>
