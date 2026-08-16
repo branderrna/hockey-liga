@@ -33,7 +33,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: SchedulePage,
+  component: FixturesPage,
 });
 
 export function fmtDate(iso: string) {
@@ -44,7 +44,7 @@ export function fmtDate(iso: string) {
   });
 }
 
-function SchedulePage() {
+function FixturesPage() {
   const [div, setDiv] = useState<DivisionId>("women");
   const [date, setDate] = useState<string | null>(null);
   const dates = matchDates(div);
