@@ -56,11 +56,7 @@ function FixturesPage() {
   const leader = standings(div)[0];
 
   return (
-    <PageShell
-      eyebrow="Fixtures & Results"
-      title="Fixtures & Results"
-      intro="Scores appear once a game has been played — upcoming games stay blank."
-    >
+    <PageShell eyebrow="Fixtures & Results" title="Fixtures & Results">
       <DivisionTabs value={div} onChange={(d) => { setDiv(d); setDate(null); setTeam("all"); }} />
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
