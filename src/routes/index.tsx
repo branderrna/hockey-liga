@@ -18,22 +18,22 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Hockey Liga 2026 — Schedule for Women's, Premier & U21" },
+      { title: "Hockey Liga 2026 — Fixtures & Results" },
       {
         name: "description",
         content:
-          "Match schedule for the three concurrent 2026 Hockey Ligas: Women's, Premier and Youth U21 (Girls & Boys) — dates, times, venues and fixtures.",
+          "Fixtures and results for the three concurrent 2026 Hockey Ligas: Women's, Premier and Youth U21 — dates, times, venues and final scores.",
       },
-      { property: "og:title", content: "Hockey Liga 2026 — Match Schedule" },
+      { property: "og:title", content: "Hockey Liga 2026 — Fixtures & Results" },
       {
         property: "og:description",
-        content: "Fixtures, venues and push-back times across the Women's, Premier and Youth U21 ligas.",
+        content: "Fixtures, venues, push-back times and scores across the Women's, Premier and Youth U21 ligas.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: SchedulePage,
+  component: FixturesPage,
 });
 
 export function fmtDate(iso: string) {
@@ -44,21 +44,24 @@ export function fmtDate(iso: string) {
   });
 }
 
-function SchedulePage() {
+function FixturesPage() {
   const [div, setDiv] = useState<DivisionId>("women");
   const [date, setDate] = useState<string | null>(null);
+  const [team, setTeam] = useState("all");
   const dates = matchDates(div);
-  const active = date && dates.includes(date) ? date : nextDate(div);
-  const games = matchesOf(div).filter((m) => m.date === active);
+  const active = date === "all" ? "all" : date && dates.includes(date) ? date : nextDate(div);
+  const games = matchesOf(div)
+    .filter((m) => active === "all" || m.date === active)
+    .filter((m) => team === "all" || m.homeId === team || m.awayId === team);
   const leader = standings(div)[0];
 
   return (
     <PageShell
-      eyebrow="Fixtures"
-      title="Match Schedule"
-      intro={`${SEASON.subtitle}. Choose a liga, then a match day.`}
+      eyebrow="Fixtures & Results"
+      title="Fixtures & Results"
+      intro={`${SEASON.subtitle}. Scores appear once a game has been played — upcoming games stay blank.`}
     >
-      <DivisionTabs value={div} onChange={(d) => { setDiv(d); setDate(null); }} />
+      <DivisionTabs value={div} onChange={(d) => { setDiv(d); setDate(null); setTeam("all"); }} />
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         <Stat label="Liga" value={divisionById(div).short} />
@@ -66,8 +69,37 @@ function SchedulePage() {
         <Stat label="Leader" value={leader && leader.gp > 0 ? leader.team.name : "—"} />
       </div>
 
-      <div className="surface mt-8 overflow-x-auto p-3">
+      <div className="surface mt-8 flex flex-wrap items-center gap-3 p-4">
+        <label htmlFor="team" className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
+          Filter by team
+        </label>
+        <select
+          id="team"
+          value={team}
+          onChange={(e) => setTeam(e.target.value)}
+          className="rounded-md border border-border bg-secondary px-3 py-2 text-sm"
+        >
+          <option value="all">All teams</option>
+          {teamsOf(div).map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="surface mt-4 overflow-x-auto p-3">
         <div className="flex gap-2">
+          <button
+            onClick={() => setDate("all")}
+            className={`shrink-0 rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
+              active === "all"
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            All dates
+          </button>
           {dates.map((d) => (
             <button
               key={d}
@@ -110,7 +142,7 @@ function SchedulePage() {
           </article>
         ))}
         {games.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No games scheduled on this date.</p>
+          <p className="text-sm text-muted-foreground">No games match this selection.</p>
         ) : null}
       </div>
 
