@@ -47,18 +47,21 @@ export function fmtDate(iso: string) {
 function FixturesPage() {
   const [div, setDiv] = useState<DivisionId>("women");
   const [date, setDate] = useState<string | null>(null);
+  const [team, setTeam] = useState("all");
   const dates = matchDates(div);
-  const active = date && dates.includes(date) ? date : nextDate(div);
-  const games = matchesOf(div).filter((m) => m.date === active);
+  const active = date === "all" ? "all" : date && dates.includes(date) ? date : nextDate(div);
+  const games = matchesOf(div)
+    .filter((m) => active === "all" || m.date === active)
+    .filter((m) => team === "all" || m.homeId === team || m.awayId === team);
   const leader = standings(div)[0];
 
   return (
     <PageShell
-      eyebrow="Fixtures"
-      title="Match Schedule"
-      intro={`${SEASON.subtitle}. Choose a liga, then a match day.`}
+      eyebrow="Fixtures & Results"
+      title="Fixtures & Results"
+      intro={`${SEASON.subtitle}. Scores appear once a game has been played — upcoming games stay blank.`}
     >
-      <DivisionTabs value={div} onChange={(d) => { setDiv(d); setDate(null); }} />
+      <DivisionTabs value={div} onChange={(d) => { setDiv(d); setDate(null); setTeam("all"); }} />
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         <Stat label="Liga" value={divisionById(div).short} />
