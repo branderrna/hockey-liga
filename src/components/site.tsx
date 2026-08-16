@@ -1,10 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { SEASON } from "@/data/league";
+import logo from "@/assets/liga-logo.jpg.asset.json";
 
 const nav = [
-  { to: "/", label: "Schedule" },
+  { to: "/", label: "Fixtures & Results" },
   { to: "/table", label: "League Table" },
-  { to: "/results", label: "Results" },
+  { to: "/about", label: "About" },
 ] as const;
 
 export function SiteHeader() {
