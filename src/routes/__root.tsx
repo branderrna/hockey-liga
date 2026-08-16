@@ -77,16 +77,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Northern Ice Cup — Hockey Tournament 2026" },
+      { title: "Hockey Liga 2026 — Women’s, Premier & Youth U21" },
       {
         name: "description",
         content:
-          "Schedule, league table and results for the six-month Northern Ice Cup hockey tournament.",
+          "Schedule, league tables and results for the three concurrent 2026 Hockey Ligas: Women’s, Premier and Youth U21.",
       },
-      { property: "og:title", content: "Northern Ice Cup — Hockey Tournament 2026" },
+      { property: "og:title", content: "Hockey Liga 2026 — Women’s, Premier & Youth U21" },
       {
         property: "og:description",
-        content: "Weekly fixtures, standings and final scores for the Northern Ice Cup.",
+        content: "Fixtures, standings and final scores across all three 2026 hockey ligas.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
