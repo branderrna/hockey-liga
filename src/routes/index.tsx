@@ -27,7 +27,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Hockey Liga 2026 — Fixtures & Results" },
       {
         property: "og:description",
-        content: "Fixtures, venues, push-back times and scores across the Women's, Premier and Youth U21 ligas.",
+        content:
+          "Fixtures, venues, push-back times and scores across the Women's, Premier and Youth U21 ligas.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -57,7 +58,14 @@ function FixturesPage() {
 
   return (
     <PageShell eyebrow="Fixtures & Results" title="Fixtures & Results">
-      <DivisionTabs value={div} onChange={(d) => { setDiv(d); setDate(null); setTeam("all"); }} />
+      <DivisionTabs
+        value={div}
+        onChange={(d) => {
+          setDiv(d);
+          setDate(null);
+          setTeam("all");
+        }}
+      />
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         <Stat label="Liga" value={divisionById(div).short} />
@@ -114,26 +122,43 @@ function FixturesPage() {
 
       <div className="mt-6 grid gap-3">
         {games.map((m) => (
-          <article key={m.id} className="surface flex flex-wrap items-center gap-4 p-4">
-            <div className="w-32 shrink-0">
+          <article
+            key={m.id}
+            className={`surface grid grid-cols-1 gap-3 p-4 sm:grid-cols-[7rem_1fr_auto_1fr_12rem] sm:items-center sm:gap-4 ${m.postponed ? "border-l-2 border-ot/60" : ""}`}
+          >
+            <div>
               <p className="font-display text-lg">{fmtDate(m.date)}</p>
-              <p className="text-xs text-muted-foreground">{m.time} · {m.venue}</p>
+              <p className="text-xs text-muted-foreground">
+                {m.time} · {m.venue}
+              </p>
             </div>
-            <div className="flex flex-1 items-center gap-3 text-sm">
-              <span className="flex-1 text-right font-semibold">{m.homeName}</span>
+            <div className="flex items-center justify-center gap-3 sm:contents">
+              <span className="flex-1 text-center text-sm font-semibold sm:flex-none">
+                {m.homeName}
+              </span>
               {isPlayed(m) ? (
-                <span className="score-num rounded-md bg-secondary px-3 py-1">
+                <span className="score-num shrink-0 rounded-md bg-secondary px-3 py-1 sm:justify-self-center">
                   {m.homeGoals}–{m.awayGoals}
                 </span>
+              ) : m.postponed ? (
+                <span className="shrink-0 rounded-full bg-ot/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-ot sm:justify-self-center">
+                  PP
+                </span>
               ) : (
-                <span className="rounded-md border border-border px-3 py-2 font-display text-base text-muted-foreground">
-                  {m.postponed ? "PP" : "VS"}
+                <span className="shrink-0 rounded-md border border-border px-3 py-2 font-display text-base text-muted-foreground sm:justify-self-center">
+                  VS
                 </span>
               )}
-              <span className="flex-1 font-semibold">{m.awayName}</span>
+              <span className="flex-1 text-center text-sm font-semibold sm:flex-none">
+                {m.awayName}
+              </span>
             </div>
-            <div className="w-56 shrink-0 text-right text-xs text-muted-foreground">
-              {m.note ?? (m.postponed ? "Postponed" : "")}
+            <div className="text-center text-xs sm:text-right">
+              {m.postponed && m.note ? (
+                <span className="text-ot">↻ {m.note}</span>
+              ) : (
+                <span className="text-muted-foreground">{m.note ?? ""}</span>
+              )}
             </div>
           </article>
         ))}

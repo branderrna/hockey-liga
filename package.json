@@ -8,6 +8,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
+    "refresh-fixtures": "node scripts/refresh-fixtures.ts",
     "lint": "eslint .",
     "format": "prettier --write ."
   },

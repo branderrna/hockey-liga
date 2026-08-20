@@ -33,11 +33,7 @@ function TablePage() {
   const rows = standings(div);
 
   return (
-    <PageShell
-      eyebrow="Standings"
-      title="League Tables"
-      intro="Win 3 pts · Draw 1 pt · Loss 0 pts. Each liga is ranked separately."
-    >
+    <PageShell eyebrow="Standings" title="League Tables">
       <DivisionTabs value={div} onChange={setDiv} />
 
       <h2 className="mt-8 text-2xl">{divisionById(div).name}</h2>

@@ -22,3 +22,10 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Fixtures & results
+
+Fixtures, scores, and postponements are pulled weekly from a Google Sheet and
+committed automatically — see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)
+for how the pipeline works, the sheet format it expects, and how to trigger a
+refresh manually.

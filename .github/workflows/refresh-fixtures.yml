@@ -1,0 +1,35 @@
+name: Refresh fixtures from Google Sheet
+
+on:
+  schedule:
+    # 09:00 Singapore time (UTC+8) every Wednesday = 01:00 UTC Wednesday
+    - cron: "0 1 * * 3"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Fetch latest fixtures/results from the league sheet
+        run: npm run refresh-fixtures
+
+      - name: Commit updated data if changed
+        run: |
+          if git diff --quiet -- src/data/matches.generated.ts; then
+            echo "No changes to fixtures/results."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/matches.generated.ts
+          git commit -m "chore: weekly fixtures/results refresh"
+          git push
