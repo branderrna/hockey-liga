@@ -1,8 +1,23 @@
-# Puck Tracker
+# Hockey Liga 2026
 
-build me a web app for a hockey tournament that lasts 6 months. We will post the hockey schedule week, the league table and the results
+A companion website for the 2026 Hockey Liga season — Women's, Premier, and
+Youth (U21 Girls / U21 Boys) — running August to November 2026 across four
+divisions and 15+ teams.
 
-This project was built with [Lovable](https://lovable.dev).
+The site shows:
+
+- **Fixtures & results** — the full match schedule per division, filterable
+  by date or team, with scores as they come in and postponed matches clearly
+  flagged
+- **League tables** — standings computed live from match results (points,
+  goal difference, recent form), never entered by hand
+- **Team info** — kit colours and per-team availability notes
+
+Fixtures and results are sourced from the league's Google Sheet and refreshed
+automatically every week — see [Fixtures & results](#fixtures--results) below.
+
+This project was built with [Lovable](https://lovable.dev) and is a TanStack
+Start + Vite app.
 
 ## Build with Lovable
 
