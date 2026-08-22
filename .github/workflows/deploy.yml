@@ -8,6 +8,13 @@ on:
 permissions:
   contents: read
 
+# If several pushes land close together, only the latest commit's deploy
+# matters — cancel any in-flight deploy for an older commit rather than
+# have them race to publish.
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

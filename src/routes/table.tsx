@@ -72,9 +72,6 @@ function TablePage() {
                 </td>
                 <td className="px-4 py-3">
                   <span className="font-semibold">{r.team.name}</span>
-                  {r.team.shirt ? (
-                    <span className="ml-2 text-xs text-muted-foreground">{r.team.shirt}</span>
-                  ) : null}
                 </td>
                 <td className="px-3 py-3 text-center text-muted-foreground">{r.gp}</td>
                 <td className="px-3 py-3 text-center">{r.w}</td>

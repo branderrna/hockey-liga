@@ -9,6 +9,12 @@ on:
 permissions:
   contents: write
 
+# If a manual run overlaps the scheduled one, queue rather than run in
+# parallel — two concurrent `git push`es here would race and one would fail.
+concurrency:
+  group: refresh-fixtures
+  cancel-in-progress: false
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
