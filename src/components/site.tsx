@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { SEASON } from "@/data/league";
-import logo from "@/assets/liga-logo.jpg.asset.json";
+import logo from "@/assets/liga-logo.jpg";
 
 const nav = [
   { to: "/", label: "Fixtures & Results" },
@@ -14,7 +14,7 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <Link to="/" className="flex items-center gap-3">
           <img
-            src={logo.url}
+            src={logo}
             alt="Hockey Liga logo"
             className="h-9 w-9 rounded-md bg-white object-contain p-0.5"
           />

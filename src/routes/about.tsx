@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "@/components/site";
-import logo from "@/assets/liga-logo.jpg.asset.json";
+import logo from "@/assets/liga-logo.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -30,7 +30,7 @@ function AboutPage() {
       <div className="grid gap-8 md:grid-cols-[220px_1fr] md:items-start">
         <div className="rounded-xl border border-border bg-card p-6">
           <img
-            src={logo.url}
+            src={logo}
             alt="Hockey Liga logo: two hockey players with sticks and ball"
             className="mx-auto w-full max-w-[180px]"
             loading="lazy"
