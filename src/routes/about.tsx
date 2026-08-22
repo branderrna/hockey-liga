@@ -67,9 +67,10 @@ function AboutPage() {
           <div className="rounded-xl border border-border bg-card p-6">
             <p className="label-eyebrow">Disclaimer</p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              This website is run as an unpaid passion project and is not an official Balestier
-              Lions platform. While we do our best to keep fixtures, scores and standings accurate
-              and up to date, the final and official results always defer to Balestier Lions.
+              This site is built and maintained in our spare time to help keep everyone in the loop
+              between matches — it isn't an official Balestier Lions platform. We do our best to
+              keep fixtures, scores and standings accurate, but for anything official, Balestier
+              Lions always has the final word.
             </p>
           </div>
         </div>
