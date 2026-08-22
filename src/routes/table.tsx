@@ -43,7 +43,7 @@ function TablePage() {
           <thead>
             <tr className="border-b border-border text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
               <th className="px-4 py-3 text-left">#</th>
-              <th className="px-4 py-3 text-left">Team</th>
+              <th className="px-4 py-3 text-left">Team (Jersey Color)</th>
               <th className="px-3 py-3 text-center">GP</th>
               <th className="px-3 py-3 text-center">W</th>
               <th className="px-3 py-3 text-center">D</th>
@@ -72,6 +72,9 @@ function TablePage() {
                 </td>
                 <td className="px-4 py-3">
                   <span className="font-semibold">{r.team.name}</span>
+                  {r.team.shirt ? (
+                    <span className="ml-2 text-xs text-muted-foreground">{r.team.shirt}</span>
+                  ) : null}
                 </td>
                 <td className="px-3 py-3 text-center text-muted-foreground">{r.gp}</td>
                 <td className="px-3 py-3 text-center">{r.w}</td>
