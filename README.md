@@ -50,3 +50,27 @@ refresh manually.
 The site auto-deploys to Cloudflare Workers on every push to `main` — see
 [docs/deploy.md](docs/deploy.md) for the live URL and how local commits stay
 in sync with what's deployed.
+
+## Contributing
+
+Adding a collaborator is just a normal GitHub thing — **Settings →
+Collaborators and teams → Add people** on this repo. A few things worth
+knowing once you're in:
+
+- **No Cloudflare access needed.** Deploys are triggered by GitHub Actions
+  using a token already stored as a repo secret, not by anyone's local
+  machine. Push to `main` and it deploys, regardless of what editor/tooling/
+  LLM you use locally.
+- **Set up locally** the same way as [Development](#development) above —
+  clone, `npm i`, `npm run dev`.
+- **Consider recreating the auto-push git hook** described in
+  [docs/deploy.md](docs/deploy.md), so a commit never accidentally sits
+  unpushed while the live site quietly falls out of date.
+- **Workflow**: we push straight to `main` rather than using feature
+  branches/PRs, since this is a small project. If two pushes land at the
+  same time, git just rejects the second one — `git pull`, then push again.
+  No data is lost.
+- **Google Sheet access is separate** from GitHub — if a collaborator also
+  needs to update fixtures/scores (not just code), share the sheet with
+  their Google account directly. See [docs/fixtures-refresh.md](docs/fixtures-refresh.md)
+  for the sheet's expected format.
