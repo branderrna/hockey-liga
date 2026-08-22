@@ -63,6 +63,15 @@ function AboutPage() {
               </a>
             </div>
           </div>
+
+          <div className="rounded-xl border border-border bg-card p-6">
+            <p className="label-eyebrow">Disclaimer</p>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              This website is run as an unpaid passion project and is not an official Balestier
+              Lions platform. While we do our best to keep fixtures, scores and standings accurate
+              and up to date, the final and official results always defer to Balestier Lions.
+            </p>
+          </div>
         </div>
       </div>
     </PageShell>
