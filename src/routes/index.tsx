@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PageShell } from "@/components/site";
 import { DivisionTabs } from "@/components/division-tabs";
 import {
@@ -49,6 +50,10 @@ function FixturesPage() {
   const [div, setDiv] = useState<DivisionId>("women");
   const [date, setDate] = useState<string | null>(null);
   const [team, setTeam] = useState("all");
+  const dateScrollerRef = useRef<HTMLDivElement>(null);
+  const scrollDates = (dir: -1 | 1) => {
+    dateScrollerRef.current?.scrollBy({ left: dir * 240, behavior: "smooth" });
+  };
   const dates = matchDates(div);
   const active = date === "all" ? "all" : date && dates.includes(date) ? date : nextDate(div);
   const games = matchesOf(div)
@@ -92,32 +97,48 @@ function FixturesPage() {
         </select>
       </div>
 
-      <div className="surface mt-4 overflow-x-auto p-3">
-        <div className="flex gap-2">
-          <button
-            onClick={() => setDate("all")}
-            className={`shrink-0 rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
-              active === "all"
-                ? "bg-primary text-primary-foreground"
-                : "bg-secondary text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            All dates
-          </button>
-          {dates.map((d) => (
+      <div className="mt-4 flex items-center gap-2">
+        <button
+          onClick={() => scrollDates(-1)}
+          aria-label="Scroll to earlier dates"
+          className="surface hidden shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground sm:block"
+        >
+          <ChevronLeft className="size-4" />
+        </button>
+        <div ref={dateScrollerRef} className="surface min-w-0 flex-1 overflow-x-auto p-3">
+          <div className="flex gap-2">
             <button
-              key={d}
-              onClick={() => setDate(d)}
+              onClick={() => setDate("all")}
               className={`shrink-0 rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
-                d === active
+                active === "all"
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-muted-foreground hover:text-foreground"
               }`}
             >
-              {fmtDate(d)}
+              All dates
             </button>
-          ))}
+            {dates.map((d) => (
+              <button
+                key={d}
+                onClick={() => setDate(d)}
+                className={`shrink-0 rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
+                  d === active
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {fmtDate(d)}
+              </button>
+            ))}
+          </div>
         </div>
+        <button
+          onClick={() => scrollDates(1)}
+          aria-label="Scroll to later dates"
+          className="surface hidden shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground sm:block"
+        >
+          <ChevronRight className="size-4" />
+        </button>
       </div>
 
       <div className="mt-6 grid gap-3">
