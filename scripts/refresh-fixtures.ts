@@ -146,21 +146,32 @@ async function main() {
 
   const matches: Match[] = [];
   const unresolvedTeams = new Set<string>();
+  const skippedRows: string[] = [];
 
   for (let r = headerIdx + 1; r < rows.length; r++) {
     const row = rows[r];
     if (!row || row.every((c) => !c?.trim())) continue;
+    const sheetRow = r + 1; // 1-indexed, matches the sheet's own row numbers
 
     const categoryRaw = (row[idx.category] ?? "").trim().toUpperCase();
     const divisionId = CATEGORY_TO_DIVISION[categoryRaw];
-    if (!divisionId) continue;
+    if (!divisionId) {
+      skippedRows.push(`row ${sheetRow}: unrecognized Category "${row[idx.category] ?? ""}"`);
+      continue;
+    }
 
     const homeName = (row[idx.home] ?? "").trim();
     const awayName = (row[idx.away] ?? "").trim();
-    if (!homeName || !awayName) continue;
+    if (!homeName || !awayName) {
+      skippedRows.push(`row ${sheetRow}: missing Home or Away team name`);
+      continue;
+    }
 
     const date = parseDate(row[idx.dayDate] ?? "");
-    if (!date) continue;
+    if (!date) {
+      skippedRows.push(`row ${sheetRow}: unparseable Day & Date "${row[idx.dayDate] ?? ""}"`);
+      continue;
+    }
 
     const time = parseTime(row[idx.time] ?? "0000");
     const venue = (row[idx.venue] ?? "").trim();
@@ -197,6 +208,13 @@ async function main() {
     console.warn(
       `Warning: ${unresolvedTeams.size} team name(s) in the sheet did not match a known team (kept as text-only, no team link):\n  ` +
         [...unresolvedTeams].join("\n  "),
+    );
+  }
+
+  if (skippedRows.length > 0) {
+    console.warn(
+      `Warning: ${skippedRows.length} row(s) in the sheet were skipped entirely (not included as a fixture):\n  ` +
+        skippedRows.join("\n  "),
     );
   }
 
