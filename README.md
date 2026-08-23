@@ -47,9 +47,10 @@ refresh manually.
 
 ## Deployment
 
-The site auto-deploys to Cloudflare Workers on every push to `main` — see
-[docs/deploy.md](docs/deploy.md) for the live URL and how local commits stay
-in sync with what's deployed.
+The site auto-deploys to Cloudflare Workers on every push to `main`
+(production) or `staging` (a separate environment for trying out changes
+first) — see [docs/deploy.md](docs/deploy.md) for both URLs, the suggested
+staging workflow, and how local commits stay in sync with what's deployed.
 
 ## Contributing
 
@@ -66,10 +67,11 @@ knowing once you're in:
 - **Consider recreating the auto-push git hook** described in
   [docs/deploy.md](docs/deploy.md), so a commit never accidentally sits
   unpushed while the live site quietly falls out of date.
-- **Workflow**: we push straight to `main` rather than using feature
-  branches/PRs, since this is a small project. If two pushes land at the
-  same time, git just rejects the second one — `git pull`, then push again.
-  No data is lost.
+- **Workflow**: push to `staging` first for anything more than a small
+  change, check it on the staging URL, then merge into `main` to ship —
+  see [docs/deploy.md](docs/deploy.md). Small stuff can go straight to
+  `main`. If two pushes land at the same time, git just rejects the
+  second one — `git pull`, then push again. No data is lost.
 - **Google Sheet access is separate** from GitHub — if a collaborator also
   needs to update fixtures/scores (not just code), share the sheet with
   their Google account directly. See [docs/fixtures-refresh.md](docs/fixtures-refresh.md)

@@ -2,17 +2,16 @@ name: Deploy to Cloudflare
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   workflow_dispatch: {}
 
 permissions:
   contents: read
 
-# If several pushes land close together, only the latest commit's deploy
-# matters — cancel any in-flight deploy for an older commit rather than
-# have them race to publish.
+# Keyed per-branch so a staging deploy never cancels/blocks a production
+# one (or vice versa) — only redundant deploys of the *same* branch race.
 concurrency:
-  group: deploy-cloudflare
+  group: deploy-cloudflare-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -31,8 +30,25 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Set Worker name for this branch
+        # main -> the live production Worker (custom domain points here).
+        # staging -> a separate Worker for testing, its own *.workers.dev URL.
+        # Explicit if/else per branch on purpose — a wrong Worker name here
+        # means deploys silently stop reaching the real site (see git history).
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "WORKER_NAME=branderrna-hockey-liga" >> "$GITHUB_ENV"
+          elif [ "${{ github.ref_name }}" = "staging" ]; then
+            echo "WORKER_NAME=branderrna-hockey-liga-staging" >> "$GITHUB_ENV"
+          else
+            echo "No Worker mapping for branch '${{ github.ref_name }}'" >&2
+            exit 1
+          fi
+
       - name: Deploy to Cloudflare Workers
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: "3aee331e79416603abc527c463b7c574"
-        run: npx nitro deploy --prebuilt
+        run: |
+          echo "Deploying branch '${{ github.ref_name }}' to Worker '$WORKER_NAME'"
+          npx wrangler --cwd .output deploy --name "$WORKER_NAME"

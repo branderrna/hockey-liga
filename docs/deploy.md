@@ -1,11 +1,33 @@
 # Deployment
 
-The site runs on Cloudflare Workers and redeploys automatically on every
-push to `main` — see [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml).
-It builds with `npm run build` and deploys with `npx nitro deploy --prebuilt`,
-authenticated via a `CLOUDFLARE_API_TOKEN` repo secret.
+The site runs on Cloudflare Workers as two separate environments, both
+deployed by [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml)
+on every push. Both build with `npm run build` and deploy with
+`npx wrangler --cwd .output deploy --name <worker>`, authenticated via a
+`CLOUDFLARE_API_TOKEN` repo secret.
 
-Live URL: https://branderrna-hockey-liga.hockey-liga.workers.dev
+| Branch    | Worker                          | URL                                                              |
+| --------- | -------------------------------- | ----------------------------------------------------------------- |
+| `main`    | `branderrna-hockey-liga`         | https://branderrna-hockey-liga.hockey-liga.workers.dev (+ `sghockeyliga.com`) |
+| `staging` | `branderrna-hockey-liga-staging` | https://branderrna-hockey-liga-staging.hockey-liga.workers.dev    |
+
+`main` is production — the custom domain points there. `staging` is for
+trying out changes (especially larger ones, like infra/dependency work)
+before they reach real visitors.
+
+## Suggested workflow
+
+1. Make changes on a feature branch, or directly on `staging`
+2. Push to `staging` → it auto-deploys to the staging URL → check it there
+3. When it looks right, merge/push `staging` into `main` → deploys to production
+
+Nothing stops you from pushing straight to `main` for small stuff (typo
+fixes, copy changes) — staging is there for when you want a safety net,
+not a mandatory gate.
+
+Note the fixtures-refresh pipeline (see
+[fixtures-refresh.md](fixtures-refresh.md)) only ever commits to `main` —
+weekly score updates go straight to production, not staging.
 
 ## Local commits auto-push
 
@@ -18,17 +40,18 @@ live site kept serving stale data even though local was ahead.
 
 To make that structurally impossible rather than relying on remembering,
 this repo has a local git hook — `.git/hooks/post-commit` — that pushes
-`main` automatically after every commit. It's not tracked by git (hooks
-never are), so it only exists on machines where it's been set up. If
-cloning fresh, recreate it:
+`main` or `staging` automatically after every commit on either of those
+branches. It's not tracked by git (hooks never are), so it only exists on
+machines where it's been set up. If cloning fresh, recreate it:
 
 ```sh
 cat > .git/hooks/post-commit << 'EOF'
 #!/bin/sh
 branch=$(git rev-parse --abbrev-ref HEAD)
-if [ "$branch" != "main" ]; then
-  exit 0
-fi
+case "$branch" in
+  main|staging) ;;
+  *) exit 0 ;;
+esac
 if git push origin "$branch" 2>&1 | sed 's/^/[auto-push] /'; then
   :
 else
@@ -41,3 +64,14 @@ chmod +x .git/hooks/post-commit
 If a push ever does fail silently (no network, auth expired, etc.), the
 hook prints a clear `[auto-push] FAILED` line — check for that after
 committing if the live site doesn't reflect a change you just made.
+
+## Why the Worker name matters
+
+The deploy workflow explicitly maps branch → Worker name rather than
+letting it default. That's not incidental: nitro/wrangler otherwise derive
+the Worker name from `package.json`'s `name` field, and a mismatch there
+silently creates a **new, disconnected Worker** instead of updating the
+live one — deploys keep "succeeding" while the real site (and its custom
+domain) stops receiving updates. This exact issue was caught during a code
+review before it reached production; the explicit branch→name mapping in
+the workflow is the fix.
