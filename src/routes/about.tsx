@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Facebook, Github, Mail } from "lucide-react";
 import { PageShell } from "@/components/site";
 import logo from "@/assets/liga-logo.jpg";
 
@@ -48,18 +49,29 @@ function AboutPage() {
             <p className="label-eyebrow">Get in touch</p>
             <div className="mt-4 flex flex-col gap-3 text-sm">
               <a
-                className="text-primary underline-offset-4 hover:underline"
+                className="flex items-center gap-2 text-primary underline-offset-4 hover:underline"
                 href="https://www.facebook.com/hockeyligasg"
                 target="_blank"
                 rel="noopener noreferrer"
               >
+                <Facebook className="size-4 shrink-0" aria-hidden="true" />
                 facebook.com/hockeyligasg
               </a>
               <a
-                className="text-primary underline-offset-4 hover:underline"
+                className="flex items-center gap-2 text-primary underline-offset-4 hover:underline"
                 href="mailto:balestierlions@gmail.com"
               >
+                <Mail className="size-4 shrink-0" aria-hidden="true" />
                 balestierlions@gmail.com
+              </a>
+              <a
+                className="flex items-center gap-2 text-primary underline-offset-4 hover:underline"
+                href="https://github.com/branderrna/hockey-liga"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Github className="size-4 shrink-0" aria-hidden="true" />
+                github.com/branderrna/hockey-liga
               </a>
             </div>
           </div>
