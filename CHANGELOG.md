@@ -1,8 +1,18 @@
 # Changelog
 
-Notable changes to the site, kept by hand alongside the automated weekly
-fixtures/results refresh (which does not get its own entry here every week —
+Notable changes to the site, kept by hand alongside the automated
+fixtures/results refresh (which does not get its own entry here every run —
 see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
+
+## 2026-08-23
+
+**Infrastructure**
+- Added a staging environment: pushes to a `staging` branch now deploy to a
+  separate Cloudflare Worker (`branderrna-hockey-liga-staging`) for trying
+  out changes before they reach production. See [docs/deploy.md](docs/deploy.md).
+- Fixtures-refresh schedule changed from once weekly (Wednesdays) to twice
+  weekly — Saturdays and Sundays at 23:30 Singapore time, after a typical
+  matchday.
 
 ## 2026-08-20
 

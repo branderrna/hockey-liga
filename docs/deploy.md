@@ -27,7 +27,7 @@ not a mandatory gate.
 
 Note the fixtures-refresh pipeline (see
 [fixtures-refresh.md](fixtures-refresh.md)) only ever commits to `main` —
-weekly score updates go straight to production, not staging.
+score updates go straight to production, not staging.
 
 ## Local commits auto-push
 

@@ -14,7 +14,7 @@ The site shows:
 - **Team info** — kit colours and per-team availability notes
 
 Fixtures and results are sourced from the league's Google Sheet and refreshed
-automatically every week — see [Fixtures & results](#fixtures--results) below.
+automatically twice a week — see [Fixtures & results](#fixtures--results) below.
 
 This project was built with [Lovable](https://lovable.dev) and is a TanStack
 Start + Vite app.

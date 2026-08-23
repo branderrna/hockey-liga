@@ -9,7 +9,7 @@ touching this repo directly.
 
 ```
 Google Sheet ("COMPLETE" tab)
-        │  weekly, Wed 09:00 SGT (or manual trigger)
+        │  Sat & Sun 23:30 SGT (or manual trigger)
         ▼
 .github/workflows/refresh-fixtures.yml   (GitHub Actions)
         │  runs
@@ -85,14 +85,16 @@ that to catch typos in the sheet or new teams that need adding to `league.ts`.
 hand-edited; the next refresh overwrites it. It's excluded from ESLint/Prettier
 formatting checks for the same reason.
 
-## The weekly automation
+## The automation
 
 [`.github/workflows/refresh-fixtures.yml`](../.github/workflows/refresh-fixtures.yml)
 runs on GitHub's own servers, no separate hosting needed:
 
-- **Schedule**: every Wednesday at 09:00 Singapore time (`0 1 * * 3` in UTC)
+- **Schedule**: every Saturday and Sunday at 23:30 Singapore time
+  (`30 15 * * 6,0` in UTC) — after a typical matchday, so results from
+  that day's games get picked up
 - **Manual trigger**: also runs on demand from the repo's Actions tab
-  ("Run workflow") if scores need to go out before the weekly schedule
+  ("Run workflow") if scores need to go out sooner
 - **What it does**: checks out the repo, runs `npm run refresh-fixtures`, and — only
   if the generated file actually changed — commits and pushes it to `main`
 
