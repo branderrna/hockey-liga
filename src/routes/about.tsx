@@ -68,17 +68,21 @@ function AboutPage() {
             <p className="label-eyebrow">A Note From Us</p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               This site is a pro bono project created to give back to the Liga community and is
-              maintained on a best-effort basis. Please note that Balestier Lions remains the
-              official authority for all final scores, fixtures, and results. Want to help keep
-              things up to date?{" "}
+              maintained on a best-effort basis. While we endeavour to ensure that all information
+              provided on this site is accurate and up to date, we cannot guarantee that it is free
+              from errors or omissions.
+            </p>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              As Balestier Lions remains the official authority for all final scores, fixtures, and
+              results, should you identify any inaccuracies or have any concerns regarding the
+              information published on this site, please contact us at{" "}
               <a
                 className="text-primary underline-offset-4 hover:underline"
-                href="https://github.com/branderrna/hockey-liga"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="mailto:balestierlions@gmail.com"
               >
-                Join us on GitHub!
+                balestierlions@gmail.com
               </a>
+              .
             </p>
           </div>
         </div>
