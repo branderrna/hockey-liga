@@ -1,5 +1,5 @@
 import type { DivisionId, League, Team, Match } from "./types";
-export type { DivisionId, League, Team, Match };
+export type { DivisionId, Team, Match };
 
 export const SEASON = {
   name: "Hockey Liga 2026",
@@ -8,7 +8,7 @@ export const SEASON = {
   end: "2026-11-29",
 };
 
-export const leagues: League[] = [
+const leagues: League[] = [
   {
     id: "women",
     name: "Women's Hockey Liga",
@@ -361,10 +361,6 @@ export const teams: Team[] = [
 ];
 
 import { matches } from "./matches.generated.ts";
-export { matches };
-
-export const teamById = (id: string | null) => teams.find((t) => t.id === id) ?? null;
-
 export const teamsOf = (divisionId: DivisionId) => teams.filter((t) => t.divisionId === divisionId);
 
 export const matchesOf = (divisionId: DivisionId) =>
@@ -375,9 +371,6 @@ export const matchesOf = (divisionId: DivisionId) =>
 export const isPlayed = (m: Match) => m.homeGoals !== null && m.awayGoals !== null && !m.postponed;
 
 export const playedOf = (divisionId: DivisionId) => matchesOf(divisionId).filter(isPlayed);
-
-export const upcomingOf = (divisionId: DivisionId) =>
-  matchesOf(divisionId).filter((m) => !isPlayed(m));
 
 export const matchDates = (divisionId: DivisionId) => [
   ...new Set(matchesOf(divisionId).map((m) => m.date)),
@@ -443,6 +436,6 @@ export function standings(divisionId: DivisionId): Standing[] {
 }
 
 export const nextDate = (divisionId: DivisionId) => {
-  const up = upcomingOf(divisionId);
+  const up = matchesOf(divisionId).filter((m) => !isPlayed(m));
   return up[0]?.date ?? matchDates(divisionId)[0] ?? SEASON.start;
 };

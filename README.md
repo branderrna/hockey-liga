@@ -16,17 +16,7 @@ The site shows:
 Fixtures and results are sourced from the league's Google Sheet and refreshed
 automatically twice a week — see [Fixtures & results](#fixtures--results) below.
 
-This project was built with [Lovable](https://lovable.dev) and is a TanStack
-Start + Vite app.
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/fa976fac-f476-497a-8889-1384702a94d1).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
+This project is a TanStack Start + Vite app deployed to Cloudflare Workers.
 ## Development
 
 Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
@@ -67,11 +57,11 @@ knowing once you're in:
 - **Consider recreating the auto-push git hook** described in
   [docs/deploy.md](docs/deploy.md), so a commit never accidentally sits
   unpushed while the live site quietly falls out of date.
-- **Workflow**: push to `staging` first for anything more than a small
-  change, check it on the staging URL, then merge into `main` to ship —
-  see [docs/deploy.md](docs/deploy.md). Small stuff can go straight to
-  `main`. If two pushes land at the same time, git just rejects the
-  second one — `git pull`, then push again. No data is lost.
+- **Workflow**: work on a branch and push it for review. For anything more
+  than a small change, push to `staging` first, check the staging URL, then
+  merge into `main` to ship — see [docs/deploy.md](docs/deploy.md). Small
+  stuff can go straight to `main`. If two pushes land at the same time, git
+  just rejects the second one — `git pull`, then push again. No data is lost.
 - **Google Sheet access is separate** from GitHub — if a collaborator also
   needs to update fixtures/scores (not just code), share the sheet with
   their Google account directly. See [docs/fixtures-refresh.md](docs/fixtures-refresh.md)

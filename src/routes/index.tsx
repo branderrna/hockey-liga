@@ -38,7 +38,7 @@ export const Route = createFileRoute("/")({
   component: FixturesPage,
 });
 
-export function fmtDate(iso: string) {
+function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-GB", {
     weekday: "short",
     day: "numeric",

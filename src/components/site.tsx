@@ -8,7 +8,7 @@ const nav = [
   { to: "/about", label: "About" },
 ] as const;
 
-export function SiteHeader() {
+function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
@@ -42,7 +42,7 @@ export function SiteHeader() {
   );
 }
 
-export function SiteFooter() {
+function SiteFooter() {
   return (
     <footer className="mt-16 border-t border-border py-8">
       <div className="mx-auto max-w-6xl px-4 text-xs text-muted-foreground">
