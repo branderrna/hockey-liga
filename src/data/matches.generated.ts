@@ -600,7 +600,7 @@ export const matches: Match[] = [
     "awayName": "SCC",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": null
   },
   {
@@ -613,8 +613,8 @@ export const matches: Match[] = [
     "awayId": "u21-girls--jansenites",
     "homeName": "UWCSEA DOVER",
     "awayName": "JANSENITES",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 5,
     "postponed": false,
     "note": null
   },
@@ -628,8 +628,8 @@ export const matches: Match[] = [
     "awayId": "women--sn-alumni",
     "homeName": "JANSENITES",
     "awayName": "SN ALUMNI",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 3,
     "postponed": false,
     "note": null
   },
@@ -643,8 +643,8 @@ export const matches: Match[] = [
     "awayId": "women--lion-city-hockey-club",
     "homeName": "ORA",
     "awayName": "LION CITY HOCKEY CLUB",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 2,
+    "awayGoals": 1,
     "postponed": false,
     "note": null
   },
@@ -658,8 +658,8 @@ export const matches: Match[] = [
     "awayId": "women--oldham",
     "homeName": "SCC",
     "awayName": "OLDHAM",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 9,
+    "awayGoals": 0,
     "postponed": false,
     "note": null
   },
@@ -673,8 +673,8 @@ export const matches: Match[] = [
     "awayId": "women--hypernovas",
     "homeName": "SILVERSTICKS SENORITAS",
     "awayName": "HYPERNOVAS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 1,
+    "awayGoals": 1,
     "postponed": false,
     "note": null
   },
@@ -688,8 +688,8 @@ export const matches: Match[] = [
     "awayId": "premier--tornados",
     "homeName": "SG MASTERS",
     "awayName": "TORNADOS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 1,
+    "awayGoals": 6,
     "postponed": false,
     "note": null
   },
@@ -703,8 +703,8 @@ export const matches: Match[] = [
     "awayId": "premier--singapore-khalsa-association",
     "homeName": "BALESTIER LIONS",
     "awayName": "SINGAPORE KHALSA ASSOCIATION",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 0,
     "postponed": false,
     "note": null
   },
@@ -900,7 +900,7 @@ export const matches: Match[] = [
     "awayName": "TEAM H.I.",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": null
   },
   {
