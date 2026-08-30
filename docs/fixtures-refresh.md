@@ -9,7 +9,7 @@ touching this repo directly.
 
 ```
 Google Sheet ("COMPLETE" tab)
-        │  Sat & Sun 23:30 SGT (or manual trigger)
+        │  Sun & Mon 03:00 SGT (or manual trigger)
         ▼
 .github/workflows/refresh-fixtures.yml   (GitHub Actions)
         │  runs
@@ -90,9 +90,8 @@ formatting checks for the same reason.
 [`.github/workflows/refresh-fixtures.yml`](../.github/workflows/refresh-fixtures.yml)
 runs on GitHub's own servers, no separate hosting needed:
 
-- **Schedule**: every Saturday and Sunday at 23:30 Singapore time
-  (`30 15 * * 6,0` in UTC) — after a typical matchday, so results from
-  that day's games get picked up
+- **Schedule**: every Sunday and Monday at 03:00 Singapore time
+  (`0 19 * * 6,0` in UTC)
 - **Manual trigger**: also runs on demand from the repo's Actions tab
   ("Run workflow") if scores need to go out sooner
 - **What it does**: checks out the repo, runs `npm run refresh-fixtures`, and — only

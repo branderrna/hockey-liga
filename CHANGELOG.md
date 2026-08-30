@@ -11,8 +11,7 @@ see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
   separate Cloudflare Worker (`branderrna-hockey-liga-staging`) for trying
   out changes before they reach production. See [docs/deploy.md](docs/deploy.md).
 - Fixtures-refresh schedule changed from once weekly (Wednesdays) to twice
-  weekly — Saturdays and Sundays at 23:30 Singapore time, after a typical
-  matchday.
+  weekly — Sundays and Mondays at 03:00 Singapore time.
 
 ## 2026-08-20
 
