@@ -934,10 +934,10 @@ export const matches: Match[] = [
     "note": null
   },
   {
-    "id": "m-2026-09-05-1900-delta-balestier-lions-hollandse",
+    "id": "m-2026-09-05-2000-delta-balestier-lions-hollandse",
     "divisionId": "premier",
     "date": "2026-09-05",
-    "time": "19:00",
+    "time": "20:00",
     "venue": "DELTA",
     "homeId": "premier--balestier-lions",
     "awayId": "premier--hollandse",
