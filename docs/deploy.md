@@ -27,7 +27,8 @@ not a mandatory gate.
 
 Note the fixtures-refresh pipeline (see
 [fixtures-refresh.md](fixtures-refresh.md)) only ever commits to `main` —
-score updates go straight to production, not staging.
+score updates go straight to production, not staging. It also can't rely on
+its push triggering this workflow the normal way — see below.
 
 ## Local commits auto-push
 
@@ -64,6 +65,22 @@ chmod +x .git/hooks/post-commit
 If a push ever does fail silently (no network, auth expired, etc.), the
 hook prints a clear `[auto-push] FAILED` line — check for that after
 committing if the live site doesn't reflect a change you just made.
+
+## Why the fixtures-refresh workflow triggers deploy.yml explicitly
+
+This one is easy to miss: GitHub doesn't chain workflow triggers when a
+push is made using a workflow's own default `GITHUB_TOKEN` — it's built-in
+anti-loop protection. `refresh-fixtures.yml` pushes to `main` using exactly
+that token, so its commits were **not** firing `deploy.yml`'s `on: push`
+at all. Everything looked fine — the commit landed, no errors anywhere —
+but the live site just silently kept serving the previous data until
+something else happened to push and trigger a real deploy.
+
+The fix: `refresh-fixtures.yml` now explicitly runs
+`gh workflow run deploy.yml --ref main` after a successful commit, instead
+of assuming the push itself will trigger it. If you ever add another
+automation that commits to `main` or `staging`, it needs the same explicit
+trigger — don't assume a bot-authored push will deploy on its own.
 
 ## Why the Worker name matters
 

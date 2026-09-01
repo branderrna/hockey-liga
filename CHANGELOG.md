@@ -4,6 +4,18 @@ Notable changes to the site, kept by hand alongside the automated
 fixtures/results refresh (which does not get its own entry here every run —
 see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
 
+## 2026-09-01
+
+**Infrastructure**
+- Fixed a real gap in the fixtures-refresh pipeline: its commits used the
+  workflow's default `GITHUB_TOKEN`, which GitHub's anti-loop protection
+  excludes from triggering other workflows' `on: push` — so `deploy.yml`
+  was silently never firing after a scheduled/manual refresh. The site
+  kept serving stale data with no error anywhere until something else
+  happened to push and trigger a real deploy. `refresh-fixtures.yml` now
+  explicitly triggers `deploy.yml` via `gh workflow run` after a
+  successful commit. See [docs/deploy.md](docs/deploy.md).
+
 ## 2026-08-23
 
 **Infrastructure**

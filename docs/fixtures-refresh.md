@@ -95,11 +95,16 @@ runs on GitHub's own servers, no separate hosting needed:
 - **Manual trigger**: also runs on demand from the repo's Actions tab
   ("Run workflow") if scores need to go out sooner
 - **What it does**: checks out the repo, runs `npm run refresh-fixtures`, and — only
-  if the generated file actually changed — commits and pushes it to `main`
+  if the generated file actually changed — commits and pushes it to `main`,
+  then explicitly triggers [`deploy.yml`](../.github/workflows/deploy.yml)
+  to publish it
 
-That push is what updates the live site: whatever host serves this project
-(Cloudflare Pages was the plan at time of writing) redeploys automatically on every
-push to `main`, the same as any other change to the repo.
+That explicit trigger matters: a push made with the workflow's default
+`GITHUB_TOKEN` does **not** fire other workflows' `on: push` (GitHub's
+built-in anti-loop protection), so without it `deploy.yml` would silently
+never run after a fixtures update — the commit would land on `main` but the
+live site would keep serving stale data with no error anywhere. This bit us
+once already; see [docs/deploy.md](deploy.md) for the full explanation.
 
 No `npm install` step is needed for this job — the script only uses Node's
 built-ins (`fetch`, `fs`) and this repo's own code, no external packages.
