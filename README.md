@@ -14,7 +14,8 @@ The site shows:
 - **Team info** — kit colours and per-team availability notes
 
 Fixtures and results are sourced from the league's Google Sheet and refreshed
-automatically twice a week — see [Fixtures & results](#fixtures--results) below.
+automatically — within minutes of an edit to the sheet, plus a daily catch-up run.
+See [Fixtures & results](#fixtures--results) below.
 
 This project is a TanStack Start + Vite app deployed to Cloudflare Workers.
 
@@ -31,16 +32,18 @@ npm run dev
 
 ## Fixtures & results
 
-Fixtures, scores, and postponements are pulled weekly from a Google Sheet and
-committed automatically — see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)
-for how the pipeline works, the sheet format it expects, and how to trigger a
-refresh manually.
+Fixtures, scores, and postponements are pulled from a Google Sheet and committed
+automatically. An edit to the sheet reaches the live site in minutes; a daily run
+at 03:00 SGT catches anything the sheet trigger misses. See
+[docs/fixtures-refresh.md](docs/fixtures-refresh.md) for how the pipeline works,
+the sheet format it expects, and how to trigger a refresh manually.
 
 ## Deployment
 
-The site auto-deploys to Cloudflare Workers on pushes to `main`
-(production) or `staging` (a separate environment for trying out changes
-first) — see [docs/deploy.md](docs/deploy.md) for both URLs, the suggested
+The site auto-deploys to Cloudflare Workers on pushes to `main` (production) or
+`staging` (a separate environment for trying out changes first), after a fixtures
+refresh, and on demand from the Actions tab — see
+[docs/deploy.md](docs/deploy.md) for both URLs, all three triggers, the suggested
 staging workflow, and how local commits stay in sync with what's deployed.
 
 ## Contributing

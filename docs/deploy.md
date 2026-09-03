@@ -1,10 +1,23 @@
 # Deployment
 
 The site runs on Cloudflare Workers as two separate environments, both
-deployed by [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml)
-on pushes to `main` or `staging`. Both build with `npm run build` and deploy with
+deployed by [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml).
+Both build with `npm run build` and deploy with
 `npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"`,
 authenticated via a `CLOUDFLARE_API_TOKEN` repo secret.
+
+Three things start a deploy:
+
+| Trigger             | When                                                                                     |
+| ------------------- | ---------------------------------------------------------------------------------------- |
+| `push`              | any commit to `main` or `staging`                                                        |
+| `workflow_run`      | a successful **Refresh fixtures from Google Sheet** run — sheet edits and the daily cron |
+| `workflow_dispatch` | **Run workflow** in the Actions tab, against `main` or `staging`                         |
+
+Every one of them passes through [`checks.yml`](../.github/workflows/checks.yml)
+first — fixtures validation, lint, formatting, typecheck, dead-code check and
+build — before any step sees the Cloudflare token. Nothing reaches a Worker
+without clearing the same gate a pull request does.
 
 | Branch    | Worker                           | URL                                                                           |
 | --------- | -------------------------------- | ----------------------------------------------------------------------------- |
@@ -17,6 +30,14 @@ before they reach real visitors.
 
 ## Manual deployment
 
+Normally you do not need a local deploy: **Actions → Deploy to Cloudflare → Run
+workflow**, pick `main` or `staging`, and it builds and publishes from that branch
+with the checks gate applied. The branch selector is safe — `deploy.yml` matches
+the ref against an explicit whitelist and refuses anything that is not `main` or
+`staging`, so a dispatch from a feature branch fails fast instead of deploying
+somewhere unintended.
+
+The commands below are the escape hatch for when Actions itself is unavailable.
 From the repository root, use a build from the intended revision (normally
 `main` for production or `staging` for staging), run `npm run build`, and
 then run exactly one matching command. `--cwd .output` deploys the generated
@@ -104,6 +125,38 @@ secret-bearing deploy step. This avoids human `workflow_dispatch` while
 still deploying refreshed data. If another automation commits to `main` or
 `staging`, it needs an explicitly reviewed trigger path; do not assume a
 bot-authored push will deploy on its own.
+
+## Why there is no wrangler config in the repository root
+
+There is deliberately no `wrangler.toml` or `wrangler.jsonc` at the top level.
+Nitro generates the real one during `npm run build`, at
+`.output/server/wrangler.json`, with the entry point, the assets binding, the
+compatibility date and `nodejs_compat` all derived from the build. That is why
+every deploy command in this file passes `--cwd .output`: the config only exists
+after a build, inside the build output.
+
+The practical consequence: **any tool that runs a Wrangler command from the
+repository root will fail**, with
+
+```
+✘ [ERROR] Missing entry-point to Worker script or to assets directory
+```
+
+Cloudflare's own **Workers Builds** (the Git integration configured in the
+Cloudflare dashboard, under the Worker's Settings → Build) does exactly that. Its
+default deploy command for a non-production branch is `npx wrangler versions
+upload`, run from the root with no build step, so it fails on every push with the
+error above. It is not connected to anything in this repository — the failure
+appears only in the Cloudflare dashboard, while the GitHub Actions deploys go on
+succeeding.
+
+Leave it disconnected. Workers Builds cannot cover what this project needs
+anyway: it is driven purely by Git events, so it cannot do the daily scheduled
+refresh or the Google Sheet edit trigger (see
+[fixtures-refresh.md](fixtures-refresh.md)). And if it were made to work
+alongside GitHub Actions, both would deploy the same Worker on every push —
+racing each other, with the Workers Builds path skipping the `checks.yml` gate
+entirely.
 
 ## Why the Worker name matters
 

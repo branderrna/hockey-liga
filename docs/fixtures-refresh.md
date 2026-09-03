@@ -1,15 +1,20 @@
-# Weekly fixtures & results refresh
+# Fixtures & results refresh
 
 Fixtures, scores and postponements for the site come from a Google Sheet, not from
-hand-edited code. A script pulls that sheet, regenerates a data file, and a scheduled
-GitHub Action commits the result every week so the site stays current without anyone
-touching this repo directly.
+hand-edited code. A script pulls that sheet, regenerates a data file, and a GitHub
+Action commits the result so the site stays current without anyone touching this
+repo directly.
+
+There are three ways a refresh starts, in descending order of how often they fire:
+an edit in the sheet, a daily cron, or a manual run. They all converge on the same
+workflow, so a sheet edit gets the same validation as a code change.
 
 ## How it fits together
 
 ```
 Google Sheet ("COMPLETE" tab)
-        │  Sun & Mon 03:00 SGT (or manual trigger)
+        │  an edit dispatches via scripts/sheet-refresh-trigger.gs (~10 min max)
+        │  plus a daily 03:00 SGT cron, or a manual run from the Actions tab
         ▼
 .github/workflows/refresh-fixtures.yml   (GitHub Actions)
         │  runs
@@ -17,10 +22,13 @@ Google Sheet ("COMPLETE" tab)
 scripts/refresh-fixtures.ts              (fetch + parse)
         │  writes
         ▼
-src/data/matches.generated.ts            (committed to the repo)
+src/data/matches.generated.ts            (committed to main, only if changed)
         │  imported by
         ▼
 src/data/league.ts  →  the rest of the site (fixtures, results, standings)
+        │  published by deploy.yml, chained off this workflow via workflow_run
+        ▼
+live site
 ```
 
 Team names, colours, and season dates still live by hand in
@@ -36,18 +44,19 @@ Google credentials — it just fetches the sheet's public CSV export).
 Expected columns (header row, any order, matched by name — a stray trailing space
 in a header like `"Score "` is tolerated):
 
-| Column | Meaning |
-|---|---|
-| Day & Date | e.g. `Sunday, 02 Aug` |
-| Venue | e.g. `CCAB`, `DELTA` |
-| Time | 24h, no colon, e.g. `1500` |
-| Category | `WOMEN`, `PREMIER`, `U21 GIRLS`, or `U21 BOYS` |
-| Home | home team name |
-| Score | see below |
-| Away | away team name |
-| Notes | free text — reschedule info, timing changes, etc. |
+| Column     | Meaning                                           |
+| ---------- | ------------------------------------------------- |
+| Day & Date | e.g. `Sunday, 02 Aug`                             |
+| Venue      | e.g. `CCAB`, `DELTA`                              |
+| Time       | 24h, no colon, e.g. `1500`                        |
+| Category   | `WOMEN`, `PREMIER`, `U21 GIRLS`, or `U21 BOYS`    |
+| Home       | home team name                                    |
+| Score      | see below                                         |
+| Away       | away team name                                    |
+| Notes      | free text — reschedule info, timing changes, etc. |
 
 **Score column convention:**
+
 - Blank → not played yet, nothing scheduled to change
 - `4 - 0` → final score, match counts toward the league table
 - Contains **`PP`** anywhere (e.g. `PP`, `PP 1 - 0`) → **postponed**. The match is
@@ -90,20 +99,24 @@ formatting checks for the same reason.
 [`.github/workflows/refresh-fixtures.yml`](../.github/workflows/refresh-fixtures.yml)
 runs on GitHub's own servers, no separate hosting needed:
 
-- **Schedule**: every Sunday and Monday at 03:00 Singapore time
-  (`0 19 * * 6,0` in UTC)
+- **On a sheet edit**: [`scripts/sheet-refresh-trigger.gs`](../scripts/sheet-refresh-trigger.gs)
+  dispatches this workflow within ~10 minutes. See
+  [Instant refresh on a sheet edit](#instant-refresh-on-a-sheet-edit) below
+- **Schedule**: daily at 03:00 Singapore time (`0 19 * * *` in UTC). This is the
+  safety net rather than the main path — it is what keeps fixtures moving if the
+  Apps Script trigger or its token ever breaks silently. GitHub's scheduled runs
+  are best-effort and can be delayed under load
 - **Manual trigger**: also runs on demand from the repo's Actions tab
-  ("Run workflow") if scores need to go out sooner
+  ("Run workflow")
 - **What it does**: checks out the repo, runs `npm run refresh-fixtures`, and — only
-  if the generated file actually changed — commits and pushes it to `main`,
-  then explicitly triggers [`deploy.yml`](../.github/workflows/deploy.yml)
-  to publish it
+  if the generated file actually changed — commits and pushes it to `main`
 
-That explicit trigger matters: a push made with the workflow's default
-`GITHUB_TOKEN` does **not** fire other workflows' `on: push` (GitHub's
-built-in anti-loop protection), so without it `deploy.yml` would silently
-never run after a fixtures update — the commit would land on `main` but the
-live site would keep serving stale data with no error anywhere. This bit us
+Publishing is chained off this workflow rather than off its push.
+[`deploy.yml`](../.github/workflows/deploy.yml) listens for this workflow
+completing successfully (`workflow_run`), because a push made with the default
+`GITHUB_TOKEN` does **not** fire other workflows' `on: push` — GitHub's built-in
+anti-loop protection. Without that chain, a fixtures commit would land on `main`
+while the live site kept serving stale data, with no error anywhere. This bit us
 once already; see [docs/deploy.md](deploy.md) for the full explanation.
 
 No `npm install` step is needed for this job — the script only uses Node's
@@ -120,6 +133,63 @@ commit-and-push step to work, check:
 If that's not enabled, the scheduled run will fail at the push step (the fetch and
 data generation still succeed — nothing breaks, the site just doesn't get the
 update until this is fixed and the workflow re-runs).
+
+## Instant refresh on a sheet edit
+
+[`scripts/sheet-refresh-trigger.gs`](../scripts/sheet-refresh-trigger.gs) is Google
+Apps Script that lives in the sheet, not in this repo's build. It watches the
+"COMPLETE" tab and dispatches `refresh-fixtures.yml` shortly after an edit, so a
+score entered in the sheet reaches the live site in minutes instead of waiting for
+the next daily run.
+
+It deliberately does **not** deploy anything itself. It only fires the same refresh
+workflow the cron fires, so sheet-driven updates go through the identical path:
+validate, commit only if changed, then `deploy.yml`. A malformed row fails
+`npm test` instead of reaching the site.
+
+**Why it is split into two functions.** A _simple_ `onEdit(e)` runs unauthorized
+and cannot use `UrlFetchApp` at all, so the trigger has to be installed rather
+than implicit. And `onEdit` fires once per cell — entering ten scores would fire
+ten times, and `refresh-fixtures.yml` queues rather than cancels
+(`concurrency.cancel-in-progress: false`), so every one of them would pile up. So
+an edit only sets a "pending" flag, and a separate time-driven function collapses
+any number of edits into at most one workflow run per interval (10 minutes,
+`FLUSH_INTERVAL_MINUTES`).
+
+### Setting it up
+
+1. **Create a GitHub token.** GitHub → **Settings → Developer settings → Personal
+   access tokens → Fine-grained tokens → Generate new token**. Scope it as
+   narrowly as it goes:
+   - **Repository access**: _Only select repositories_ → `branderrna/hockey-liga`
+   - **Permissions → Repository permissions → Actions**: **Read and write**
+     (this is what `workflow_dispatch` needs; nothing else is required)
+   - Set an expiry you will actually notice — see the note below
+2. **Open the sheet's script editor**: in the Google Sheet, **Extensions → Apps
+   Script**.
+3. **Paste in the script**: copy the contents of
+   [`scripts/sheet-refresh-trigger.gs`](../scripts/sheet-refresh-trigger.gs) over
+   the default `Code.gs`, and save.
+4. **Store the token**: **Project Settings → Script Properties → Add script
+   property**, name `GITHUB_TOKEN`, value the token from step 1. Script Properties
+   are part of the Apps Script project, not the sheet's contents — someone with
+   view access to the sheet cannot read them. The token must never be committed
+   to this repo.
+5. **Install the triggers**: select `installTriggers` in the editor's function
+   dropdown and **Run**. Authorize when Google prompts. This is safe to re-run —
+   it clears its own triggers first, so it will not stack duplicates.
+6. **Verify**: run `testDispatchNow`. A **Refresh fixtures from Google Sheet** run
+   should appear in the repo's Actions tab within a few seconds. If the sheet has
+   not changed, the run correctly finishes without committing.
+
+### Keeping it working
+
+The token expires. When it does, sheet edits stop triggering refreshes **and
+nothing announces it** — the sheet looks fine and the Apps Script failure is only
+visible under **Executions** in the script editor. This is exactly why the daily
+cron stays in place: fixtures keep updating on their normal schedule even while
+the fast path is dead. Regenerate the token and update the `GITHUB_TOKEN` script
+property to restore it.
 
 ## Known limitation
 
@@ -139,4 +209,12 @@ special "TBD" styling for them yet. Worth a decision before those rounds arrive.
   to work without credentials.
 - **Scheduled run succeeds but the site doesn't update**: check the Action's log
   in the repo's Actions tab — most likely the push step failed on permissions (see
-  "One-time setup" above), or nothing in the sheet actually changed that week.
+  "One-time setup" above), or nothing in the sheet actually changed.
+- **Sheet edits don't trigger anything, but the daily run works**: the Apps Script
+  side is broken, not the workflow. In the Apps Script editor open **Executions**
+  to see `flushPendingRefresh` failures — an expired or revoked token shows up as
+  an HTTP 401/403 from `dispatchRefreshWorkflow`. Run `testDispatchNow` to confirm
+  a fix. Fixtures still update daily meanwhile.
+- **A sheet edit triggered a run that failed `npm test`**: that is the gate working.
+  The sheet has a row the validator rejects (bad date, unknown division, malformed
+  score). The live site keeps its last good data until the row is fixed.

@@ -40,6 +40,7 @@ Run the relevant checks after changes. Do not claim a task is complete without r
 ## Deployment and Git
 
 - The deploy workflow is `.github/workflows/deploy.yml` and deploys the prebuilt `.output` directory with `npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"`; see [`docs/deploy.md`](docs/deploy.md) for the explicit production and staging Worker names.
-- The fixture refresh workflow is `.github/workflows/refresh-fixtures.yml` and may commit generated data to `main`.
+- The fixture refresh workflow is `.github/workflows/refresh-fixtures.yml` and may commit generated data to `main`. It is dispatched by a Google Sheet edit via `scripts/sheet-refresh-trigger.gs` (Apps Script, not part of the build) and by a daily cron; `deploy.yml` then publishes it through `workflow_run`.
+- Wrangler commands must run with `--cwd .output`. There is no wrangler config in the repository root by design; Nitro generates it into the build output. Do not add one, and do not reconnect Cloudflare Workers Builds — see [`docs/deploy.md`](docs/deploy.md).
 - Do not rewrite published history, force-push, or merge branches as part of routine work.
 - Keep commits focused and review `git diff --check` before committing.
