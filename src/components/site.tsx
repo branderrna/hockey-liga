@@ -18,11 +18,8 @@ function SiteHeader() {
             alt="Hockey Liga logo"
             className="h-9 w-9 rounded-md bg-white object-contain p-0.5"
           />
-          <span className="leading-tight">
-            <span className="block font-display text-xl tracking-wide">{SEASON.name}</span>
-            <span className="block text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              {"\n"}
-            </span>
+          <span className="block font-display text-xl leading-tight tracking-wide">
+            {SEASON.name}
           </span>
         </Link>
         <nav className="flex items-center gap-1">
@@ -46,7 +43,7 @@ function SiteFooter() {
   return (
     <footer className="mt-16 border-t border-border py-8">
       <div className="mx-auto max-w-6xl px-4 text-xs text-muted-foreground">
-        {SEASON.name} · {SEASON.subtitle} · Aug 2 – Nov 29, 2026
+        {SEASON.name} · Aug 2 – Nov 29, 2026
       </div>
     </footer>
   );

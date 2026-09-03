@@ -3,7 +3,6 @@ export type { DivisionId, Team, Match };
 
 export const SEASON = {
   name: "Hockey Liga 2026",
-  subtitle: "\n",
   start: "2026-08-02",
   end: "2026-11-29",
 };
