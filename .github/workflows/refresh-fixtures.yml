@@ -9,7 +9,6 @@ on:
 
 permissions:
   contents: write
-  actions: write # needed to explicitly trigger deploy.yml below
 
 # If a manual run overlaps the scheduled one, queue rather than run in
 # parallel — two concurrent `git push`es here would race and one would fail.
@@ -20,6 +19,8 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
@@ -45,13 +46,10 @@ jobs:
           git push
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
-      # A push made with the default GITHUB_TOKEN does NOT trigger other
-      # workflows' `on: push` (GitHub's anti-loop protection) — so without
-      # this, deploy.yml would never fire after a fixtures update and the
-      # live site would silently keep serving stale data. Trigger it
-      # explicitly instead of relying on the push event.
-      - name: Trigger production deploy
-        if: steps.commit.outputs.changed == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run deploy.yml --ref main
+  deploy:
+    needs: refresh
+    if: ${{ needs.refresh.outputs.changed == 'true' }}
+    uses: ./.github/workflows/deploy.yml
+    with:
+      branch: main
+    secrets: inherit

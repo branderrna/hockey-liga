@@ -3,6 +3,15 @@ name: Deploy to Cloudflare
 on:
   push:
     branches: [main, staging]
+  workflow_call:
+    inputs:
+      branch:
+        description: Branch to deploy
+        required: true
+        type: string
+    secrets:
+      CLOUDFLARE_API_TOKEN:
+        required: true
 
 permissions:
   contents: read
@@ -15,12 +24,14 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' }}
+    if: ${{ (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')) || (github.event_name == 'workflow_call' && ((github.ref == 'refs/heads/main' && inputs.branch == 'main') || (github.ref == 'refs/heads/staging' && inputs.branch == 'staging'))) }}
     runs-on: ubuntu-latest
     env:
-      BRANCH_NAME: ${{ github.ref_name }}
+      BRANCH_NAME: ${{ inputs.branch || github.ref_name }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.branch || github.ref }}
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:

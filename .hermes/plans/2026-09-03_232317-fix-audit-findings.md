@@ -133,21 +133,22 @@
 
 ## Task 3: Harden branch handling in the deploy workflow
 
-**Objective:** Prevent arbitrary refs from reaching the secret-bearing deploy step or being embedded into shell source. The deploy workflow is push-only; documented manual deployment remains a local, explicitly named Wrangler command.
+**Objective:** Prevent arbitrary refs from reaching the secret-bearing deploy step or being embedded into shell source. The deploy workflow has no human `workflow_dispatch`; direct deployments are push-only, and the fixture refresh automation uses a validated reusable workflow call.
 
 **Files:**
-- Modify: `.github/workflows/deploy.yml:3-55`
+- Modify: `.github/workflows/deploy.yml:3-71`
+- Modify: `.github/workflows/refresh-fixtures.yml:10-55`
 
 **Implementation shape:**
 
 1. Keep push triggers limited to `main` and `staging`.
-2. Do not expose the secret-bearing deploy job through `workflow_dispatch`; local manual deployment is documented separately with explicit Worker names.
-3. Keep a job-level full-ref guard as defense in depth so only branch refs can deploy:
+2. Do not expose the secret-bearing deploy job through `workflow_dispatch`; local manual deployment is documented separately with explicit Worker names. Automation that commits with `GITHUB_TOKEN` must call this workflow through `workflow_call` with a matching supported branch input.
+3. Keep a job-level full-ref guard as defense in depth so only matching branch refs can deploy directly or through a reusable call:
 
    ```yaml
    jobs:
      deploy:
-       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
+       if: ${{ (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')) || (github.event_name == 'workflow_call' && ((github.ref == 'refs/heads/main' && inputs.branch == 'main') || (github.ref == 'refs/heads/staging' && inputs.branch == 'staging'))) }}
    ```
 
 4. Pass the ref through an environment variable and use a quoted shell variable. Do not place `${{ github.ref_name }}` inside any `run:` block:
@@ -199,7 +200,7 @@
 
 - Use a syntax-only shell test with a quote-bearing sample ref to confirm the generated shell remains valid. Do not execute the sample as a real workflow.
 
-**Expected result:** The deploy workflow is push-only for `main` and `staging`; tag/manual refs cannot reach secret-bearing deployment work, and supported refs cannot alter shell syntax through their names.
+**Expected result:** The deploy workflow accepts direct pushes only for `main` and `staging`, and accepts reusable calls only when the caller ref and branch input match; tag/manual refs cannot reach secret-bearing deployment work, and supported refs cannot alter shell syntax through their names.
 
 ---
 
@@ -418,7 +419,7 @@ Do not run a live `wrangler deploy`, trigger the production workflow, merge the 
 ## Completion criteria
 
 - No active documentation or committed plan recommends `npx nitro deploy --prebuilt`.
-- The deploy workflow has no `workflow_dispatch` trigger, uses full branch refs, and does not interpolate `github.ref_name` into shell source.
+- The deploy workflow has no human `workflow_dispatch`, uses full branch refs for push and reusable-call guards, and the fixture refresh workflow calls it only with a matching `main` input.
 - Branch is rebased onto the latest `origin/main` with current fixture data preserved.
 - `npm test`, lint, TypeScript, Knip, build, audit, both Wrangler dry-runs, and local Worker smoke checks pass.
 - GitHub comparison reports zero commits behind `main` after the final fetch.

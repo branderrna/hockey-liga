@@ -88,7 +88,7 @@ If a push ever does fail silently (no network, auth expired, etc.), the
 hook prints a clear `[auto-push] FAILED` line — check for that after
 committing if the live site doesn't reflect a change you just made.
 
-## Why the fixtures-refresh workflow triggers deploy.yml explicitly
+## Why the fixtures-refresh workflow calls deploy.yml explicitly
 
 This one is easy to miss: GitHub doesn't chain workflow triggers when a
 push is made using a workflow's own default `GITHUB_TOKEN` — it's built-in
@@ -98,11 +98,13 @@ at all. Everything looked fine — the commit landed, no errors anywhere —
 but the live site just silently kept serving the previous data until
 something else happened to push and trigger a real deploy.
 
-The fix: `refresh-fixtures.yml` now explicitly runs
-`gh workflow run deploy.yml --ref main` after a successful commit, instead
-of assuming the push itself will trigger it. If you ever add another
-automation that commits to `main` or `staging`, it needs the same explicit
-trigger — don't assume a bot-authored push will deploy on its own.
+The fix: after a successful fixture commit, `refresh-fixtures.yml` invokes
+`deploy.yml` as a reusable workflow with the validated `main` branch input
+and inherited repository secret. This avoids human `workflow_dispatch` while
+still deploying refreshed data. If you ever add another automation that
+commits to `main` or `staging`, it should call the reusable deploy workflow
+with the matching branch input; don't assume a bot-authored push will deploy
+on its own.
 
 ## Why the Worker name matters
 
