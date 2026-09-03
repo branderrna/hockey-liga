@@ -6,7 +6,7 @@ Both build with `npm run build` and deploy with
 `npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"`,
 authenticated via a `CLOUDFLARE_API_TOKEN` repo secret.
 
-Three things start a deploy:
+Three things start a **production or staging deploy**:
 
 | Trigger             | When                                                                                     |
 | ------------------- | ---------------------------------------------------------------------------------------- |
@@ -18,6 +18,9 @@ Every one of them passes through [`checks.yml`](../.github/workflows/checks.yml)
 first — fixtures validation, lint, formatting, typecheck, dead-code check and
 build — before any step sees the Cloudflare token. Nothing reaches a Worker
 without clearing the same gate a pull request does.
+
+Pushes to any _other_ branch do not deploy. They build a preview instead — see
+[Preview deployments](#preview-deployments-cloudflare-workers-builds) below.
 
 | Branch    | Worker                           | URL                                                                           |
 | --------- | -------------------------------- | ----------------------------------------------------------------------------- |
@@ -178,6 +181,69 @@ scheduled refresh or the Google Sheet edit trigger (see
 Note that disconnecting the integration stops future builds but does **not**
 delete the Worker it created. That has to be removed separately, or it keeps
 serving whatever it last deployed.
+
+## Preview deployments (Cloudflare Workers Builds)
+
+Every push to a branch other than `main` gets its own preview URL, so a change
+can be seen running before it is merged. Two URLs are produced per build and
+posted as a pull request comment:
+
+| URL                                                               | Points at                                   |
+| ----------------------------------------------------------------- | ------------------------------------------- |
+| `<branch>-branderrna-hockey-liga.hockey-liga.workers.dev`         | latest commit on that branch (stable alias) |
+| `<version-prefix>-branderrna-hockey-liga.hockey-liga.workers.dev` | that one specific commit                    |
+
+These are **versions** of the production Worker, uploaded but never deployed.
+Production keeps serving whatever it was serving; promoting a version would
+require an explicit `wrangler versions deploy`, which nothing here runs
+automatically.
+
+### This configuration lives in the Cloudflare dashboard, not in this repository
+
+It is the one piece of deployment setup that is not in version control, which is
+why it is written down here. It is attached to the **`branderrna-hockey-liga`**
+Worker, under Settings → Build:
+
+| Field                              | Value                                                     |
+| ---------------------------------- | --------------------------------------------------------- |
+| Git repository                     | `branderrna/hockey-liga`                                  |
+| Build command                      | `npm run build`                                           |
+| Deploy command (production branch) | `echo "Production deploys are handled by GitHub Actions"` |
+| Version command (non-production)   | `npx wrangler versions upload`                            |
+| Root directory                     | `/`                                                       |
+| Production branch                  | `main`                                                    |
+| Builds for non-production branches | enabled                                                   |
+
+Two of those are load-bearing and should not be changed casually:
+
+- **The build command must stay set.** Without it there is no `.output`, and
+  Wrangler falls into its interactive setup wizard, which auto-answers itself in
+  CI and scaffolds a config against the wrong build. That is exactly how the
+  duplicate `hockey-liga` Worker described above came to exist. With the build
+  command set, the build writes `.wrangler/deploy/config.json`, Wrangler follows
+  that redirect to `.output/server/wrangler.json`, and the wizard never runs.
+- **The production deploy command must stay a no-op.** Connecting a repository
+  makes the production branch build unconditionally, and there is no setting to
+  turn that off. GitHub Actions owns production. If this field is ever set back
+  to `wrangler deploy`, both systems will deploy `main` and race each other.
+
+A `main` push therefore still runs a Cloudflare build of about a minute that
+deploys nothing. That is the price of there being no way to disable production
+branch builds, and it is deliberate.
+
+Previews do **not** run `checks.yml`. Lint, formatting, typecheck and fixture
+validation still gate `main` through GitHub Actions; a preview only proves the
+branch builds and renders.
+
+### Verifying it still works
+
+Push a throwaway branch containing a visible marker, then confirm the preview
+shows it and production does not:
+
+```sh
+curl -s https://<branch>-branderrna-hockey-liga.hockey-liga.workers.dev | grep -c MARKER  # 1
+curl -s https://sghockeyliga.com | grep -c MARKER                                         # 0
+```
 
 ## Why the Worker name matters
 

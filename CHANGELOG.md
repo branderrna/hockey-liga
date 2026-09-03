@@ -4,6 +4,25 @@ Notable changes to the site, kept by hand alongside the automated
 fixtures/results refresh (which does not get its own entry here every run —
 see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
 
+## 2026-09-04 (preview deployments)
+
+**Deployment**
+
+- Every branch now gets its own preview URL. Pushing any branch other than
+  `main` builds a preview at
+  `<branch>-branderrna-hockey-liga.hockey-liga.workers.dev`, stable across
+  commits, so a change can be seen running before it is merged. These are
+  uploaded Worker _versions_, never deployed — production is untouched.
+- Cloudflare Workers Builds was reconnected for this, deliberately and
+  differently from before: a build command is now set (which is what stops
+  Wrangler's setup wizard from scaffolding a rogue config), and the production
+  branch deploy command is a no-op so GitHub Actions keeps sole ownership of
+  production. Verified end to end on a throwaway branch: the preview served the
+  change while `sghockeyliga.com` did not.
+- Because that configuration lives in the Cloudflare dashboard rather than in
+  this repository, it is transcribed in [docs/deploy.md](docs/deploy.md) along
+  with which fields are load-bearing and why.
+
 ## 2026-09-04 (later)
 
 **Infrastructure**

@@ -42,9 +42,13 @@ the sheet format it expects, and how to trigger a refresh manually.
 
 The site auto-deploys to Cloudflare Workers on pushes to `main` (production) or
 `staging` (a separate environment for trying out changes first), after a fixtures
-refresh, and on demand from the Actions tab — see
-[docs/deploy.md](docs/deploy.md) for both URLs, all three triggers, the suggested
-staging workflow, and how local commits stay in sync with what's deployed.
+refresh, and on demand from the Actions tab.
+
+Pushing any other branch does not deploy — it builds a **preview** at
+`<branch>-branderrna-hockey-liga.hockey-liga.workers.dev`, so you can see a
+change running before merging it. See [docs/deploy.md](docs/deploy.md) for every
+URL and trigger, the preview setup, and how local commits stay in sync with
+what's deployed.
 
 ## Contributing
 
