@@ -1,11 +1,30 @@
 // Captures the original Error out-of-band so server.ts can recover the stack
 // when h3 has already swallowed the throw into a generic 500 Response.
 
-let lastCapturedError: { error: unknown; at: number } | undefined;
-const TTL_MS = 5_000;
+import { AsyncLocalStorage } from "node:async_hooks";
+
+type CaptureSlot = { error: unknown };
+
+// Request-scoped, not module-scoped. A Worker isolate serves many requests
+// concurrently, so a single shared slot mis-attributes one request's error to
+// another's response — or drops it entirely — whenever two failures overlap.
+// Verified against workerd: with a shared slot, three concurrent failing
+// requests produced one wrong attribution and two lost errors.
+const captureStore = new AsyncLocalStorage<CaptureSlot>();
+
+// Runs fn inside a fresh capture scope. Everything awaited within it — h3's
+// internal error logging included — records into that request's own slot.
+export function runWithErrorCapture<T>(fn: () => T): T {
+  return captureStore.run({ error: undefined }, fn);
+}
 
 function record(error: unknown) {
-  lastCapturedError = { error, at: Date.now() };
+  const slot = captureStore.getStore();
+  // No slot means this error happened outside a request scope (module init, or
+  // a global handler firing after the response resolved). The console.error
+  // wrapper below still logs it expanded; there is just nothing to correlate
+  // it to, and guessing a request would reintroduce the cross-talk above.
+  if (slot) slot.error = error;
 }
 
 // h3's HTTPError serializes to {"status":500,"unhandled":true,"message":"HTTPError"} —
@@ -69,13 +88,12 @@ if (typeof globalThis.addEventListener === "function") {
   );
 }
 
+// Reads and clears the error recorded for the in-flight request. The slot lives
+// exactly as long as the request, so no staleness window (and no TTL) is needed.
 export function consumeLastCapturedError(): unknown {
-  if (!lastCapturedError) return undefined;
-  if (Date.now() - lastCapturedError.at > TTL_MS) {
-    lastCapturedError = undefined;
-    return undefined;
-  }
-  const { error } = lastCapturedError;
-  lastCapturedError = undefined;
+  const slot = captureStore.getStore();
+  if (!slot) return undefined;
+  const { error } = slot;
+  slot.error = undefined;
   return error;
 }
