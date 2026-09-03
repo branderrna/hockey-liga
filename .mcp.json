@@ -2,11 +2,7 @@
   "mcpServers": {
     "code-review-graph": {
       "command": "uvx",
-      "args": [
-        "code-review-graph==2.3.7",
-        "serve"
-      ],
-      "cwd": "D:\\_github-repos\\hockey-liga",
+      "args": ["code-review-graph==2.3.7", "serve"],
       "type": "stdio"
     }
   }

@@ -1,0 +1,9 @@
+# Normalize to LF in the repository and in the working tree. Prettier checks for
+# LF, so without this a Windows checkout (core.autocrlf=true) reports every file
+# as unformatted and `npm run format:check` is unusable locally.
+* text=auto eol=lf
+
+# Never line-ending-normalize binary assets.
+*.jpg binary
+*.png binary
+*.ico binary

@@ -51,7 +51,6 @@
   --color-ot: var(--ot);
 }
 
-
 :root {
   --radius: 0.5rem;
   --background: oklch(0.17 0.035 255);
@@ -102,9 +101,7 @@
 }
 
 @utility surface {
-  background:
-    linear-gradient(180deg, oklch(1 0 0 / 0.05), transparent 40%),
-    var(--color-card);
+  background: linear-gradient(180deg, oklch(1 0 0 / 0.05), transparent 40%), var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
 }
@@ -122,4 +119,3 @@
   font-size: 1.9rem;
   line-height: 1;
 }
-
