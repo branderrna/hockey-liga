@@ -3,7 +3,7 @@
 The site runs on Cloudflare Workers as two separate environments, both
 deployed by [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml)
 on every push. Both build with `npm run build` and deploy with
-`npx wrangler --cwd .output deploy --name <worker>`, authenticated via a
+`npx wrangler --cwd .output deploy --name "$WORKER_NAME"`, authenticated via a
 `CLOUDFLARE_API_TOKEN` repo secret.
 
 | Branch    | Worker                          | URL                                                              |
@@ -14,6 +14,28 @@ on every push. Both build with `npm run build` and deploy with
 `main` is production — the custom domain points there. `staging` is for
 trying out changes (especially larger ones, like infra/dependency work)
 before they reach real visitors.
+
+## Manual deployment
+
+From the repository root, use a build from the intended revision (normally
+`main` for production or `staging` for staging), run `npm run build`, and
+then run exactly one matching command. `--cwd .output` deploys the generated
+build, and the Worker name must match the target environment.
+
+### Production
+
+```sh
+npx wrangler --cwd .output deploy --name branderrna-hockey-liga
+```
+
+### Staging
+
+```sh
+npx wrangler --cwd .output deploy --name branderrna-hockey-liga-staging
+```
+
+Set `CLOUDFLARE_API_TOKEN` before running either command. Do not omit
+`--name` or substitute the other environment's Worker name.
 
 ## Suggested workflow
 
