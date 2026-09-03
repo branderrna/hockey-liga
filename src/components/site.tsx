@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { ChevronRight, Home, Info, Menu, X } from "lucide-react";
-import { SEASON, activeLigas, matchesOf, upcomingLigas } from "@/data/league";
+import { SEASON, activeLigas, upcomingLigas } from "@/data/league";
+import { MyTeamPicker } from "@/components/my-team-picker";
 import logo from "@/assets/liga-logo.jpg";
 
 const SEASON_RANGE = "2 Aug – 29 Nov 2026";
@@ -36,9 +37,6 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
           onClick={onNavigate}
         >
           <span className="flex-1 truncate">{liga.short}</span>
-          <span className="meta-mono shrink-0 tabular-nums">
-            {liga.divisionId ? matchesOf(liga.divisionId).length : ""}
-          </span>
         </Link>
       ))}
 
@@ -55,6 +53,14 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
           <span className="meta-mono shrink-0 opacity-70">Soon</span>
         </Link>
       ))}
+
+      <Link
+        to="/archive"
+        className="meta-mono mt-6 px-3 py-2 transition-colors hover:text-foreground"
+        onClick={onNavigate}
+      >
+        See past years&rsquo; results →
+      </Link>
 
       <div className="mt-auto border-t border-hairline px-3 pt-4">
         <p className="meta-mono">{SEASON.name}</p>
@@ -91,17 +97,22 @@ export function AppShell({ children }: { children: ReactNode }) {
         <SidebarNav />
       </aside>
 
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-hairline bg-background/90 px-2 backdrop-blur lg:hidden">
-        <Brand />
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          aria-label="Open navigation"
-          aria-expanded={open}
-          className="mr-2 rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-        >
-          <Menu className="size-5" />
-        </button>
+      <header className="sticky top-0 z-40 border-b border-hairline bg-background/90 backdrop-blur lg:hidden">
+        <div className="flex items-center justify-between px-2">
+          <Brand />
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            aria-label="Open navigation"
+            aria-expanded={open}
+            className="mr-2 rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            <Menu className="size-5" />
+          </button>
+        </div>
+        <div className="border-t border-hairline px-3 py-2">
+          <MyTeamPicker />
+        </div>
       </header>
 
       {open ? (
@@ -112,7 +123,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-foreground/20 backdrop-blur-[2px]"
           />
-          <div className="animate-rise absolute inset-y-0 left-0 flex w-[17rem] max-w-[85vw] flex-col border-r border-hairline bg-background">
+          <div className="animate-rise absolute inset-0 flex w-full flex-col bg-background">
             <div className="flex items-center justify-between">
               <Brand onClick={() => setOpen(false)} />
               <button
@@ -129,7 +140,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       ) : null}
 
-      <div className="min-w-0">{children}</div>
+      <div className="min-w-0">
+        <div className="sticky top-0 z-30 hidden border-b border-hairline bg-background/90 px-8 py-2.5 backdrop-blur lg:flex lg:justify-end">
+          <MyTeamPicker />
+        </div>
+        {children}
+      </div>
     </div>
   );
 }
@@ -165,7 +181,7 @@ export function LandingShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen">
       <header className="border-b border-hairline">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3 px-5 py-3 sm:px-8">
           <span className="flex items-center gap-2.5">
             <img
               src={logo}
@@ -175,9 +191,10 @@ export function LandingShell({ children }: { children: ReactNode }) {
             />
             <span className="text-sm font-medium tracking-tight">Hockey Liga</span>
           </span>
+          <MyTeamPicker className="order-last w-full sm:order-none sm:ml-auto sm:w-auto" />
           <Link
             to="/about"
-            className="meta-mono flex items-center gap-1 transition-colors hover:text-foreground"
+            className="meta-mono ml-auto flex items-center gap-1 transition-colors hover:text-foreground sm:ml-0"
           >
             About
             <ChevronRight className="size-3" aria-hidden="true" />

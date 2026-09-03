@@ -16,6 +16,9 @@ export type Liga = {
   | { status: "upcoming"; divisionId: null; returns: string }
 );
 
+export type ActiveLiga = Extract<Liga, { status: "active" }>;
+export type UpcomingLiga = Extract<Liga, { status: "upcoming" }>;
+
 export type League = {
   id: string;
   name: string;

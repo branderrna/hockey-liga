@@ -2,8 +2,10 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AppShell } from "@/components/site";
+import { useMyTeam } from "@/lib/my-team";
 import {
   isPlayed,
+  isReplayed,
   latestWeekendKey,
   ligaBySlug,
   matchesOf,
@@ -70,7 +72,7 @@ function LigaPage() {
       <div className="border-b border-hairline pb-7">
         <div className="mx-auto max-w-5xl px-5 pt-8 sm:px-8 lg:pt-12">
           <p className="label-eyebrow">{liga.group} · Season 2026</p>
-          <h1 className="mt-2 text-3xl sm:text-4xl">{liga.name}</h1>
+          <h1 className="mt-2 text-3xl uppercase sm:text-4xl">{liga.name}</h1>
           <p className="meta-mono mt-2">
             {teamsOf(divisionId).length} teams · {playedOf(divisionId).length} of{" "}
             {matchesOf(divisionId).length} games played
@@ -114,7 +116,7 @@ function ComingSoon({ liga }: { liga: Liga }) {
     <AppShell>
       <main className="mx-auto max-w-5xl px-5 py-14 sm:px-8 lg:py-20">
         <p className="label-eyebrow">{liga.group} · Coming soon</p>
-        <h1 className="mt-3 text-3xl sm:text-4xl">{liga.name}</h1>
+        <h1 className="mt-3 text-3xl uppercase sm:text-4xl">{liga.name}</h1>
         <div className="surface mt-8 max-w-xl p-6">
           <p className="text-sm leading-relaxed text-muted-foreground">
             This liga has no fixtures on the site yet. Its schedule and table will appear here once
@@ -137,11 +139,19 @@ function ScheduleView({ divisionId }: { divisionId: DivisionId }) {
   // Keep the selected weekend centred in the strip, including on first paint.
   useLayoutEffect(() => {
     const strip = stripRef.current;
-    const el = strip?.querySelector<HTMLElement>(`[data-key="${activeKey}"]`);
-    if (!strip || !el) return;
-    const offset = el.getBoundingClientRect().left - strip.getBoundingClientRect().left;
-    const left = strip.scrollLeft + offset - (strip.clientWidth - el.offsetWidth) / 2;
-    strip.scrollTo({ left, behavior: "instant" });
+    if (!strip) return;
+    const centre = () => {
+      const el = strip.querySelector<HTMLElement>(`[data-key="${activeKey}"]`);
+      if (!el) return;
+      const offset = el.getBoundingClientRect().left - strip.getBoundingClientRect().left;
+      const left = strip.scrollLeft + offset - (strip.clientWidth - el.offsetWidth) / 2;
+      strip.scrollTo({ left, behavior: "instant" });
+    };
+    // The strip's width settles after stylesheets and webfonts land, and again
+    // on resize, so re-centre whenever its box changes rather than only once.
+    const observer = new ResizeObserver(centre);
+    observer.observe(strip);
+    return () => observer.disconnect();
   }, [activeKey]);
 
   if (weekends.length === 0) {
@@ -257,8 +267,17 @@ function WeekendGames({ weekend }: { weekend: Weekend }) {
 }
 
 function MatchRow({ match: m }: { match: Match }) {
+  const { teamId } = useMyTeam();
+  const mine = !!teamId && (m.homeId === teamId || m.awayId === teamId);
+  const nameClass = (id: string | null) =>
+    teamId && id === teamId ? "font-semibold text-foreground" : "font-medium";
+
   return (
-    <li className="border-b border-hairline transition-colors duration-150 hover:bg-secondary/70">
+    <li
+      className={`border-b border-l-2 border-hairline transition-colors duration-150 hover:bg-secondary/70 ${
+        mine ? "border-l-foreground" : "border-l-transparent"
+      } ${isReplayed(m) ? "bg-ice/35" : ""} ${m.postponed ? "text-muted-foreground" : ""}`}
+    >
       <div className="grid grid-cols-[2.25rem_1fr] items-center gap-x-3 gap-y-1.5 px-1 py-3 sm:grid-cols-[2.25rem_3.25rem_1fr_5.5rem_1fr_7rem] sm:gap-x-4">
         <span className="meta-mono tabular-nums">{String(m.no).padStart(2, "0")}</span>
 
@@ -268,11 +287,13 @@ function MatchRow({ match: m }: { match: Match }) {
         </span>
 
         <span className="col-span-2 grid grid-cols-[1fr_5.5rem_1fr] items-center gap-2 sm:contents">
-          <span className="text-right text-sm leading-tight font-medium sm:truncate">
+          <span className={`text-right text-sm leading-tight sm:truncate ${nameClass(m.homeId)}`}>
             {m.homeName}
           </span>
           <Score match={m} />
-          <span className="text-sm leading-tight font-medium sm:truncate">{m.awayName}</span>
+          <span className={`text-sm leading-tight sm:truncate ${nameClass(m.awayId)}`}>
+            {m.awayName}
+          </span>
         </span>
 
         <span className="meta-mono hidden truncate text-right sm:block">{m.venue}</span>
@@ -339,6 +360,7 @@ const MOBILE_FORM_GAMES = 3;
 
 function TableView({ divisionId }: { divisionId: DivisionId }) {
   const rows = standings(divisionId);
+  const { teamId } = useMyTeam();
 
   return (
     <div className="animate-rise">
@@ -346,7 +368,7 @@ function TableView({ divisionId }: { divisionId: DivisionId }) {
         <table className="w-full text-sm sm:min-w-[640px]">
           <thead>
             <tr className="border-b border-border">
-              <th className="label-eyebrow py-2 pr-3 text-left font-normal">#</th>
+              <th className="label-eyebrow py-2 pr-3 pl-2 text-left font-normal">#</th>
               <th className="label-eyebrow py-2 pr-3 text-left font-normal">Team</th>
               {columns.map((c) => (
                 <th
@@ -368,12 +390,20 @@ function TableView({ divisionId }: { divisionId: DivisionId }) {
             {rows.map((r, i) => (
               <tr
                 key={r.team.id}
-                className="border-b border-hairline transition-colors duration-150 last:border-0 hover:bg-secondary/70"
+                className={`border-b border-l-2 border-hairline transition-colors duration-150 last:border-b-0 hover:bg-secondary/70 ${
+                  r.team.id === teamId ? "border-l-foreground" : "border-l-transparent"
+                }`}
               >
-                <td className="meta-mono py-3 pr-3 tabular-nums">
+                <td className="meta-mono py-3 pr-3 pl-2 tabular-nums">
                   {String(i + 1).padStart(2, "0")}
                 </td>
-                <td className="py-3 pr-3 leading-tight font-medium">{r.team.name}</td>
+                <td
+                  className={`py-3 pr-3 leading-tight ${
+                    r.team.id === teamId ? "font-semibold" : "font-medium"
+                  }`}
+                >
+                  {r.team.name}
+                </td>
                 {columns.map((c) => (
                   <td
                     key={c.key}
@@ -407,14 +437,13 @@ function TableView({ divisionId }: { divisionId: DivisionId }) {
       </div>
 
       <div className="meta-mono mt-5 space-y-1.5 leading-relaxed">
-        <p>
-          3 points for a win · 1 for a draw · sorted by points, then goal difference, then goals for
-        </p>
+        <p>W/D/L = 3/1/0 pts · Sorted Pts &gt; GD &gt; GF</p>
         <p>
           Form runs left to right, oldest to most recent —{" "}
           <span className="sm:hidden">last 3 games</span>
           <span className="hidden sm:inline">last 5 games</span>
         </p>
+        <p className="sm:hidden">Rotate your phone for the full table</p>
       </div>
     </div>
   );

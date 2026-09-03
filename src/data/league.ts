@@ -1,5 +1,15 @@
-import type { DivisionId, League, Liga, LigaSlug, Match, Team, Weekend } from "./types";
-export type { DivisionId, Liga, LigaSlug, Match, Team, Weekend };
+import type {
+  ActiveLiga,
+  DivisionId,
+  League,
+  Liga,
+  LigaSlug,
+  Match,
+  Team,
+  UpcomingLiga,
+  Weekend,
+} from "./types";
+export type { ActiveLiga, DivisionId, Liga, LigaSlug, Match, Team, UpcomingLiga, Weekend };
 
 export const SEASON = {
   name: "Hockey Liga 2026",
@@ -371,6 +381,13 @@ export const isPlayed = (m: Match) => m.homeGoals !== null && m.awayGoals !== nu
 
 export const playedOf = (divisionId: DivisionId) => matchesOf(divisionId).filter(isPlayed);
 
+/**
+ * Fixtures moved to this date from an earlier, postponed one. The sheet's
+ * wording varies ("shifted from", "shiftef from", "shiftefd from"), so match
+ * the stem rather than the exact phrase — and do not catch "changed from".
+ */
+export const isReplayed = (m: Match) => !!m.note && /shift\w*\s+from\b/i.test(m.note);
+
 export const matchDates = (divisionId: DivisionId) => [
   ...new Set(matchesOf(divisionId).map((m) => m.date)),
 ];
@@ -526,8 +543,8 @@ export const ligas: Liga[] = [
   },
 ];
 
-export const activeLigas = ligas.filter((l) => l.status === "active");
-export const upcomingLigas = ligas.filter((l) => l.status === "upcoming");
+export const activeLigas = ligas.filter((l): l is ActiveLiga => l.status === "active");
+export const upcomingLigas = ligas.filter((l): l is UpcomingLiga => l.status === "upcoming");
 export const ligaBySlug = (slug: string) => ligas.find((l) => l.slug === slug);
 export const isLigaSlug = (slug: string): slug is LigaSlug => ligas.some((l) => l.slug === slug);
 
