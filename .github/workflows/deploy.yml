@@ -2,7 +2,7 @@ name: Deploy to Cloudflare
 
 on:
   push:
-    branches: [main, staging]
+    branches: [main]
   workflow_run:
     workflows: ["Refresh fixtures from Google Sheet"]
     types: [completed]
@@ -14,8 +14,8 @@ on:
 permissions:
   contents: read
 
-# Keyed per-branch so a staging deploy never cancels/blocks a production
-# one (or vice versa) — only redundant deploys of the *same* branch race.
+# Keyed per-branch so unrelated deploys never cancel each other — only
+# redundant deploys of the *same* branch race.
 concurrency:
   group: deploy-cloudflare-${{ github.ref_name }}
   cancel-in-progress: true
@@ -50,17 +50,9 @@ jobs:
               echo "BRANCH_NAME=main" >> "$GITHUB_ENV"
               echo "WORKER_NAME=branderrna-hockey-liga" >> "$GITHUB_ENV"
               ;;
-            push:branch:refs/heads/staging:)
-              echo "BRANCH_NAME=staging" >> "$GITHUB_ENV"
-              echo "WORKER_NAME=branderrna-hockey-liga-staging" >> "$GITHUB_ENV"
-              ;;
             workflow_dispatch:branch:refs/heads/main:)
               echo "BRANCH_NAME=main" >> "$GITHUB_ENV"
               echo "WORKER_NAME=branderrna-hockey-liga" >> "$GITHUB_ENV"
-              ;;
-            workflow_dispatch:branch:refs/heads/staging:)
-              echo "BRANCH_NAME=staging" >> "$GITHUB_ENV"
-              echo "WORKER_NAME=branderrna-hockey-liga-staging" >> "$GITHUB_ENV"
               ;;
             workflow_run:*:*:main)
               echo "BRANCH_NAME=main" >> "$GITHUB_ENV"

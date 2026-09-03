@@ -4,6 +4,20 @@ Notable changes to the site, kept by hand alongside the automated
 fixtures/results refresh (which does not get its own entry here every run —
 see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
 
+## 2026-09-04 (staging retired)
+
+**Deployment**
+
+- Retired the `staging` branch, its Worker, and its branch mapping. Per-branch
+  preview URLs replace it and are strictly better: every branch gets its own
+  environment instead of everyone sharing one slot. `staging` had also drifted
+  29 commits behind `main` and was last deployed 2026-08-23, so anyone
+  following the old advice would have been testing against a month-old
+  baseline — a stale safety net is worse than none.
+- `main` is now the only branch that deploys. `deploy.yml` rejects any other
+  ref before the Cloudflare token is in scope, and the auto-push git hook in
+  [docs/deploy.md](docs/deploy.md) only pushes `main`.
+
 ## 2026-09-04 (preview deployments)
 
 **Deployment**

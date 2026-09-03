@@ -40,9 +40,8 @@ the sheet format it expects, and how to trigger a refresh manually.
 
 ## Deployment
 
-The site auto-deploys to Cloudflare Workers on pushes to `main` (production) or
-`staging` (a separate environment for trying out changes first), after a fixtures
-refresh, and on demand from the Actions tab.
+The site auto-deploys to Cloudflare Workers on pushes to `main`, after a
+fixtures refresh, and on demand from the Actions tab.
 
 Pushing any other branch does not deploy — it builds a **preview** at
 `<branch>-branderrna-hockey-liga.hockey-liga.workers.dev`, so you can see a
@@ -65,11 +64,11 @@ knowing once you're in:
 - **Consider recreating the auto-push git hook** described in
   [docs/deploy.md](docs/deploy.md), so a commit never accidentally sits
   unpushed while the live site quietly falls out of date.
-- **Workflow**: work on a branch and push it for review. For anything more
-  than a small change, push to `staging` first, check the staging URL, then
-  merge into `main` to ship — see [docs/deploy.md](docs/deploy.md). Small
-  stuff can go straight to `main`. If two pushes land at the same time, git
-  just rejects the second one — `git pull`, then push again. No data is lost.
+- **Workflow**: work on a branch and push it. Every branch gets its own
+  preview URL, so you can check the change running before merging — see
+  [docs/deploy.md](docs/deploy.md). Small stuff can go straight to `main`. If
+  two pushes land at the same time, git just rejects the second one —
+  `git pull`, then push again. No data is lost.
 - **Google Sheet access is separate** from GitHub — if a collaborator also
   needs to update fixtures/scores (not just code), share the sheet with
   their Google account directly. See [docs/fixtures-refresh.md](docs/fixtures-refresh.md)

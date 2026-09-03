@@ -1,18 +1,18 @@
 # Deployment
 
-The site runs on Cloudflare Workers as two separate environments, both
-deployed by [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml).
-Both build with `npm run build` and deploy with
+The site runs on Cloudflare Workers, deployed by
+[`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml). It builds
+with `npm run build` and deploys with
 `npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"`,
 authenticated via a `CLOUDFLARE_API_TOKEN` repo secret.
 
-Three things start a **production or staging deploy**:
+Three things start a **production deploy**:
 
 | Trigger             | When                                                                                     |
 | ------------------- | ---------------------------------------------------------------------------------------- |
-| `push`              | any commit to `main` or `staging`                                                        |
+| `push`              | any commit to `main`                                                                     |
 | `workflow_run`      | a successful **Refresh fixtures from Google Sheet** run — sheet edits and the daily cron |
-| `workflow_dispatch` | **Run workflow** in the Actions tab, against `main` or `staging`                         |
+| `workflow_dispatch` | **Run workflow** in the Actions tab, against `main`                                      |
 
 Every one of them passes through [`checks.yml`](../.github/workflows/checks.yml)
 first — fixtures validation, lint, formatting, typecheck, dead-code check and
@@ -22,59 +22,49 @@ without clearing the same gate a pull request does.
 Pushes to any _other_ branch do not deploy. They build a preview instead — see
 [Preview deployments](#preview-deployments-cloudflare-workers-builds) below.
 
-| Branch    | Worker                           | URL                                                                           |
-| --------- | -------------------------------- | ----------------------------------------------------------------------------- |
-| `main`    | `branderrna-hockey-liga`         | https://branderrna-hockey-liga.hockey-liga.workers.dev (+ `sghockeyliga.com`) |
-| `staging` | `branderrna-hockey-liga-staging` | https://branderrna-hockey-liga-staging.hockey-liga.workers.dev                |
+| Branch | Worker                   | URL                                                                           |
+| ------ | ------------------------ | ----------------------------------------------------------------------------- |
+| `main` | `branderrna-hockey-liga` | https://branderrna-hockey-liga.hockey-liga.workers.dev (+ `sghockeyliga.com`) |
 
-`main` is production — the custom domain points there. `staging` is for
-trying out changes (especially larger ones, like infra/dependency work)
-before they reach real visitors.
+`main` is production, and the custom domain points there. It is the only
+branch that deploys. There was previously a `staging` branch and Worker; it
+was retired on 2026-09-04 in favour of per-branch preview URLs, which give
+every branch its own environment instead of one shared slot.
 
 ## Manual deployment
 
 Normally you do not need a local deploy: **Actions → Deploy to Cloudflare → Run
-workflow**, pick `main` or `staging`, and it builds and publishes from that branch
-with the checks gate applied. The branch selector is safe — `deploy.yml` matches
-the ref against an explicit whitelist and refuses anything that is not `main` or
-`staging`, so a dispatch from a feature branch fails fast instead of deploying
-somewhere unintended.
+workflow** against `main`, and it builds and publishes with the checks gate
+applied. The branch selector is safe — `deploy.yml` matches the ref against an
+explicit whitelist and refuses anything that is not `main`, so a dispatch from a
+feature branch fails fast instead of deploying somewhere unintended.
 
-The commands below are the escape hatch for when Actions itself is unavailable.
-From the repository root, use a build from the intended revision (normally
-`main` for production or `staging` for staging), run `npm run build`, and
-then run exactly one matching command. `--cwd .output` deploys the generated
-build, and the Worker name must match the target environment.
-
-### Production
+The command below is the escape hatch for when Actions itself is unavailable.
+From the repository root, on the revision you intend to ship, run
+`npm run build` and then:
 
 ```sh
 npx --no-install wrangler --cwd .output deploy --name branderrna-hockey-liga
 ```
 
-### Staging
-
-```sh
-npx --no-install wrangler --cwd .output deploy --name branderrna-hockey-liga-staging
-```
-
-Set `CLOUDFLARE_API_TOKEN` before running either command. Do not omit
-`--name` or substitute the other environment's Worker name.
+Set `CLOUDFLARE_API_TOKEN` first. `--cwd .output` deploys the generated build,
+and `--name` must not be omitted — see
+[Why the Worker name matters](#why-the-worker-name-matters).
 
 ## Suggested workflow
 
-1. Make changes on a feature branch, or directly on `staging`
-2. Push to `staging` → it auto-deploys to the staging URL → check it there
-3. When it looks right, merge/push `staging` into `main` → deploys to production
+1. Make changes on a feature branch and push it
+2. Open its preview URL — `<branch>-branderrna-hockey-liga.hockey-liga.workers.dev`
+   — and check the change running
+3. Merge into `main` to ship
 
-Nothing stops you from pushing straight to `main` for small stuff (typo
-fixes, copy changes) — staging is there for when you want a safety net,
-not a mandatory gate.
+Small stuff (typo fixes, copy changes) can go straight to `main`. Previews are
+there for when you want to look before shipping, not as a mandatory gate.
 
 Note the fixtures-refresh pipeline (see
-[fixtures-refresh.md](fixtures-refresh.md)) only ever commits to `main` —
-score updates go straight to production, not staging. It also can't rely on
-its push triggering this workflow the normal way — see below.
+[fixtures-refresh.md](fixtures-refresh.md)) only ever commits to `main`, so
+score updates go straight to production. It also can't rely on its push
+triggering this workflow the normal way — see below.
 
 ## Local commits auto-push
 
@@ -87,16 +77,16 @@ live site kept serving stale data even though local was ahead.
 
 To make that structurally impossible rather than relying on remembering,
 this repo has a local git hook — `.git/hooks/post-commit` — that pushes
-`main` or `staging` automatically after every commit on either of those
-branches. It's not tracked by git (hooks never are), so it only exists on
-machines where it's been set up. If cloning fresh, recreate it:
+`main` automatically after every commit on that branch. It's not tracked by git
+(hooks never are), so it only exists on machines where it's been set up. If
+cloning fresh, recreate it:
 
 ```sh
 cat > .git/hooks/post-commit << 'EOF'
 #!/bin/sh
 branch=$(git rev-parse --abbrev-ref HEAD)
 case "$branch" in
-  main|staging) ;;
+  main) ;;
   *) exit 0 ;;
 esac
 if git push origin "$branch" 2>&1 | sed 's/^/[auto-push] /'; then
@@ -125,9 +115,9 @@ The fix: `deploy.yml` also listens for a successful completion of
 from the default branch, validates the refresh run's `head_branch` with a
 case-sensitive shell `case`, and only then checks out `main` and reaches the
 secret-bearing deploy step. This avoids human `workflow_dispatch` while
-still deploying refreshed data. If another automation commits to `main` or
-`staging`, it needs an explicitly reviewed trigger path; do not assume a
-bot-authored push will deploy on its own.
+still deploying refreshed data. If another automation commits to `main`, it
+needs an explicitly reviewed trigger path; do not assume a bot-authored push
+will deploy on its own.
 
 ## Why there is no wrangler config in the repository root
 
