@@ -35,7 +35,7 @@
 ## Proposed order
 
 1. Refresh and rebase onto the current `origin/main`.
-2. Correct every deployment instruction and make the workflow safe for manual dispatch.
+2. Correct every deployment instruction and make the branch-only workflow safe.
 3. Add the smallest useful CI/test gate.
 4. Apply optional Wrangler/compatibility hardening if it does not expand the deployment surface unnecessarily.
 5. Run the complete verification matrix, publish with `--force-with-lease`, and verify the GitHub comparison.
@@ -250,16 +250,16 @@
      check:
        runs-on: ubuntu-latest
        steps:
-         - uses: actions/checkout@v4
-         - uses: actions/setup-node@v4
+         - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+         - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
            with:
              node-version: "24"
              cache: npm
          - run: npm ci
          - run: npm test
          - run: npm run lint
-         - run: npx tsc --noEmit
-         - run: npx knip --include files,exports,dependencies,types
+         - run: npx --no-install tsc --noEmit
+         - run: npx --no-install knip --include files,exports,dependencies,types
          - run: npm run build
    ```
 
@@ -289,7 +289,7 @@
    npm install --save-dev --save-exact wrangler@4.128.0
    ```
 
-2. Change workflow/docs commands to use the project-local Wrangler. Keep `npx wrangler` only when npm will resolve the locked local binary.
+2. Change workflow/docs commands to use the project-local Wrangler via `npx --no-install`. Do not allow deployment to download a mutable CLI version.
 3. Confirm the installed Nitro types and generated config support an explicit Cloudflare compatibility date. Prefer a checked-in source setting over relying on the build date.
 4. If enabling observability, add only the documented non-secret config and verify it survives Nitro generation:
 
@@ -366,8 +366,8 @@ npx --no-install wrangler --cwd .output deploy --dry-run --name branderrna-hocke
 npm ci
 npm test
 npm run lint
-npx tsc --noEmit
-npx knip --include files,exports,dependencies,types
+npx --no-install tsc --noEmit
+npx --no-install knip --include files,exports,dependencies,types
 npm audit --audit-level=high
 npm run build
 npx --no-install wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga

@@ -38,7 +38,7 @@ refresh manually.
 
 ## Deployment
 
-The site auto-deploys to Cloudflare Workers on every push to `main`
+The site auto-deploys to Cloudflare Workers on pushes to `main`
 (production) or `staging` (a separate environment for trying out changes
 first) — see [docs/deploy.md](docs/deploy.md) for both URLs, the suggested
 staging workflow, and how local commits stay in sync with what's deployed.

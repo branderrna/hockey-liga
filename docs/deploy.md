@@ -2,14 +2,14 @@
 
 The site runs on Cloudflare Workers as two separate environments, both
 deployed by [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml)
-on every push. Both build with `npm run build` and deploy with
-`npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"`, authenticated via a
-`CLOUDFLARE_API_TOKEN` repo secret.
+on pushes to `main` or `staging`. Both build with `npm run build` and deploy with
+`npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"`,
+authenticated via a `CLOUDFLARE_API_TOKEN` repo secret.
 
-| Branch    | Worker                          | URL                                                              |
-| --------- | -------------------------------- | ----------------------------------------------------------------- |
+| Branch    | Worker                           | URL                                                                           |
+| --------- | -------------------------------- | ----------------------------------------------------------------------------- |
 | `main`    | `branderrna-hockey-liga`         | https://branderrna-hockey-liga.hockey-liga.workers.dev (+ `sghockeyliga.com`) |
-| `staging` | `branderrna-hockey-liga-staging` | https://branderrna-hockey-liga-staging.hockey-liga.workers.dev    |
+| `staging` | `branderrna-hockey-liga-staging` | https://branderrna-hockey-liga-staging.hockey-liga.workers.dev                |
 
 `main` is production — the custom domain points there. `staging` is for
 trying out changes (especially larger ones, like infra/dependency work)
