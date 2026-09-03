@@ -54,7 +54,7 @@ its push triggering this workflow the normal way — see below.
 
 ## Local commits auto-push
 
-Because deploys are push-triggered, a commit that stays local doesn't just
+Because direct deploys are push-triggered, a commit that stays local doesn't just
 sit there quietly — it means the live site silently drifts from what's
 actually in the repo, with no indication anything's out of sync. That
 happened once already (see git history around 2026-08-22): a batch of
@@ -88,23 +88,22 @@ If a push ever does fail silently (no network, auth expired, etc.), the
 hook prints a clear `[auto-push] FAILED` line — check for that after
 committing if the live site doesn't reflect a change you just made.
 
-## Why the fixtures-refresh workflow calls deploy.yml explicitly
+## Why the fixtures-refresh workflow triggers deploy.yml
 
 This one is easy to miss: GitHub doesn't chain workflow triggers when a
 push is made using a workflow's own default `GITHUB_TOKEN` — it's built-in
 anti-loop protection. `refresh-fixtures.yml` pushes to `main` using exactly
-that token, so its commits were **not** firing `deploy.yml`'s `on: push`
-at all. Everything looked fine — the commit landed, no errors anywhere —
-but the live site just silently kept serving the previous data until
-something else happened to push and trigger a real deploy.
+that token, so its commits do not fire `deploy.yml`'s `on: push` by
+themselves.
 
-The fix: after a successful fixture commit, `refresh-fixtures.yml` invokes
-`deploy.yml` as a reusable workflow with the validated `main` branch input
-and inherited repository secret. This avoids human `workflow_dispatch` while
-still deploying refreshed data. If you ever add another automation that
-commits to `main` or `staging`, it should call the reusable deploy workflow
-with the matching branch input; don't assume a bot-authored push will deploy
-on its own.
+The fix: `deploy.yml` also listens for a successful completion of
+`refresh-fixtures.yml` through `workflow_run`. The deploy workflow is loaded
+from the default branch, validates the refresh run's `head_branch` with a
+case-sensitive shell `case`, and only then checks out `main` and reaches the
+secret-bearing deploy step. This avoids human `workflow_dispatch` while
+still deploying refreshed data. If another automation commits to `main` or
+`staging`, it needs an explicitly reviewed trigger path; do not assume a
+bot-authored push will deploy on its own.
 
 ## Why the Worker name matters
 
