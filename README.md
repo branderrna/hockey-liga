@@ -17,6 +17,7 @@ Fixtures and results are sourced from the league's Google Sheet and refreshed
 automatically twice a week — see [Fixtures & results](#fixtures--results) below.
 
 This project is a TanStack Start + Vite app deployed to Cloudflare Workers.
+
 ## Development
 
 Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
