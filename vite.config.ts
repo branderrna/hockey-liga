@@ -12,6 +12,11 @@ export default defineConfig({
     }),
     nitro({
       preset: "cloudflare-module",
+      compatibilityDate: { cloudflare: "2026-09-03" },
+      cloudflare: { nodeCompat: true },
+      framework: {
+        deployCommand: 'npx wrangler --cwd .output deploy --name "$WORKER_NAME"',
+      },
     }),
     react(),
   ],
