@@ -11,7 +11,8 @@
     "refresh-fixtures": "node scripts/refresh-fixtures.ts",
     "test": "node --experimental-strip-types scripts/validate-fixtures.ts",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",

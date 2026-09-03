@@ -2,9 +2,15 @@ name: Refresh fixtures from Google Sheet
 
 on:
   schedule:
-    # 03:00 Singapore time (UTC+8) every Sunday and Monday = 19:00 UTC the
-    # previous day (Sat 19:00 UTC -> Sun 03:00 SGT, Sun 19:00 UTC -> Mon 03:00 SGT)
-    - cron: "0 19 * * 6,0"
+    # 03:00 Singapore time (UTC+8) daily = 19:00 UTC the previous day.
+    # This is the safety net, not the primary path: scripts/sheet-refresh-trigger.gs
+    # dispatches this workflow within minutes of a sheet edit. The daily run is
+    # what keeps fixtures moving if that Apps Script trigger or its token ever
+    # breaks silently. GitHub's scheduled runs are best-effort and can be delayed
+    # under load, so treat this as "early morning", not exactly 03:00.
+    - cron: "0 19 * * *"
+  # Dispatched by scripts/sheet-refresh-trigger.gs on a sheet edit, and available
+  # manually from the Actions tab.
   workflow_dispatch: {}
 
 permissions:

@@ -6,6 +6,10 @@ on:
   workflow_run:
     workflows: ["Refresh fixtures from Google Sheet"]
     types: [completed]
+  # Direct "deploy now" for the two mapped branches. Safe despite accepting an
+  # arbitrary ref: the guard below whitelists refs by exact match and never
+  # interpolates one into shell source.
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -17,10 +21,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Nothing reaches a Worker without passing the same gate pull requests do.
+  # This also guards the fixtures-refresh path, which reaches this workflow
+  # via workflow_run: invalid sheet data fails `npm test` instead of reaching
+  # the live site.
+  checks:
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
+    uses: ./.github/workflows/checks.yml
+
   deploy:
-    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
+    needs: checks
     runs-on: ubuntu-latest
     steps:
+      # Resolves the deploy target *before* checkout, build, or any step that
+      # sees CLOUDFLARE_API_TOKEN. Nothing here interpolates a ref into shell
+      # source: refs arrive via env and are matched, never expanded, because
+      # Git permits quote-bearing branch names.
       - name: Validate deployment target
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -35,6 +51,14 @@ jobs:
               echo "WORKER_NAME=branderrna-hockey-liga" >> "$GITHUB_ENV"
               ;;
             push:branch:refs/heads/staging:)
+              echo "BRANCH_NAME=staging" >> "$GITHUB_ENV"
+              echo "WORKER_NAME=branderrna-hockey-liga-staging" >> "$GITHUB_ENV"
+              ;;
+            workflow_dispatch:branch:refs/heads/main:)
+              echo "BRANCH_NAME=main" >> "$GITHUB_ENV"
+              echo "WORKER_NAME=branderrna-hockey-liga" >> "$GITHUB_ENV"
+              ;;
+            workflow_dispatch:branch:refs/heads/staging:)
               echo "BRANCH_NAME=staging" >> "$GITHUB_ENV"
               echo "WORKER_NAME=branderrna-hockey-liga-staging" >> "$GITHUB_ENV"
               ;;
@@ -55,6 +79,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "24"
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -62,6 +87,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      # --name is never omitted: nitro/wrangler would otherwise derive the
+      # Worker name from package.json, silently creating a new, disconnected
+      # Worker while the real site stops receiving updates (see docs/deploy.md).
       - name: Deploy to Cloudflare Workers
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
