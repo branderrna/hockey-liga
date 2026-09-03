@@ -215,12 +215,12 @@ zod
    - native Vite tsconfig path resolution where supported
    - Nitro Cloudflare-module output
    - the custom `server` entry pointing at `src/server.ts`
-3. Preserve the current production contract: `npm run build` must produce the prebuilt output consumed by `npx wrangler --cwd .output deploy --name "$WORKER_NAME"`, with `WORKER_NAME` explicitly set to `branderrna-hockey-liga` for production or `branderrna-hockey-liga-staging` for staging.
+3. Preserve the current production contract: `npm run build` must produce the prebuilt output consumed by `npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"`, with `WORKER_NAME` explicitly set to `branderrna-hockey-liga` for production or `branderrna-hockey-liga-staging` for staging.
 4. Do not carry over Lovable sandbox asset proxying, bundled-dev behavior, editor HMR gates, or Lovable-specific diagnostics unless a real local workflow still depends on them.
 5. Remove `@lovable.dev/vite-tanstack-config` only after the native config builds successfully.
 6. Reassess and remove wrapper-only peer packages. Vite’s current warning indicates `vite-tsconfig-paths` can likely be replaced with native `resolve.tsconfigPaths` support.
 
-**Validation:** Run local dev/preview if possible, `npm run build`, inspect `.output/server/wrangler.json`, and validate both deployment targets with `npx wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga` and `npx wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga-staging` before any release.
+**Validation:** Run local dev/preview if possible, `npm run build`, inspect `.output/server/wrangler.json`, and validate both deployment targets with `npx --no-install wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga` and `npx --no-install wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga-staging` before any release.
 
 ---
 

@@ -3,7 +3,7 @@
 The site runs on Cloudflare Workers as two separate environments, both
 deployed by [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml)
 on every push. Both build with `npm run build` and deploy with
-`npx wrangler --cwd .output deploy --name "$WORKER_NAME"`, authenticated via a
+`npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"`, authenticated via a
 `CLOUDFLARE_API_TOKEN` repo secret.
 
 | Branch    | Worker                          | URL                                                              |
@@ -25,13 +25,13 @@ build, and the Worker name must match the target environment.
 ### Production
 
 ```sh
-npx wrangler --cwd .output deploy --name branderrna-hockey-liga
+npx --no-install wrangler --cwd .output deploy --name branderrna-hockey-liga
 ```
 
 ### Staging
 
 ```sh
-npx wrangler --cwd .output deploy --name branderrna-hockey-liga-staging
+npx --no-install wrangler --cwd .output deploy --name branderrna-hockey-liga-staging
 ```
 
 Set `CLOUDFLARE_API_TOKEN` before running either command. Do not omit

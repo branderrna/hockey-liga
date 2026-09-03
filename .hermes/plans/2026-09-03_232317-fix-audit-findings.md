@@ -99,19 +99,19 @@
 - CI deployment remains:
 
   ```bash
-  npx wrangler --cwd .output deploy --name "$WORKER_NAME"
+  npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"
   ```
 
 - Manual production deployment must name production explicitly:
 
   ```bash
-  npx wrangler --cwd .output deploy --name branderrna-hockey-liga
+  npx --no-install wrangler --cwd .output deploy --name branderrna-hockey-liga
   ```
 
 - Manual staging deployment must name staging explicitly:
 
   ```bash
-  npx wrangler --cwd .output deploy --name branderrna-hockey-liga-staging
+  npx --no-install wrangler --cwd .output deploy --name branderrna-hockey-liga-staging
   ```
 
 - No active instruction may recommend `npx nitro deploy --prebuilt`.
@@ -133,7 +133,7 @@
 
 ## Task 3: Harden branch handling in the deploy workflow
 
-**Objective:** Prevent arbitrary `workflow_dispatch` refs from being embedded into shell source or reaching the deploy step with the Cloudflare token.
+**Objective:** Prevent arbitrary refs from reaching the secret-bearing deploy step or being embedded into shell source. The deploy workflow is push-only; documented manual deployment remains a local, explicitly named Wrangler command.
 
 **Files:**
 - Modify: `.github/workflows/deploy.yml:3-55`
@@ -141,15 +141,16 @@
 **Implementation shape:**
 
 1. Keep push triggers limited to `main` and `staging`.
-2. Add a job-level expression guard so manual dispatches for unsupported refs are skipped before checkout, build, or secret exposure:
+2. Do not expose the secret-bearing deploy job through `workflow_dispatch`; local manual deployment is documented separately with explicit Worker names.
+3. Keep a job-level full-ref guard as defense in depth so only branch refs can deploy:
 
    ```yaml
    jobs:
      deploy:
-       if: github.ref_name == 'main' || github.ref_name == 'staging'
+       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
    ```
 
-3. Pass the ref through an environment variable and use a quoted shell variable. Do not place `${{ github.ref_name }}` inside any `run:` block:
+4. Pass the ref through an environment variable and use a quoted shell variable. Do not place `${{ github.ref_name }}` inside any `run:` block:
 
    ```yaml
    - name: Set Worker name for this branch
@@ -170,7 +171,7 @@
        esac
    ```
 
-4. Use the same environment-variable pattern in the deploy log line:
+5. Use the same environment-variable pattern in the deploy log line:
 
    ```yaml
    - name: Deploy to Cloudflare Workers
@@ -180,13 +181,14 @@
        CLOUDFLARE_ACCOUNT_ID: "<existing public account id>"
      run: |
        printf 'Deploying branch %s to Worker %s\n' "$BRANCH_NAME" "$WORKER_NAME"
-       npx wrangler --cwd .output deploy --name "$WORKER_NAME"
+       npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"
    ```
 
-5. Do not change the existing secret value or record it in the repository.
+6. Do not change the existing secret value or record it in the repository.
 
 **Validation:**
 
+- Confirm the deploy workflow has no `workflow_dispatch` trigger and its job guard uses full `refs/heads/...` values.
 - Confirm no `github.ref_name` expression remains inside a `run:` block.
 - Confirm the workflow is accepted by GitHub:
 
@@ -197,7 +199,7 @@
 
 - Use a syntax-only shell test with a quote-bearing sample ref to confirm the generated shell remains valid. Do not execute the sample as a real workflow.
 
-**Expected result:** Unsupported manual refs are skipped before secret-bearing deployment work, and supported refs cannot alter shell syntax through their names.
+**Expected result:** The deploy workflow is push-only for `main` and `staging`; tag/manual refs cannot reach secret-bearing deployment work, and supported refs cannot alter shell syntax through their names.
 
 ---
 
@@ -307,8 +309,8 @@
 ```bash
 npm ci
 npm run build
-npx wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga
-npx wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga-staging
+npx --no-install wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga
+npx --no-install wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga-staging
 ```
 
 **Tradeoff:** Adding Wrangler to `devDependencies` increases the lockfile and install footprint, but prevents an unreviewed CLI version from being downloaded during deployment. If that churn is not justified, pin the workflow command as `npx wrangler@4.128.0` instead and record the tradeoff.
@@ -368,8 +370,8 @@ npx tsc --noEmit
 npx knip --include files,exports,dependencies,types
 npm audit --audit-level=high
 npm run build
-npx wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga
-npx wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga-staging
+npx --no-install wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga
+npx --no-install wrangler --cwd .output deploy --dry-run --name branderrna-hockey-liga-staging
 git diff --check
 npx prettier --check README.md AGENTS.md CLAUDE.md docs/deploy.md docs/fixtures-refresh.md package.json vite.config.ts src/components/site.tsx src/data/league.ts src/lib/error-capture.ts src/routes/__root.tsx src/routes/index.tsx src/routes/table.tsx src/routes/about.tsx src/styles.css .github/workflows/deploy.yml .github/workflows/refresh-fixtures.yml
 git status --short --branch
@@ -409,14 +411,14 @@ Do not run a live `wrangler deploy`, trigger the production workflow, merge the 
 - **Generated data risk:** `origin/main` contains the newest fixture refresh. Keep its generated file during rebase; do not regenerate from the Google Sheet as part of this fix unless the refresh workflow is explicitly requested.
 - **Deployment risk:** no live deploy is needed to validate the fix. Dry-runs plus the local Worker emulator are sufficient.
 - **CI cost:** adding PR CI duplicates the build already done by deployment, but catches failures before a merge reaches `main`.
-- **Dependency churn:** pinning Wrangler improves reproducibility but expands the lockfile. It is optional after the command/documentation fix.
+- **Dependency churn:** pinning Wrangler as a project dependency expands the lockfile, but ensures the secret-bearing deployment command uses the reviewed local version.
 - **Error handling scope:** the shared error state is real technical debt, but a speculative rewrite could remove the current diagnostic recovery. Defer until a request-local design and regression test exist.
 - **Formatting scope:** fix only the branch-introduced README regression; do not mix inherited formatter cleanup into the infrastructure fix.
 
 ## Completion criteria
 
 - No active documentation or committed plan recommends `npx nitro deploy --prebuilt`.
-- Unsupported manual workflow refs cannot reach a secret-bearing deploy step, and `github.ref_name` is not embedded in shell source.
+- The deploy workflow has no `workflow_dispatch` trigger, uses full branch refs, and does not interpolate `github.ref_name` into shell source.
 - Branch is rebased onto the latest `origin/main` with current fixture data preserved.
 - `npm test`, lint, TypeScript, Knip, build, audit, both Wrangler dry-runs, and local Worker smoke checks pass.
 - GitHub comparison reports zero commits behind `main` after the final fetch.

@@ -3,7 +3,6 @@ name: Deploy to Cloudflare
 on:
   push:
     branches: [main, staging]
-  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -16,7 +15,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ github.ref_name == 'main' || github.ref_name == 'staging' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' }}
     runs-on: ubuntu-latest
     env:
       BRANCH_NAME: ${{ github.ref_name }}
@@ -58,4 +57,4 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: "3aee331e79416603abc527c463b7c574"
         run: |
           echo "Deploying branch '$BRANCH_NAME' to Worker '$WORKER_NAME'"
-          npx wrangler --cwd .output deploy --name "$WORKER_NAME"
+          npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"

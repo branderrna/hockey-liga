@@ -39,7 +39,7 @@ Run the relevant checks after changes. Do not claim a task is complete without r
 
 ## Deployment and Git
 
-- The deploy workflow is `.github/workflows/deploy.yml` and deploys the prebuilt `.output` directory with `npx wrangler --cwd .output deploy --name "$WORKER_NAME"`; see [`docs/deploy.md`](docs/deploy.md) for the explicit production and staging Worker names.
+- The deploy workflow is `.github/workflows/deploy.yml` and deploys the prebuilt `.output` directory with `npx --no-install wrangler --cwd .output deploy --name "$WORKER_NAME"`; see [`docs/deploy.md`](docs/deploy.md) for the explicit production and staging Worker names.
 - The fixture refresh workflow is `.github/workflows/refresh-fixtures.yml` and may commit generated data to `main`.
 - Do not rewrite published history, force-push, or merge branches as part of routine work.
 - Keep commits focused and review `git diff --check` before committing.
