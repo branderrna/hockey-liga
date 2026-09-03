@@ -391,7 +391,7 @@ export const matches: Match[] = [
     "homeGoals": 1,
     "awayGoals": 0,
     "postponed": false,
-    "note": null
+    "note": "Game shifted from 20th Oct"
   },
   {
     "id": "m-2026-08-22-1700-delta-theresian-fielders-ora",
@@ -496,7 +496,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Venue changed"
   },
   {
     "id": "m-2026-08-23-1600-ccab-sn-alumni-hollandse",
@@ -556,7 +556,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted to 31st Oct, 6pm"
   },
   {
     "id": "m-2026-08-23-1800-delta-ora-thisisri",
@@ -571,7 +571,7 @@ export const matches: Match[] = [
     "homeGoals": 8,
     "awayGoals": 4,
     "postponed": false,
-    "note": null
+    "note": "Game shifted from 2nd Aug, 3pm. 9 min played"
   },
   {
     "id": "m-2026-08-23-1900-delta-sg-masters-jansenites",
@@ -661,7 +661,7 @@ export const matches: Match[] = [
     "homeGoals": 9,
     "awayGoals": 0,
     "postponed": false,
-    "note": null
+    "note": "Game shifted from 10th Oct, 5pm"
   },
   {
     "id": "m-2026-08-29-1800-delta-silversticks-senoritas-hypernovas",
@@ -946,7 +946,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Timing changed to 8pm"
   },
   {
     "id": "m-2026-09-06-1500-ccab-republic-polytechnic-jansenites",
@@ -1291,7 +1291,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shifted from 2nd Aug, 5pm"
   },
   {
     "id": "m-2026-09-13-1800-delta-theresian-fielders-singapore-polytechnic",
@@ -1321,7 +1321,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted  from 2nd Aug, 15 min played"
   },
   {
     "id": "m-2026-09-19-1500-ccab-republic-polytechnic-crescent-fire-horse",
@@ -1576,7 +1576,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game postponed to 11th Oct"
   },
   {
     "id": "m-2026-09-26-1500-ccab-tornados-scc",
@@ -1591,7 +1591,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shifted from 28th Nov"
   },
   {
     "id": "m-2026-09-26-1600-ccab-republic-polytechnic-lch-young-boys",
@@ -2056,7 +2056,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shifted from 21st Nov"
   },
   {
     "id": "m-2026-10-10-1600-ccab-scc-ejc-tannibellies",
@@ -2071,7 +2071,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted to 20th Oct"
   },
   {
     "id": "m-2026-10-10-1700-ccab-6th-8th",
@@ -2086,7 +2086,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Timing changed, venue remains"
   },
   {
     "id": "m-2026-10-10-1700-ccab-scc-oldham",
@@ -2101,7 +2101,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted to 29th Aug, 6pm"
   },
   {
     "id": "m-2026-10-10-1700-delta-ora-crescent",
@@ -2131,7 +2131,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted to 21st Nov, 5pm"
   },
   {
     "id": "m-2026-10-10-1800-delta-lion-city-hockey-club-singapore-polytechnic",
@@ -2146,7 +2146,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shifted from 11th Oct, 3pm"
   },
   {
     "id": "m-2026-10-10-1800-delta-1st-3rd",
@@ -2161,7 +2161,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted to 11th Oct, 3pm"
   },
   {
     "id": "m-2026-10-10-1900-delta-5th-4th",
@@ -2206,7 +2206,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shifted from 10th Oct, 6pm"
   },
   {
     "id": "m-2026-10-11-1500-delta-lion-city-hockey-club-singapore-polytechnic",
@@ -2221,7 +2221,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted to 10th Oct, 6pm"
   },
   {
     "id": "m-2026-10-11-1600-ccab-ejc-tannibellies-aha-dc",
@@ -2296,7 +2296,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shifted from 26th Sept"
   },
   {
     "id": "m-2026-10-13-1700-ccab-ejc-tannibellies-crescent-fire-horse",
@@ -2311,7 +2311,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shifted from 2nd Aug, 4pm"
   },
   {
     "id": "m-2026-10-17-1500-ccab-crescent-fire-horse-uwcsea-dover",
@@ -2386,7 +2386,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Venue Changed, timing remains"
   },
   {
     "id": "m-2026-10-17-1800-delta-2nd-3rd",
@@ -2401,7 +2401,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Venue Changed, timinmg remains"
   },
   {
     "id": "m-2026-10-17-1900-ccab-7th-9th",
@@ -2506,7 +2506,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted to 22nd Nov, 3pm"
   },
   {
     "id": "m-2026-10-18-1700-delta-jansenites-ora",
@@ -2521,7 +2521,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shiftefd from 31st Oct"
   },
   {
     "id": "m-2026-10-18-1800-delta-silversticks-senoritas-lion-city-hockey-club",
@@ -2551,7 +2551,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted to 22nd Aug"
   },
   {
     "id": "m-2026-10-24-1500-ccab-ora-singapore-polytechnic",
@@ -2866,7 +2866,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted to 18th Oct, 5pm"
   },
   {
     "id": "m-2026-10-31-1800-delta-hypernovas-jansenites",
@@ -2881,7 +2881,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shiftef from 23rd Aug, 6pm"
   },
   {
     "id": "m-2026-10-31-1900-ccab-7th-8th",
@@ -3001,7 +3001,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shifted from 2nd Aug, 3pm."
   },
   {
     "id": "m-2026-11-01-1900-delta-3rd-5th",
@@ -3016,7 +3016,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Timing changed, venue remains"
   },
   {
     "id": "m-2026-11-14-1500-ccab-republic-polytechnic-ora",
@@ -3301,7 +3301,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted to 10th Oct, 4pm"
   },
   {
     "id": "m-2026-11-21-1700-ccab-tornados-theresian-fielders",
@@ -3316,7 +3316,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shifted to 21st Nov, 5pm"
   },
   {
     "id": "m-2026-11-21-1700-delta-team-h-i-hollandse",
@@ -3361,7 +3361,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Game shiftefd from 18th Oct, 5pm"
   },
   {
     "id": "m-2026-11-22-1500-delta-ora-singapore-polytechnic",
@@ -3451,7 +3451,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Game shifted to 26th Sept, 3pm"
   },
   {
     "id": "m-2026-11-28-1600-ccab-hypernovas-sn-alumni",
@@ -3466,7 +3466,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "Timing changed, venue remains"
   },
   {
     "id": "m-2026-11-29-1500-delta-crescent-oldham",
