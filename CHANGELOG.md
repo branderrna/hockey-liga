@@ -4,6 +4,19 @@ Notable changes to the site, kept by hand alongside the automated
 fixtures/results refresh (which does not get its own entry here every run —
 see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
 
+## 2026-09-04 (later)
+
+**Infrastructure**
+
+- Removed a duplicate deployment nobody knew about. Cloudflare Workers Builds
+  had been connected to this repo since 2026-08-22 and was quietly deploying
+  every `main` push to a second Worker named `hockey-liga`, live at
+  `hockey-liga.hockey-liga.workers.dev`. Only its non-`main` builds failed
+  visibly, which is why it read as "broken CI" rather than a parallel deploy.
+  `sghockeyliga.com` was never affected. Integration disconnected; see
+  [docs/deploy.md](docs/deploy.md) for how `wrangler deploy` produces this
+  silently while `wrangler versions upload` fails loudly.
+
 ## 2026-09-04
 
 **Deployment triggers**

@@ -135,28 +135,49 @@ compatibility date and `nodejs_compat` all derived from the build. That is why
 every deploy command in this file passes `--cwd .output`: the config only exists
 after a build, inside the build output.
 
-The practical consequence: **any tool that runs a Wrangler command from the
-repository root will fail**, with
+A Wrangler command run from the repository root therefore has nothing to point
+at. What happens next depends on the subcommand, and the difference matters:
 
-```
-✘ [ERROR] Missing entry-point to Worker script or to assets directory
-```
+- `wrangler versions upload` fails outright, with
+  `✘ [ERROR] Missing entry-point to Worker script or to assets directory`.
+- `wrangler deploy` **does not fail.** It drops into Wrangler's interactive
+  setup wizard, which in a non-interactive environment answers itself
+  (`Using fallback value in non-interactive context: yes`), scaffolds a
+  `wrangler.jsonc`, adds `@cloudflare/vite-plugin`, builds to `dist/` instead of
+  `.output/`, and deploys — to a Worker named after whatever it inferred.
 
-Cloudflare's own **Workers Builds** (the Git integration configured in the
-Cloudflare dashboard, under the Worker's Settings → Build) does exactly that. Its
-default deploy command for a non-production branch is `npx wrangler versions
-upload`, run from the root with no build step, so it fails on every push with the
-error above. It is not connected to anything in this repository — the failure
-appears only in the Cloudflare dashboard, while the GitHub Actions deploys go on
-succeeding.
+The second case is the dangerous one, and it is not hypothetical.
 
-Leave it disconnected. Workers Builds cannot cover what this project needs
-anyway: it is driven purely by Git events, so it cannot do the daily scheduled
-refresh or the Google Sheet edit trigger (see
-[fixtures-refresh.md](fixtures-refresh.md)). And if it were made to work
-alongside GitHub Actions, both would deploy the same Worker on every push —
-racing each other, with the Workers Builds path skipping the `checks.yml` gate
-entirely.
+## What Cloudflare Workers Builds did here (2026-08-22 to 2026-09-03)
+
+Cloudflare's **Workers Builds** — the Git integration configured in the
+dashboard under a Worker's Settings → Build — was connected to this repository
+and ran both of those commands, because it uses different defaults per branch:
+
+| Branch     | Deploy command                 | Outcome                 |
+| ---------- | ------------------------------ | ----------------------- |
+| non-`main` | `npx wrangler versions upload` | failed, visibly         |
+| `main`     | `npx wrangler deploy`          | **succeeded, silently** |
+
+Only the failures were ever noticed. Meanwhile every push to `main` was also
+being deployed by the wizard path above to a **separate Worker named
+`hockey-liga`** — created 2026-08-22, three minutes after the real one, and
+serving a live public copy of the site at `hockey-liga.hockey-liga.workers.dev`
+for two weeks before anyone looked. It ran a different build pipeline and a
+different compatibility date from production.
+
+`sghockeyliga.com` was never affected: it points at `branderrna-hockey-liga`,
+deployed by GitHub Actions. But two deploys raced on every push, seconds apart,
+and the Workers Builds one skipped the `checks.yml` gate entirely.
+
+**Leave Workers Builds disconnected.** Beyond the above, it cannot cover what
+this project needs: it is driven purely by Git events, so it cannot do the daily
+scheduled refresh or the Google Sheet edit trigger (see
+[fixtures-refresh.md](fixtures-refresh.md)).
+
+Note that disconnecting the integration stops future builds but does **not**
+delete the Worker it created. That has to be removed separately, or it keeps
+serving whatever it last deployed.
 
 ## Why the Worker name matters
 
