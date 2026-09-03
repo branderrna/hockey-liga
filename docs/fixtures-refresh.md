@@ -158,13 +158,30 @@ any number of edits into at most one workflow run per interval (10 minutes,
 
 ### Setting it up
 
-1. **Create a GitHub token.** GitHub → **Settings → Developer settings → Personal
-   access tokens → Fine-grained tokens → Generate new token**. Scope it as
-   narrowly as it goes:
+1. **Create a GitHub token — from the `branderrna` account.** This repo is owned
+   by a personal account rather than an organization, and a fine-grained token is
+   bound to a single **resource owner**: your own account, or an org you belong
+   to. A collaborator's own account is never an option for someone else's
+   personal repo, so a fine-grained token made by a collaborator cannot reach
+   this repo at all — `branderrna` will not appear in the **Resource owner**
+   dropdown. The repo owner has to create it.
+
+   (A _classic_ token is not resource-scoped and would work from a
+   collaborator account, but the dispatch endpoint requires the full `repo`
+   scope, granting read/write to every repository that account can reach. That
+   is a poor trade for one narrow permission on one repo. Prefer the
+   fine-grained token from the owner.)
+
+   GitHub → **Settings → Developer settings → Personal access tokens →
+   Fine-grained tokens → Generate new token**. Scope it as narrowly as it goes:
    - **Repository access**: _Only select repositories_ → `branderrna/hockey-liga`
    - **Permissions → Repository permissions → Actions**: **Read and write**
-     (this is what `workflow_dispatch` needs; nothing else is required)
+     (this is what `workflow_dispatch` needs; nothing else is required — in
+     particular **not** `Contents`. The workflow commits and pushes using its
+     own `GITHUB_TOKEN`, so this token cannot modify code even if leaked. It can
+     only start a run that the daily cron would have started anyway.)
    - Set an expiry you will actually notice — see the note below
+
 2. **Open the sheet's script editor**: in the Google Sheet, **Extensions → Apps
    Script**.
 3. **Paste in the script**: copy the contents of
