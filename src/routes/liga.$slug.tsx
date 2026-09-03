@@ -13,7 +13,7 @@ import {
   weekendsOf,
   type DivisionId,
   type Liga,
-  type NumberedMatch,
+  type Match,
   type Weekend,
 } from "@/data/league";
 
@@ -256,10 +256,10 @@ function WeekendGames({ weekend }: { weekend: Weekend }) {
   );
 }
 
-function MatchRow({ match: m }: { match: NumberedMatch }) {
+function MatchRow({ match: m }: { match: Match }) {
   return (
     <li className="border-b border-hairline transition-colors duration-150 hover:bg-secondary/70">
-      <div className="grid grid-cols-[2.25rem_1fr] items-center gap-x-3 gap-y-2 px-1 py-3 sm:grid-cols-[2.25rem_3.25rem_1fr_5.5rem_1fr_7rem] sm:gap-x-4">
+      <div className="grid grid-cols-[2.25rem_1fr] items-center gap-x-3 gap-y-1.5 px-1 py-3 sm:grid-cols-[2.25rem_3.25rem_1fr_5.5rem_1fr_7rem] sm:gap-x-4">
         <span className="meta-mono tabular-nums">{String(m.no).padStart(2, "0")}</span>
 
         <span className="meta-mono">
@@ -276,22 +276,23 @@ function MatchRow({ match: m }: { match: NumberedMatch }) {
         </span>
 
         <span className="meta-mono hidden truncate text-right sm:block">{m.venue}</span>
-      </div>
 
-      {m.note ? (
-        <p
-          className={`px-1 pb-3 text-xs leading-snug sm:pl-[6.5rem] ${
-            m.postponed ? "text-ot" : "text-muted-foreground"
-          }`}
-        >
-          {m.note}
-        </p>
-      ) : null}
+        {/* Spans the home/score/away columns so it centres on the score. */}
+        {m.note ? (
+          <p
+            className={`col-span-2 text-center text-xs leading-snug sm:col-start-3 sm:col-end-6 ${
+              m.postponed ? "text-ot" : "text-muted-foreground"
+            }`}
+          >
+            {m.note}
+          </p>
+        ) : null}
+      </div>
     </li>
   );
 }
 
-function Score({ match: m }: { match: NumberedMatch }) {
+function Score({ match: m }: { match: Match }) {
   if (isPlayed(m)) {
     return (
       <span className="score-num text-center">
@@ -320,24 +321,47 @@ const formColor = {
 } as const;
 const formLabel = { W: "Win", D: "Draw", L: "Loss" } as const;
 
+/**
+ * Standings columns. Narrow screens keep only the columns that carry the
+ * story — played, points and form — so the table fits one screen width.
+ */
+const columns = [
+  { key: "gp", label: "GP", onMobile: true, muted: true },
+  { key: "w", label: "W", onMobile: false, muted: false },
+  { key: "d", label: "D", onMobile: false, muted: false },
+  { key: "l", label: "L", onMobile: false, muted: false },
+  { key: "gf", label: "GF", onMobile: false, muted: true },
+  { key: "ga", label: "GA", onMobile: false, muted: true },
+  { key: "gd", label: "GD", onMobile: false, muted: false },
+] as const;
+
+const MOBILE_FORM_GAMES = 3;
+
 function TableView({ divisionId }: { divisionId: DivisionId }) {
   const rows = standings(divisionId);
 
   return (
     <div className="animate-rise">
       <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-        <table className="w-full min-w-[640px] text-sm">
+        <table className="w-full text-sm sm:min-w-[640px]">
           <thead>
             <tr className="border-b border-border">
               <th className="label-eyebrow py-2 pr-3 text-left font-normal">#</th>
               <th className="label-eyebrow py-2 pr-3 text-left font-normal">Team</th>
-              {["GP", "W", "D", "L", "GF", "GA", "GD"].map((h) => (
-                <th key={h} className="label-eyebrow w-11 py-2 text-center font-normal">
-                  {h}
+              {columns.map((c) => (
+                <th
+                  key={c.key}
+                  className={`label-eyebrow w-11 py-2 text-center font-normal ${
+                    c.onMobile ? "" : "hidden sm:table-cell"
+                  }`}
+                >
+                  {c.label}
                 </th>
               ))}
               <th className="label-eyebrow w-12 py-2 text-center font-normal">Pts</th>
-              <th className="label-eyebrow w-28 py-2 pl-4 text-left font-normal">Form</th>
+              <th className="label-eyebrow w-20 py-2 pl-2 text-left font-normal sm:w-28 sm:pl-4">
+                Form
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -349,22 +373,27 @@ function TableView({ divisionId }: { divisionId: DivisionId }) {
                 <td className="meta-mono py-3 pr-3 tabular-nums">
                   {String(i + 1).padStart(2, "0")}
                 </td>
-                <td className="py-3 pr-3 font-medium">{r.team.name}</td>
-                <td className="py-3 text-center tabular-nums text-muted-foreground">{r.gp}</td>
-                <td className="py-3 text-center tabular-nums">{r.w}</td>
-                <td className="py-3 text-center tabular-nums">{r.d}</td>
-                <td className="py-3 text-center tabular-nums">{r.l}</td>
-                <td className="py-3 text-center tabular-nums text-muted-foreground">{r.gf}</td>
-                <td className="py-3 text-center tabular-nums text-muted-foreground">{r.ga}</td>
-                <td className="py-3 text-center tabular-nums">{r.gd > 0 ? `+${r.gd}` : r.gd}</td>
+                <td className="py-3 pr-3 leading-tight font-medium">{r.team.name}</td>
+                {columns.map((c) => (
+                  <td
+                    key={c.key}
+                    className={`py-3 text-center tabular-nums ${
+                      c.muted ? "text-muted-foreground" : ""
+                    } ${c.onMobile ? "" : "hidden sm:table-cell"}`}
+                  >
+                    {c.key === "gd" && r.gd > 0 ? `+${r.gd}` : r[c.key]}
+                  </td>
+                ))}
                 <td className="py-3 text-center font-medium tabular-nums">{r.pts}</td>
-                <td className="py-3 pl-4">
+                <td className="py-3 pl-2 sm:pl-4">
                   <span className="flex gap-1">
                     {r.form.map((f, idx) => (
                       <span
                         key={idx}
                         title={formLabel[f]}
-                        className={`grid size-5 place-items-center rounded-sm border text-[10px] font-medium ${formColor[f]}`}
+                        className={`size-5 place-items-center rounded-sm border text-[10px] font-medium ${
+                          formColor[f]
+                        } ${idx < r.form.length - MOBILE_FORM_GAMES ? "hidden sm:grid" : "grid"}`}
                       >
                         {f}
                       </span>
@@ -376,9 +405,17 @@ function TableView({ divisionId }: { divisionId: DivisionId }) {
           </tbody>
         </table>
       </div>
-      <p className="meta-mono mt-5">
-        3 points for a win · 1 for a draw · sorted by points, then goal difference, then goals for
-      </p>
+
+      <div className="meta-mono mt-5 space-y-1.5 leading-relaxed">
+        <p>
+          3 points for a win · 1 for a draw · sorted by points, then goal difference, then goals for
+        </p>
+        <p>
+          Form runs left to right, oldest to most recent —{" "}
+          <span className="sm:hidden">last 3 games</span>
+          <span className="hidden sm:inline">last 5 games</span>
+        </p>
+      </div>
     </div>
   );
 }

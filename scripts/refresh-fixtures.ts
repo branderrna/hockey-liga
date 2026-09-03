@@ -131,6 +131,7 @@ async function main() {
   const header = rows[headerIdx].map((c) => c.trim());
   const col = (name: string) => header.indexOf(name);
   const idx = {
+    no: col("No."),
     dayDate: col("Day & Date"),
     venue: col("Venue"),
     time: col("Time"),
@@ -173,6 +174,12 @@ async function main() {
       continue;
     }
 
+    const no = Number((row[idx.no] ?? "").trim());
+    if (!Number.isInteger(no) || no <= 0) {
+      skippedRows.push(`row ${sheetRow}: unparseable game number "${row[idx.no] ?? ""}"`);
+      continue;
+    }
+
     const time = parseTime(row[idx.time] ?? "0000");
     const venue = (row[idx.venue] ?? "").trim();
     const { postponed, homeGoals, awayGoals } = parseScore(row[idx.score] ?? "");
@@ -187,6 +194,7 @@ async function main() {
 
     matches.push({
       id,
+      no,
       divisionId,
       date,
       time,

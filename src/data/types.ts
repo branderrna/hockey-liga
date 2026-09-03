@@ -35,6 +35,8 @@ export type Team = {
 
 export type Match = {
   id: string;
+  /** Game number as printed in column A ("No.") of the sheet. */
+  no: number;
   divisionId: DivisionId;
   date: string;
   time: string;
@@ -49,13 +51,10 @@ export type Match = {
   note: string | null;
 };
 
-/** A match with its sequential number within its liga's schedule. */
-export type NumberedMatch = Match & { no: number };
-
 /** Consecutive match days played as one block — in practice a Sat/Sun weekend. */
 export type Weekend = {
   key: string;
   dates: string[];
   label: string;
-  matches: NumberedMatch[];
+  matches: Match[];
 };

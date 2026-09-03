@@ -1,14 +1,5 @@
-import type {
-  DivisionId,
-  League,
-  Liga,
-  LigaSlug,
-  Match,
-  NumberedMatch,
-  Team,
-  Weekend,
-} from "./types";
-export type { DivisionId, Liga, LigaSlug, Match, NumberedMatch, Team, Weekend };
+import type { DivisionId, League, Liga, LigaSlug, Match, Team, Weekend } from "./types";
+export type { DivisionId, Liga, LigaSlug, Match, Team, Weekend };
 
 export const SEASON = {
   name: "Hockey Liga 2026",
@@ -540,13 +531,6 @@ export const upcomingLigas = ligas.filter((l) => l.status === "upcoming");
 export const ligaBySlug = (slug: string) => ligas.find((l) => l.slug === slug);
 export const isLigaSlug = (slug: string): slug is LigaSlug => ligas.some((l) => l.slug === slug);
 
-/**
- * The schedule of a liga, in playing order, with each game numbered.
- * Numbers are derived from that order — the sheet has no game-number column.
- */
-export const scheduleOf = (divisionId: DivisionId): NumberedMatch[] =>
-  matchesOf(divisionId).map((m, i) => ({ ...m, no: i + 1 }));
-
 const DAY_MS = 86_400_000;
 const dayOf = (iso: string) => Math.round(Date.parse(`${iso}T00:00:00Z`) / DAY_MS);
 
@@ -575,7 +559,7 @@ export function weekendsOf(divisionId: DivisionId): Weekend[] {
     if (current && previous && dayOf(date) - dayOf(previous) <= 1) current.push(date);
     else blocks.push([date]);
   }
-  const schedule = scheduleOf(divisionId);
+  const schedule = matchesOf(divisionId);
   return blocks.map((dates) => ({
     key: dates[0]!,
     dates,
