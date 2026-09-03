@@ -1,5 +1,14 @@
-import type { DivisionId, League, Team, Match } from "./types";
-export type { DivisionId, Team, Match };
+import type {
+  DivisionId,
+  League,
+  Liga,
+  LigaSlug,
+  Match,
+  NumberedMatch,
+  Team,
+  Weekend,
+} from "./types";
+export type { DivisionId, Liga, LigaSlug, Match, NumberedMatch, Team, Weekend };
 
 export const SEASON = {
   name: "Hockey Liga 2026",
@@ -438,3 +447,152 @@ export const nextDate = (divisionId: DivisionId) => {
   const up = matchesOf(divisionId).filter((m) => !isPlayed(m));
   return up[0]?.date ?? matchDates(divisionId)[0] ?? SEASON.start;
 };
+
+/*
+ * Liga catalogue.
+ *
+ * `active` ligas are backed by fixtures in the sheet. `upcoming` ligas ran
+ * before the sheet existed or have not started; their pages render a
+ * placeholder until fixtures are either back-filled or published next season.
+ */
+export const ligas: Liga[] = [
+  {
+    slug: "women",
+    name: "Women's Hockey Liga",
+    short: "Women's",
+    group: "Open",
+    status: "active",
+    divisionId: "women",
+  },
+  {
+    slug: "premier",
+    name: "Premier Hockey Liga",
+    short: "Premier",
+    group: "Open",
+    status: "active",
+    divisionId: "premier",
+  },
+  {
+    slug: "u21-girls",
+    name: "Youth Hockey Liga — U21 Girls",
+    short: "U21 Girls",
+    group: "Youth",
+    status: "active",
+    divisionId: "u21-girls",
+  },
+  {
+    slug: "u21-boys",
+    name: "Youth Hockey Liga — U21 Boys",
+    short: "U21 Boys",
+    group: "Youth",
+    status: "active",
+    divisionId: "u21-boys",
+  },
+  {
+    slug: "super",
+    name: "Super Hockey Liga",
+    short: "Super",
+    group: "Open",
+    status: "upcoming",
+    divisionId: null,
+    returns: "Season complete — results pending",
+  },
+  {
+    slug: "veterans",
+    name: "Veterans Hockey Liga",
+    short: "Veterans",
+    group: "Open",
+    status: "upcoming",
+    divisionId: null,
+    returns: "Season complete — results pending",
+  },
+  {
+    slug: "social",
+    name: "Social Hockey Liga",
+    short: "Social",
+    group: "Open",
+    status: "upcoming",
+    divisionId: null,
+    returns: "Season complete — results pending",
+  },
+  {
+    slug: "u14-boys",
+    name: "Youth Hockey Liga — U14 Boys",
+    short: "U14 Boys",
+    group: "Youth",
+    status: "upcoming",
+    divisionId: null,
+    returns: "Season complete — results pending",
+  },
+  {
+    slug: "u14-girls",
+    name: "Youth Hockey Liga — U14 Girls",
+    short: "U14 Girls",
+    group: "Youth",
+    status: "upcoming",
+    divisionId: null,
+    returns: "Season complete — results pending",
+  },
+];
+
+export const activeLigas = ligas.filter((l) => l.status === "active");
+export const upcomingLigas = ligas.filter((l) => l.status === "upcoming");
+export const ligaBySlug = (slug: string) => ligas.find((l) => l.slug === slug);
+export const isLigaSlug = (slug: string): slug is LigaSlug => ligas.some((l) => l.slug === slug);
+
+/**
+ * The schedule of a liga, in playing order, with each game numbered.
+ * Numbers are derived from that order — the sheet has no game-number column.
+ */
+export const scheduleOf = (divisionId: DivisionId): NumberedMatch[] =>
+  matchesOf(divisionId).map((m, i) => ({ ...m, no: i + 1 }));
+
+const DAY_MS = 86_400_000;
+const dayOf = (iso: string) => Math.round(Date.parse(`${iso}T00:00:00Z`) / DAY_MS);
+
+function weekendLabel(dates: string[]) {
+  const fmt = (iso: string, opts: Intl.DateTimeFormatOptions) =>
+    new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { timeZone: "UTC", ...opts });
+  const first = dates[0];
+  const last = dates[dates.length - 1];
+  if (!first || !last) return "";
+  if (first === last) return fmt(first, { day: "numeric", month: "short" });
+  const sameMonth = first.slice(0, 7) === last.slice(0, 7);
+  return sameMonth
+    ? `${fmt(first, { day: "numeric" })}–${fmt(last, { day: "numeric", month: "short" })}`
+    : `${fmt(first, { day: "numeric", month: "short" })} – ${fmt(last, { day: "numeric", month: "short" })}`;
+}
+
+/**
+ * Groups a liga's fixtures into playing blocks: match days one calendar day
+ * apart belong to the same block, which lumps each Sat/Sun weekend together.
+ */
+export function weekendsOf(divisionId: DivisionId): Weekend[] {
+  const blocks: string[][] = [];
+  for (const date of matchDates(divisionId)) {
+    const current = blocks[blocks.length - 1];
+    const previous = current?.[current.length - 1];
+    if (current && previous && dayOf(date) - dayOf(previous) <= 1) current.push(date);
+    else blocks.push([date]);
+  }
+  const schedule = scheduleOf(divisionId);
+  return blocks.map((dates) => ({
+    key: dates[0]!,
+    dates,
+    label: weekendLabel(dates),
+    matches: schedule.filter((m) => dates.includes(m.date)),
+  }));
+}
+
+/**
+ * The weekend a visitor most likely wants: the last one with a result, or the
+ * next one to be played if the liga has not started.
+ */
+export function latestWeekendKey(divisionId: DivisionId): string | null {
+  const weekends = weekendsOf(divisionId);
+  for (let i = weekends.length - 1; i >= 0; i--) {
+    const weekend = weekends[i];
+    if (weekend?.matches.some(isPlayed)) return weekend.key;
+  }
+  return weekends[0]?.key ?? null;
+}

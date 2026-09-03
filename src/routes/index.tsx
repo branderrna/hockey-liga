@@ -1,205 +1,117 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { PageShell } from "@/components/site";
-import { DivisionTabs } from "@/components/division-tabs";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+import { LandingShell } from "@/components/site";
 import {
   SEASON,
-  divisionById,
-  isPlayed,
-  matchDates,
+  activeLigas,
   matchesOf,
-  nextDate,
   playedOf,
-  standings,
   teamsOf,
-  type DivisionId,
+  upcomingLigas,
+  type Liga,
 } from "@/data/league";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Hockey Liga 2026 — Fixtures & Results" },
+      { title: "Hockey Liga 2026 — Schedules & League Tables" },
       {
         name: "description",
         content:
-          "Fixtures and results for the three concurrent 2026 Hockey Ligas: Women's, Premier and Youth U21 — dates, times, venues and final scores.",
+          "Pick a liga to see its weekend schedule and league table: Women's, Premier and Youth U21 Girls and Boys, played across Singapore from August to November 2026.",
       },
-      { property: "og:title", content: "Hockey Liga 2026 — Fixtures & Results" },
+      { property: "og:title", content: "Hockey Liga 2026 — Schedules & League Tables" },
       {
         property: "og:description",
-        content:
-          "Fixtures, venues, push-back times and scores across the Women's, Premier and Youth U21 ligas.",
+        content: "Weekend schedules and standings across every 2026 Hockey Liga.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: FixturesPage,
+  component: LandingPage,
 });
 
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  });
-}
-
-function FixturesPage() {
-  const [div, setDiv] = useState<DivisionId>("women");
-  const [date, setDate] = useState<string | null>(null);
-  const [team, setTeam] = useState("all");
-  const dateScrollerRef = useRef<HTMLDivElement>(null);
-  const scrollDates = (dir: -1 | 1) => {
-    dateScrollerRef.current?.scrollBy({ left: dir * 240, behavior: "smooth" });
-  };
-  const dates = matchDates(div);
-  const active = date === "all" ? "all" : date && dates.includes(date) ? date : nextDate(div);
-  const games = matchesOf(div)
-    .filter((m) => active === "all" || m.date === active)
-    .filter((m) => team === "all" || m.homeId === team || m.awayId === team);
-  const leader = standings(div)[0];
+function LigaCard({ liga, index }: { liga: Liga; index: number }) {
+  const games = liga.divisionId ? matchesOf(liga.divisionId).length : 0;
+  const played = liga.divisionId ? playedOf(liga.divisionId).length : 0;
+  const teams = liga.divisionId ? teamsOf(liga.divisionId).length : 0;
 
   return (
-    <PageShell eyebrow="Fixtures & Results" title="Fixtures & Results">
-      <DivisionTabs
-        value={div}
-        onChange={(d) => {
-          setDiv(d);
-          setDate(null);
-          setTeam("all");
-        }}
-      />
-
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
-        <Stat label="Liga" value={divisionById(div).short} />
-        <Stat label="Teams / games" value={`${teamsOf(div).length} · ${matchesOf(div).length}`} />
-        <Stat label="Leader" value={leader && leader.gp > 0 ? leader.team.name : "—"} />
+    <Link
+      to="/liga/$slug"
+      params={{ slug: liga.slug }}
+      style={{ animationDelay: `${index * 55}ms` }}
+      className="animate-rise surface group relative flex flex-col justify-between gap-6 p-5 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-foreground/45 hover:shadow-[0_1px_0_0_var(--color-hairline)] sm:p-6"
+    >
+      <div>
+        <p className="label-eyebrow">{liga.group}</p>
+        <h2 className="mt-2 text-xl sm:text-2xl">{liga.short}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{liga.name}</p>
       </div>
 
-      <div className="surface mt-8 flex flex-wrap items-center gap-3 p-4">
-        <label htmlFor="team" className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
-          Filter by team
-        </label>
-        <select
-          id="team"
-          value={team}
-          onChange={(e) => setTeam(e.target.value)}
-          className="rounded-md border border-border bg-secondary px-3 py-2 text-sm"
-        >
-          <option value="all">All teams</option>
-          {teamsOf(div).map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mt-4 flex items-center gap-2">
-        <button
-          onClick={() => scrollDates(-1)}
-          aria-label="Scroll to earlier dates"
-          className="surface hidden shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground sm:block"
-        >
-          <ChevronLeft className="size-4" />
-        </button>
-        <div ref={dateScrollerRef} className="surface min-w-0 flex-1 overflow-x-auto p-3">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setDate("all")}
-              className={`shrink-0 rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
-                active === "all"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              All dates
-            </button>
-            {dates.map((d) => (
-              <button
-                key={d}
-                onClick={() => setDate(d)}
-                className={`shrink-0 rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
-                  d === active
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {fmtDate(d)}
-              </button>
-            ))}
+      <div className="flex items-end justify-between gap-4 border-t border-hairline pt-4">
+        <dl className="meta-mono flex gap-5">
+          <div>
+            <dt className="opacity-70">Teams</dt>
+            <dd className="mt-0.5 text-sm text-foreground tabular-nums">{teams}</dd>
           </div>
-        </div>
-        <button
-          onClick={() => scrollDates(1)}
-          aria-label="Scroll to later dates"
-          className="surface hidden shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground sm:block"
-        >
-          <ChevronRight className="size-4" />
-        </button>
+          <div>
+            <dt className="opacity-70">Games</dt>
+            <dd className="mt-0.5 text-sm text-foreground tabular-nums">
+              {played}/{games}
+            </dd>
+          </div>
+        </dl>
+        <ArrowRight
+          className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-hover:translate-x-1 group-hover:text-foreground"
+          aria-hidden="true"
+        />
       </div>
-
-      <div className="mt-6 grid gap-3">
-        {games.map((m) => (
-          <article
-            key={m.id}
-            className={`surface grid grid-cols-1 gap-3 p-4 sm:grid-cols-[7rem_1fr_auto_1fr_12rem] sm:items-center sm:gap-4 ${m.postponed ? "border-l-2 border-ot/60" : ""}`}
-          >
-            <div>
-              <p className="font-display text-lg">{fmtDate(m.date)}</p>
-              <p className="text-xs text-muted-foreground">
-                {m.time} · {m.venue}
-              </p>
-            </div>
-            <div className="flex items-center justify-center gap-3 sm:contents">
-              <span className="flex-1 text-center text-sm font-semibold sm:flex-none">
-                {m.homeName}
-              </span>
-              {isPlayed(m) ? (
-                <span className="score-num shrink-0 rounded-md bg-secondary px-3 py-1 sm:justify-self-center">
-                  {m.homeGoals}–{m.awayGoals}
-                </span>
-              ) : m.postponed ? (
-                <span className="shrink-0 rounded-full bg-ot/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-ot sm:justify-self-center">
-                  PP
-                </span>
-              ) : (
-                <span className="shrink-0 rounded-md border border-border px-3 py-2 font-display text-base text-muted-foreground sm:justify-self-center">
-                  VS
-                </span>
-              )}
-              <span className="flex-1 text-center text-sm font-semibold sm:flex-none">
-                {m.awayName}
-              </span>
-            </div>
-            <div className="text-center text-xs sm:text-right">
-              {m.postponed && m.note ? (
-                <span className="text-ot">↻ {m.note}</span>
-              ) : (
-                <span className="text-muted-foreground">{m.note ?? ""}</span>
-              )}
-            </div>
-          </article>
-        ))}
-        {games.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No games match this selection.</p>
-        ) : null}
-      </div>
-
-      <p className="mt-6 text-xs text-muted-foreground">
-        {playedOf(div).length} of {matchesOf(div).length} games completed in this liga.
-      </p>
-    </PageShell>
+    </Link>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function LandingPage() {
   return (
-    <div className="surface p-4">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
-      <p className="mt-1 font-display text-2xl">{value}</p>
-    </div>
+    <LandingShell>
+      <main className="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
+        <p className="label-eyebrow">{SEASON.name} · 2 Aug – 29 Nov</p>
+        <h1 className="mt-3 max-w-xl text-3xl leading-tight sm:text-5xl">
+          Which liga are you following?
+        </h1>
+        <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
+          Pick a liga for its weekend schedule, scores and league table.
+        </p>
+
+        <div className="mt-10 grid gap-4 sm:mt-14 sm:grid-cols-2">
+          {activeLigas.map((liga, i) => (
+            <LigaCard key={liga.slug} liga={liga} index={i} />
+          ))}
+        </div>
+
+        <section className="mt-14">
+          <p className="label-eyebrow">Not running this season</p>
+          <div className="mt-4 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2">
+            {upcomingLigas.map((liga) => (
+              <Link
+                key={liga.slug}
+                to="/liga/$slug"
+                params={{ slug: liga.slug }}
+                className="group flex items-center justify-between gap-3 bg-card px-4 py-3 transition-colors hover:bg-secondary"
+              >
+                <span className="truncate text-sm text-muted-foreground transition-colors group-hover:text-foreground">
+                  {liga.name}
+                </span>
+                <ArrowRight
+                  className="size-3.5 shrink-0 text-muted-foreground/60 transition-transform duration-200 group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </Link>
+            ))}
+          </div>
+        </section>
+      </main>
+    </LandingShell>
   );
 }

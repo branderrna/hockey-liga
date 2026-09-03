@@ -9,24 +9,25 @@
  * The @theme inline block maps CSS custom properties to Tailwind utility
  * classes (e.g. --color-primary -> bg-primary, text-primary).
  *
- * The :root and .dark blocks define the actual color values using oklch.
+ * The :root block defines the actual color values using oklch.
  * All colors MUST use oklch format.
  *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * The palette is deliberately near-neutral: structure comes from hairline
+ * rules and spacing, not from fills. Accents are reserved for state
+ * (postponed, win/draw/loss) so they read as information, not decoration.
  */
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
-  --font-display: "Bebas Neue", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 1px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 10px);
+  --radius-3xl: calc(var(--radius) + 14px);
+  --radius-4xl: calc(var(--radius) + 18px);
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -42,6 +43,7 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+  --color-hairline: var(--hairline);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ice: var(--ice);
@@ -52,29 +54,30 @@
 }
 
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.17 0.035 255);
-  --foreground: oklch(0.97 0.008 240);
-  --card: oklch(0.22 0.038 256);
-  --card-foreground: oklch(0.97 0.008 240);
-  --primary: oklch(0.78 0.15 200);
-  --primary-foreground: oklch(0.16 0.04 255);
-  --secondary: oklch(0.27 0.04 256);
-  --secondary-foreground: oklch(0.97 0.008 240);
-  --muted: oklch(0.26 0.035 256);
-  --muted-foreground: oklch(0.7 0.03 245);
-  --accent: oklch(0.72 0.19 45);
-  --accent-foreground: oklch(0.16 0.04 255);
-  --destructive: oklch(0.62 0.22 25);
-  --destructive-foreground: oklch(0.98 0.005 240);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.78 0.15 200);
-  --ice: oklch(0.88 0.07 205);
-  --rink: oklch(0.24 0.04 258);
-  --win: oklch(0.75 0.16 155);
-  --loss: oklch(0.65 0.2 25);
-  --ot: oklch(0.82 0.16 85);
+  --radius: 0.25rem;
+  --background: oklch(0.975 0.001 250);
+  --foreground: oklch(0.19 0.005 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.19 0.005 250);
+  --primary: oklch(0.21 0.006 250);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.955 0.002 250);
+  --secondary-foreground: oklch(0.19 0.005 250);
+  --muted: oklch(0.955 0.002 250);
+  --muted-foreground: oklch(0.53 0.008 250);
+  --accent: oklch(0.62 0.13 250);
+  --accent-foreground: oklch(0.99 0 0);
+  --destructive: oklch(0.58 0.19 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.88 0.003 250);
+  --hairline: oklch(0.91 0.003 250);
+  --input: oklch(0.86 0.003 250);
+  --ring: oklch(0.21 0.006 250);
+  --ice: oklch(0.93 0.02 240);
+  --rink: oklch(0.97 0.002 250);
+  --win: oklch(0.52 0.13 155);
+  --loss: oklch(0.58 0.17 25);
+  --ot: oklch(0.58 0.12 70);
 }
 
 @layer base {
@@ -82,40 +85,93 @@
     border-color: var(--color-border);
   }
 
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    background-image:
-      radial-gradient(900px 420px at 12% -8%, oklch(0.78 0.15 200 / 0.16), transparent 65%),
-      radial-gradient(700px 380px at 92% 4%, oklch(0.72 0.19 45 / 0.12), transparent 60%);
-    background-attachment: fixed;
+    font-feature-settings: "cv05" 1;
   }
 
   h1,
   h2,
   h3 {
     font-family: var(--font-display);
-    letter-spacing: 0.02em;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  /* Scores, counts and standings columns must align vertically. */
+  table,
+  th,
+  td {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-ring);
+    outline-offset: 2px;
   }
 }
 
+/* A panel defined by its edge, not by a fill. */
 @utility surface {
-  background: linear-gradient(180deg, oklch(1 0 0 / 0.05), transparent 40%), var(--color-card);
+  background: var(--color-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
 }
 
 @utility label-eyebrow {
-  font-family: var(--font-display);
-  letter-spacing: 0.22em;
+  font-family: var(--font-mono);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-primary);
-  font-size: 0.8rem;
+  color: var(--color-muted-foreground);
+  font-size: 0.6875rem;
 }
 
 @utility score-num {
-  font-family: var(--font-display);
-  font-size: 1.9rem;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   line-height: 1;
+}
+
+/* Small uppercase mono caption used for venues, times and game numbers. */
+@utility meta-mono {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: var(--color-muted-foreground);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility animate-rise {
+  animation: rise 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

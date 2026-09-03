@@ -1,54 +1,140 @@
 import { Link } from "@tanstack/react-router";
-import { SEASON } from "@/data/league";
+import { useEffect, useState, type ReactNode } from "react";
+import { ChevronRight, Home, Info, Menu, X } from "lucide-react";
+import { SEASON, activeLigas, matchesOf, upcomingLigas } from "@/data/league";
 import logo from "@/assets/liga-logo.jpg";
 
-const nav = [
-  { to: "/", label: "Fixtures & Results" },
-  { to: "/table", label: "League Table" },
-  { to: "/about", label: "About" },
-] as const;
+const SEASON_RANGE = "2 Aug – 29 Nov 2026";
 
-function SiteHeader() {
+const navLinkClass =
+  "group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground data-[status=active]:bg-secondary data-[status=active]:text-foreground data-[status=active]:font-medium";
+
+function SectionLabel({ children }: { children: ReactNode }) {
+  return <p className="label-eyebrow px-3 pb-2 pt-6">{children}</p>;
+}
+
+function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <Link to="/" className="flex items-center gap-3">
-          <img
-            src={logo}
-            alt="Hockey Liga logo"
-            className="h-9 w-9 rounded-md bg-white object-contain p-0.5"
-          />
-          <span className="block font-display text-xl leading-tight tracking-wide">
-            {SEASON.name}
+    <nav className="flex h-full flex-col overflow-y-auto px-3 pb-8">
+      <SectionLabel>Navigation</SectionLabel>
+      <Link to="/" activeOptions={{ exact: true }} className={navLinkClass} onClick={onNavigate}>
+        <Home className="size-4 shrink-0" aria-hidden="true" />
+        Home
+      </Link>
+      <Link to="/about" className={navLinkClass} onClick={onNavigate}>
+        <Info className="size-4 shrink-0" aria-hidden="true" />
+        About
+      </Link>
+
+      <SectionLabel>Ligas</SectionLabel>
+      {activeLigas.map((liga) => (
+        <Link
+          key={liga.slug}
+          to="/liga/$slug"
+          params={{ slug: liga.slug }}
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
+          <span className="flex-1 truncate">{liga.short}</span>
+          <span className="meta-mono shrink-0 tabular-nums">
+            {liga.divisionId ? matchesOf(liga.divisionId).length : ""}
           </span>
         </Link>
-        <nav className="flex items-center gap-1">
-          {nav.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              activeOptions={{ exact: n.to === "/" }}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground data-[status=active]:bg-secondary data-[status=active]:text-primary"
-            >
-              {n.label}
-            </Link>
-          ))}
-        </nav>
+      ))}
+
+      <SectionLabel>Coming soon</SectionLabel>
+      {upcomingLigas.map((liga) => (
+        <Link
+          key={liga.slug}
+          to="/liga/$slug"
+          params={{ slug: liga.slug }}
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
+          <span className="flex-1 truncate">{liga.short}</span>
+          <span className="meta-mono shrink-0 opacity-70">Soon</span>
+        </Link>
+      ))}
+
+      <div className="mt-auto border-t border-hairline px-3 pt-4">
+        <p className="meta-mono">{SEASON.name}</p>
+        <p className="meta-mono mt-1 opacity-70">{SEASON_RANGE}</p>
       </div>
-    </header>
+    </nav>
   );
 }
 
-function SiteFooter() {
+function Brand({ onClick }: { onClick?: () => void }) {
   return (
-    <footer className="mt-16 border-t border-border py-8">
-      <div className="mx-auto max-w-6xl px-4 text-xs text-muted-foreground">
-        {SEASON.name} · Aug 2 – Nov 29, 2026
-      </div>
-    </footer>
+    <Link to="/" className="flex items-center gap-2.5 px-3 py-4" onClick={onClick}>
+      <img src={logo} alt="" aria-hidden="true" className="size-7 rounded-sm object-contain" />
+      <span className="text-sm font-medium tracking-tight">Hockey Liga</span>
+    </Link>
   );
 }
 
+/** Page shell for liga and content pages: fixed rail on desktop, drawer on mobile. */
+export function AppShell({ children }: { children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  return (
+    <div className="min-h-screen lg:grid lg:grid-cols-[15rem_1fr]">
+      <aside className="sticky top-0 hidden h-screen border-r border-hairline lg:flex lg:flex-col">
+        <Brand />
+        <SidebarNav />
+      </aside>
+
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-hairline bg-background/90 px-2 backdrop-blur lg:hidden">
+        <Brand />
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Open navigation"
+          aria-expanded={open}
+          className="mr-2 rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
+          <Menu className="size-5" />
+        </button>
+      </header>
+
+      {open ? (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button
+            type="button"
+            aria-label="Close navigation"
+            onClick={() => setOpen(false)}
+            className="absolute inset-0 bg-foreground/20 backdrop-blur-[2px]"
+          />
+          <div className="animate-rise absolute inset-y-0 left-0 flex w-[17rem] max-w-[85vw] flex-col border-r border-hairline bg-background">
+            <div className="flex items-center justify-between">
+              <Brand onClick={() => setOpen(false)} />
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Close navigation"
+                className="mr-2 rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+            <SidebarNav onNavigate={() => setOpen(false)} />
+          </div>
+        </div>
+      ) : null}
+
+      <div className="min-w-0">{children}</div>
+    </div>
+  );
+}
+
+/** Standard content page inside the shell. */
 export function PageShell({
   eyebrow,
   title,
@@ -58,18 +144,47 @@ export function PageShell({
   eyebrow: string;
   title: string;
   intro?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen">
-      <SiteHeader />
-      <main className="mx-auto max-w-6xl px-4 py-10">
+    <AppShell>
+      <main className="mx-auto max-w-5xl px-5 py-10 sm:px-8 lg:py-14">
         <p className="label-eyebrow">{eyebrow}</p>
-        <h1 className="mt-2 text-4xl sm:text-5xl">{title}</h1>
-        {intro ? <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{intro}</p> : null}
-        <div className="mt-8">{children}</div>
+        <h1 className="mt-3 text-3xl sm:text-4xl">{title}</h1>
+        {intro ? (
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">{intro}</p>
+        ) : null}
+        <div className="mt-10">{children}</div>
       </main>
-      <SiteFooter />
+    </AppShell>
+  );
+}
+
+/** Chrome-free shell for the landing page: no rail, no drawer. */
+export function LandingShell({ children }: { children: ReactNode }) {
+  return (
+    <div className="min-h-screen">
+      <header className="border-b border-hairline">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
+          <span className="flex items-center gap-2.5">
+            <img
+              src={logo}
+              alt=""
+              aria-hidden="true"
+              className="size-7 rounded-sm object-contain"
+            />
+            <span className="text-sm font-medium tracking-tight">Hockey Liga</span>
+          </span>
+          <Link
+            to="/about"
+            className="meta-mono flex items-center gap-1 transition-colors hover:text-foreground"
+          >
+            About
+            <ChevronRight className="size-3" aria-hidden="true" />
+          </Link>
+        </div>
+      </header>
+      {children}
     </div>
   );
 }

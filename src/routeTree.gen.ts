@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as TableRouteImport } from './routes/table'
+import { Route as LigaSlugRouteImport } from './routes/liga.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const TableRoute = TableRouteImport.update({
   path: '/table',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LigaSlugRoute = LigaSlugRouteImport.update({
+  id: '/liga/$slug',
+  path: '/liga/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/table': typeof TableRoute
+  '/liga/$slug': typeof LigaSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/table': typeof TableRoute
+  '/liga/$slug': typeof LigaSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/table': typeof TableRoute
+  '/liga/$slug': typeof LigaSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/table'
+  fullPaths: '/' | '/about' | '/table' | '/liga/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/table'
-  id: '__root__' | '/' | '/about' | '/table'
+  to: '/' | '/about' | '/table' | '/liga/$slug'
+  id: '__root__' | '/' | '/about' | '/table' | '/liga/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   TableRoute: typeof TableRoute
+  LigaSlugRoute: typeof LigaSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TableRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/liga/$slug': {
+      id: '/liga/$slug'
+      path: '/liga/$slug'
+      fullPath: '/liga/$slug'
+      preLoaderRoute: typeof LigaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   TableRoute: TableRoute,
+  LigaSlugRoute: LigaSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

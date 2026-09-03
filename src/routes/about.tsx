@@ -28,8 +28,8 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   return (
     <PageShell eyebrow="Hockey Liga" title="About the Liga">
-      <div className="grid gap-8 md:grid-cols-[220px_1fr] md:items-start">
-        <div className="rounded-xl border border-border bg-card p-6">
+      <div className="grid gap-8 md:grid-cols-[200px_1fr] md:items-start">
+        <div className="surface p-6">
           <img
             src={logo}
             alt="Hockey Liga logo: two hockey players with sticks and ball"
@@ -39,17 +39,17 @@ function AboutPage() {
         </div>
 
         <div className="space-y-6">
-          <p className="text-lg leading-relaxed text-foreground">
+          <p className="text-base leading-relaxed sm:text-lg">
             Hockey Liga is a 9-a-side Social Hockey Tournament which aims to create a platform for
             pre-season preparations for the SHF Leagues and School Tournaments and have Hockey being
             played in Singapore all year round.
           </p>
 
-          <div className="rounded-xl border border-border bg-card p-6">
+          <div className="surface p-6">
             <p className="label-eyebrow">Get in touch</p>
             <div className="mt-4 flex flex-col gap-3 text-sm">
               <a
-                className="flex items-center gap-2 text-primary underline-offset-4 hover:underline"
+                className="flex items-center gap-2 text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
                 href="https://www.facebook.com/hockeyligasg"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -58,14 +58,14 @@ function AboutPage() {
                 facebook.com/hockeyligasg
               </a>
               <a
-                className="flex items-center gap-2 text-primary underline-offset-4 hover:underline"
+                className="flex items-center gap-2 text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
                 href="mailto:balestierlions@gmail.com"
               >
                 <Mail className="size-4 shrink-0" aria-hidden="true" />
                 balestierlions@gmail.com
               </a>
               <a
-                className="flex items-center gap-2 text-primary underline-offset-4 hover:underline"
+                className="flex items-center gap-2 text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
                 href="https://github.com/branderrna/hockey-liga"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -76,7 +76,7 @@ function AboutPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-card p-6">
+          <div className="surface p-6">
             <p className="label-eyebrow">A Note From Us</p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               This site is a pro bono project created to give back to the Liga community and is
@@ -89,7 +89,7 @@ function AboutPage() {
               results, should you identify any inaccuracies or have any concerns regarding the
               information published on this site, please contact us at{" "}
               <a
-                className="text-primary underline-offset-4 hover:underline"
+                className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
                 href="mailto:balestierlions@gmail.com"
               >
                 balestierlions@gmail.com

@@ -1,5 +1,21 @@
 export type DivisionId = "women" | "premier" | "u21-girls" | "u21-boys";
 
+/** Ligas that have no fixtures in the sheet yet. Their pages render a placeholder. */
+export type UpcomingLigaSlug = "super" | "veterans" | "social" | "u14-boys" | "u14-girls";
+
+export type LigaSlug = DivisionId | UpcomingLigaSlug;
+
+export type Liga = {
+  slug: LigaSlug;
+  name: string;
+  /** Sidebar and card label. */
+  short: string;
+  group: "Open" | "Youth";
+} & (
+  | { status: "active"; divisionId: DivisionId }
+  | { status: "upcoming"; divisionId: null; returns: string }
+);
+
 export type League = {
   id: string;
   name: string;
@@ -31,4 +47,15 @@ export type Match = {
   awayGoals: number | null;
   postponed: boolean;
   note: string | null;
+};
+
+/** A match with its sequential number within its liga's schedule. */
+export type NumberedMatch = Match & { no: number };
+
+/** Consecutive match days played as one block — in practice a Sat/Sun weekend. */
+export type Weekend = {
+  key: string;
+  dates: string[];
+  label: string;
+  matches: NumberedMatch[];
 };
