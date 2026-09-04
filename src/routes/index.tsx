@@ -43,7 +43,7 @@ function LandingPage() {
   return (
     <LandingShell>
       <main className="mx-auto max-w-4xl px-5 py-16 sm:px-8 sm:py-24 lg:py-28">
-        <p className="label-eyebrow">{SEASON.name} · 2 Aug – 29 Nov</p>
+        <p className="label-eyebrow">{SEASON.name}</p>
 
         <h1 className="mt-6 flex flex-col items-start gap-3 text-2xl leading-tight font-normal tracking-tight sm:gap-4 sm:text-4xl">
           <span>I play in</span>

@@ -76,7 +76,7 @@ function AllLigasPage() {
   return (
     <LandingShell>
       <main className="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
-        <p className="label-eyebrow">{SEASON.name} · 2 Aug – 29 Nov</p>
+        <p className="label-eyebrow">{SEASON.name}</p>
         <h1 className="mt-3 max-w-xl text-3xl leading-tight sm:text-5xl">
           Which liga are you following?
         </h1>

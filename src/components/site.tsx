@@ -6,8 +6,6 @@ import { ViewingAs } from "@/components/my-team-picker";
 import { useMyTeam } from "@/lib/my-team";
 import logo from "@/assets/liga-logo.jpg";
 
-const SEASON_RANGE = "2 Aug – 29 Nov 2026";
-
 const navLinkClass =
   "group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground data-[status=active]:bg-secondary data-[status=active]:text-foreground data-[status=active]:font-medium";
 
@@ -65,7 +63,6 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="mt-auto border-t border-hairline px-3 pt-4">
         <p className="meta-mono">{SEASON.name}</p>
-        <p className="meta-mono mt-1 opacity-70">{SEASON_RANGE}</p>
       </div>
     </nav>
   );

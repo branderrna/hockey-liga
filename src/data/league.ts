@@ -10,10 +10,22 @@ import type {
 } from "./types";
 export type { ActiveLiga, DivisionId, Liga, Match, Team, UpcomingLiga, Weekend };
 
+const SEASON_START = "2026-08-02";
+const SEASON_END = "2026-11-29";
+const SEASON_YEAR = SEASON_START.slice(0, 4);
+
+/*
+ * The season's bounds. `start` and `end` are load-bearing, not decoration:
+ * the sheet writes dates without a year, so the refresh script stamps
+ * `start`'s year onto them, and the validator rejects fixtures outside the
+ * window. `year` and `name` are derived from them so no view hardcodes a
+ * season — moving to the next one is a single edit here.
+ */
 export const SEASON = {
-  name: "Hockey Liga 2026",
-  start: "2026-08-02",
-  end: "2026-11-29",
+  year: SEASON_YEAR,
+  name: `Hockey Liga ${SEASON_YEAR}`,
+  start: SEASON_START,
+  end: SEASON_END,
 };
 
 const leagues: League[] = [
