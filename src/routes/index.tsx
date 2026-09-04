@@ -66,7 +66,7 @@ function LandingPage() {
           />
         </h1>
 
-        <div className="mt-12 flex flex-wrap items-center gap-3">
+        <div className="mt-12">
           <button
             type="button"
             disabled={!ready}
@@ -85,16 +85,16 @@ function LandingPage() {
               aria-hidden="true"
             />
           </button>
-
-          {/* Secondary to Proceed: outlined, so a visitor whose liga is not in
-              the list still has somewhere to go. */}
-          <Link
-            to="/ligas"
-            className="inline-flex items-center rounded-sm border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground sm:text-base"
-          >
-            Browse every liga
-          </Link>
         </div>
+
+        {/* The liga manager runs every liga rather than playing in one, so his
+            way in is past the team picker entirely. */}
+        <Link to="/ligas" className="group mt-10 inline-block">
+          <span className="text-sm underline decoration-border underline-offset-4 transition-colors group-hover:text-foreground group-hover:decoration-foreground">
+            Enter <span className="font-medium">I AM GOPAL</span> mode
+          </span>
+          <span className="meta-mono mt-1.5 block">browse every liga</span>
+        </Link>
       </main>
     </LandingShell>
   );
