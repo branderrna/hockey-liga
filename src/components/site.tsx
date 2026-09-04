@@ -3,7 +3,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import { ChevronRight, CornerUpLeft, Info, Menu, X } from "lucide-react";
 import { SEASON, activeLigas, upcomingLigas } from "@/data/league";
 import { ViewingAs } from "@/components/my-team-picker";
-import { useMyTeam } from "@/lib/my-team";
 import logo from "@/assets/liga-logo.jpg";
 
 const navLinkClass =
@@ -80,10 +79,6 @@ function Brand({ onClick }: { onClick?: () => void }) {
 /** Page shell for liga and content pages: fixed rail on desktop, drawer on mobile. */
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  // Kept while a liga is set even if the team is not: changing liga in the bar
-  // clears the team, and the bar has to stay put to pick the new one.
-  const { divisionId } = useMyTeam();
-  const viewingAs = !!divisionId;
 
   useEffect(() => {
     if (!open) return;
@@ -112,11 +107,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Menu className="size-5" />
           </button>
         </div>
-        {viewingAs ? (
-          <div className="border-t border-hairline px-3 py-2">
-            <ViewingAs />
-          </div>
-        ) : null}
+        <div className="border-t border-hairline px-3 py-2">
+          <ViewingAs />
+        </div>
       </header>
 
       {open ? (
@@ -145,11 +138,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       ) : null}
 
       <div className="min-w-0">
-        {viewingAs ? (
-          <div className="sticky top-0 z-30 hidden border-b border-hairline bg-background/90 px-8 py-2.5 backdrop-blur lg:flex lg:justify-end">
-            <ViewingAs />
-          </div>
-        ) : null}
+        <div className="sticky top-0 z-30 hidden border-b border-hairline bg-background/90 px-8 py-2.5 backdrop-blur lg:flex lg:justify-end">
+          <ViewingAs />
+        </div>
         {children}
       </div>
     </div>

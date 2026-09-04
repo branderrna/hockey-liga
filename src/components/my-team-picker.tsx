@@ -203,7 +203,9 @@ export function InlineSelect({
           aria-activedescendant={`${id}-${active}`}
           onKeyDown={onListKeyDown}
           style={{ marginLeft: shift }}
-          className="absolute top-full left-0 z-50 mt-2 max-h-72 w-max max-w-[min(22rem,80vw)] overflow-y-auto border border-border bg-card py-1 text-sm normal-case shadow-[0_6px_20px_oklch(0_0_0/0.09)] outline-none"
+          className={`absolute top-full left-0 z-50 mt-2 max-h-72 w-max max-w-[min(22rem,80vw)] overflow-y-auto border border-border bg-card py-1 shadow-[0_6px_20px_oklch(0_0_0/0.09)] outline-none ${
+            variant === "quiet" ? "font-mono text-[0.6875rem] tracking-[0.04em]" : "text-sm"
+          }`}
         >
           {options.map((option, index) => (
             <li
@@ -214,7 +216,9 @@ export function InlineSelect({
               data-index={index}
               onMouseEnter={() => setActive(index)}
               onClick={() => choose(index)}
-              className={`cursor-pointer px-3 py-2 ${uppercase ? "uppercase" : ""} ${
+              className={`cursor-pointer ${variant === "quiet" ? "px-2.5 py-1.5" : "px-3 py-2"} ${
+                uppercase ? "uppercase" : ""
+              } ${
                 option.value === value
                   ? "bg-primary text-primary-foreground"
                   : index === active
@@ -234,9 +238,10 @@ export function InlineSelect({
 /** Read-only echo of the choice made on the landing page. */
 export function ViewingAs() {
   const { divisionId, teamId, setMyTeam } = useMyTeam();
-  if (!divisionId) return null;
 
-  const teamOptions = teamsOf(divisionId).map((team) => ({ value: team.id, label: team.name }));
+  const teamOptions = divisionId
+    ? teamsOf(divisionId).map((team) => ({ value: team.id, label: team.name }))
+    : [];
   const ligaOptions = activeLigas.map((liga) => ({ value: liga.divisionId, label: liga.name }));
 
   return (
@@ -249,6 +254,7 @@ export function ViewingAs() {
         placeholder="select team"
         value={teamId}
         options={teamOptions}
+        disabled={!divisionId}
         onChange={(next) => setMyTeam({ divisionId, teamId: next })}
       />{" "}
       in{" "}
