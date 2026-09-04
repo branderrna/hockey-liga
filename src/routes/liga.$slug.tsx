@@ -295,11 +295,12 @@ function MatchRow({ match: m }: { match: Match }) {
         </span>
 
         <span className="col-span-2 grid grid-cols-[1fr_5.5rem_1fr] items-center gap-2 sm:contents">
-          <span className="text-right text-sm leading-tight sm:truncate">
+          {/* Names wrap rather than truncate — a clipped club name is worse than a taller row. */}
+          <span className="text-right text-sm leading-tight">
             <TeamName name={m.homeName} mine={!!teamId && m.homeId === teamId} />
           </span>
           <Score match={m} />
-          <span className="text-sm leading-tight sm:truncate">
+          <span className="text-sm leading-tight">
             <TeamName name={m.awayName} mine={!!teamId && m.awayId === teamId} />
           </span>
         </span>
