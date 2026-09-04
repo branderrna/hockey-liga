@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Facebook, Github, Mail } from "lucide-react";
+import { Facebook, Mail } from "lucide-react";
 import { PageShell } from "@/components/site";
 import logo from "@/assets/liga-logo.jpg";
 
@@ -64,15 +64,6 @@ function AboutPage() {
                 <Mail className="size-4 shrink-0" aria-hidden="true" />
                 balestierlions@gmail.com
               </a>
-              <a
-                className="flex items-center gap-2 text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
-                href="https://github.com/branderrna/hockey-liga"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Github className="size-4 shrink-0" aria-hidden="true" />
-                github.com/branderrna/hockey-liga
-              </a>
             </div>
           </div>
 
@@ -87,7 +78,7 @@ function AboutPage() {
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               As Balestier Lions remains the official authority for all final scores, fixtures, and
               results, should you identify any inaccuracies or have any concerns regarding the
-              information published on this site, please contact us at{" "}
+              information published on this site, please contact{" "}
               <a
                 className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
                 href="mailto:balestierlions@gmail.com"
