@@ -216,7 +216,7 @@ export function ViewingAs() {
     // part that would be cut, and it is the half worth keeping.
     <p className="meta-mono leading-snug">
       Viewing as <span className="text-foreground">{team.name}</span> in{" "}
-      <span className="text-foreground">{liga.name}</span>
+      <span className="text-foreground uppercase">{liga.name}</span>
     </p>
   );
 }
