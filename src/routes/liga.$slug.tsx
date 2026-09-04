@@ -384,10 +384,11 @@ function Score({ match: m }: { match: Match }) {
 
 /* ----------------------------------- table ---------------------------------- */
 
-const formColor = {
-  W: "border-win/40 text-win",
-  D: "border-ot/40 text-ot",
-  L: "border-loss/40 text-loss",
+/** A soft wash behind the letter; the letter itself carries the colour. */
+const formFill = {
+  W: "bg-win/15 text-win-ink",
+  D: "bg-ot/15 text-ot-ink",
+  L: "bg-loss/15 text-loss-ink",
 } as const;
 const formLabel = { W: "Win", D: "Draw", L: "Loss" } as const;
 
@@ -405,7 +406,38 @@ const columns = [
   { key: "gd", label: "GD", onMobile: false, muted: false },
 ] as const;
 
-const MOBILE_FORM_GAMES = 3;
+const FORM_SLOTS = 5;
+const MOBILE_FORM_SLOTS = 3;
+
+/**
+ * Always five slots, so the column reads as a single block down the table.
+ * Results fill from the left, oldest first; the remainder are games the team
+ * has yet to play. Narrow screens show a three-slot window ending on the most
+ * recent result, so a team with two games played still shows both.
+ */
+function FormRun({ form }: { form: Standing["form"] }) {
+  const mobileFrom = Math.max(0, form.length - MOBILE_FORM_SLOTS);
+
+  return (
+    <span className="flex gap-1">
+      {Array.from({ length: FORM_SLOTS }, (_, i) => {
+        const result = form[i];
+        const onMobile = i >= mobileFrom && i < mobileFrom + MOBILE_FORM_SLOTS;
+        return (
+          <span
+            key={i}
+            title={result ? formLabel[result] : "Not played"}
+            className={`size-5 place-items-center rounded-sm text-[10px] font-medium ${
+              result ? formFill[result] : "border border-border"
+            } ${onMobile ? "grid" : "hidden sm:grid"}`}
+          >
+            {result ?? ""}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
 
 type StandingEntry = { rank: number; row: Standing };
 
@@ -437,7 +469,7 @@ function StandingsTable({
             </th>
           ))}
           <th className="label-eyebrow w-12 py-2 text-center font-normal">Pts</th>
-          <th className="label-eyebrow w-20 py-2 pl-2 text-left font-normal sm:w-28 sm:pl-4">
+          <th className="label-eyebrow w-20 py-2 pl-2 text-left font-normal sm:w-32 sm:pl-4">
             Form
           </th>
         </tr>
@@ -464,19 +496,7 @@ function StandingsTable({
             ))}
             <td className="py-3 text-center font-medium tabular-nums">{r.pts}</td>
             <td className="py-3 pl-2 sm:pl-4">
-              <span className="flex gap-1">
-                {r.form.map((f, idx) => (
-                  <span
-                    key={idx}
-                    title={formLabel[f]}
-                    className={`size-5 place-items-center rounded-sm border text-[10px] font-medium ${
-                      formColor[f]
-                    } ${idx < r.form.length - MOBILE_FORM_GAMES ? "hidden sm:grid" : "grid"}`}
-                  >
-                    {f}
-                  </span>
-                ))}
-              </span>
+              <FormRun form={r.form} />
             </td>
           </tr>
         ))}
@@ -493,6 +513,7 @@ function StandingsKey() {
         Form runs left to right, oldest to most recent —{" "}
         <span className="sm:hidden">last 3 games</span>
         <span className="hidden sm:inline">last 5 games</span>
+        {" · empty = not played"}
       </p>
       <p className="sm:hidden">Rotate your phone for the full table</p>
     </div>
