@@ -284,7 +284,7 @@ function MatchRow({ match: m }: { match: Match }) {
     <li
       className={`border-b border-hairline transition-colors duration-150 hover:bg-secondary/70 ${
         isReplayed(m) ? "bg-ice/35" : ""
-      } ${m.postponed ? "text-muted-foreground" : ""}`}
+      } ${m.postponed ? "row-faded" : ""}`}
     >
       <div className="grid grid-cols-[2.25rem_1fr] items-center gap-x-3 gap-y-1.5 px-1 py-3 sm:grid-cols-[2.25rem_3.25rem_1fr_5.5rem_1fr_7rem] sm:gap-x-4">
         <span className="meta-mono tabular-nums">{String(m.no).padStart(2, "0")}</span>
@@ -334,7 +334,12 @@ function Score({ match: m }: { match: Match }) {
   }
   if (m.postponed) {
     return (
-      <span className="meta-mono text-center font-medium text-ot" title="Postponed">
+      // Same type as `meta-mono`, spelled out so the faded row does not
+      // outrank the marker's own colour.
+      <span
+        className="text-center font-mono text-[0.6875rem] font-medium tracking-[0.04em] text-ot"
+        title="Postponed"
+      >
         PP
       </span>
     );

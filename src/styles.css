@@ -44,6 +44,7 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-hairline: var(--hairline);
+  --color-faded: var(--faded);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ice: var(--ice);
@@ -65,6 +66,7 @@
   --secondary-foreground: oklch(0.19 0.005 250);
   --muted: oklch(0.955 0.002 250);
   --muted-foreground: oklch(0.53 0.008 250);
+  --faded: oklch(0.68 0.006 250);
   --accent: oklch(0.62 0.13 250);
   --accent-foreground: oklch(0.99 0 0);
   --destructive: oklch(0.58 0.19 25);
@@ -143,6 +145,19 @@
 }
 
 /* Small uppercase mono caption used for venues, times and game numbers. */
+/*
+ * A stood-down fixture: readable, but clearly set back from the games that
+ * were actually played. It has to reach the mono captions too, since
+ * `meta-mono` sets its own colour and would otherwise ignore the row.
+ */
+@utility row-faded {
+  color: var(--color-faded);
+
+  & .meta-mono {
+    color: var(--color-faded);
+  }
+}
+
 @utility meta-mono {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
