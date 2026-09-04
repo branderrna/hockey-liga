@@ -16,15 +16,20 @@ import {
   type DivisionId,
   type Liga,
   type Match,
+  type Standing,
   type Weekend,
 } from "@/data/league";
 
-type View = "schedule" | "table";
+type View = "schedule" | "table" | "my-team";
+
+const OPTIONAL_VIEWS: View[] = ["table", "my-team"];
 
 export const Route = createFileRoute("/liga/$slug")({
   // Schedule is the default view, so it stays out of the URL entirely.
-  validateSearch: (search: { view?: unknown }): { view?: View } =>
-    search.view === "table" ? { view: "table" } : {},
+  validateSearch: (search: { view?: unknown }): { view?: View } => {
+    const view = OPTIONAL_VIEWS.find((v) => v === search.view);
+    return view ? { view } : {};
+  },
   beforeLoad: ({ params }) => {
     if (!ligaBySlug(params.slug)) throw notFound();
   },
@@ -57,15 +62,27 @@ function fmtDayHeading(iso: string) {
   });
 }
 
+const VIEW_LABEL: Record<View, string> = {
+  schedule: "Schedule",
+  table: "League table",
+  "my-team": "My team",
+};
+
 function LigaPage() {
   const { slug } = Route.useParams();
   const { view = "schedule" } = Route.useSearch();
   const navigate = Route.useNavigate();
+  const { teamId } = useMyTeam();
   const liga = ligaBySlug(slug)!;
 
   if (liga.status === "upcoming") return <ComingSoon liga={liga} />;
 
   const divisionId = liga.divisionId;
+
+  // "My team" only means something in the liga the visitor's team plays in.
+  const myTeam = teamId && teamsOf(divisionId).some((t) => t.id === teamId) ? teamId : null;
+  const views: View[] = myTeam ? ["schedule", "table", "my-team"] : ["schedule", "table"];
+  const active = views.includes(view) ? view : "schedule";
 
   return (
     <AppShell>
@@ -79,21 +96,21 @@ function LigaPage() {
           </p>
 
           <div className="mt-7 inline-flex rounded-md border border-border p-0.5">
-            {(["schedule", "table"] as const).map((v) => (
+            {views.map((v) => (
               <button
                 key={v}
                 type="button"
                 onClick={() =>
-                  navigate({ search: v === "table" ? { view: "table" } : {}, replace: true })
+                  navigate({ search: v === "schedule" ? {} : { view: v }, replace: true })
                 }
-                aria-pressed={view === v}
-                className={`rounded-[3px] px-4 py-1.5 text-sm transition-colors duration-150 ${
-                  view === v
+                aria-pressed={active === v}
+                className={`rounded-[3px] px-3 py-1.5 text-sm whitespace-nowrap transition-colors duration-150 sm:px-4 ${
+                  active === v
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {v === "table" ? "League table" : "Schedule"}
+                {VIEW_LABEL[v]}
               </button>
             ))}
           </div>
@@ -101,8 +118,10 @@ function LigaPage() {
       </div>
 
       <main className="mx-auto max-w-5xl px-5 py-8 sm:px-8 lg:py-10">
-        {view === "table" ? (
+        {active === "table" ? (
           <TableView divisionId={divisionId} />
+        ) : active === "my-team" && myTeam ? (
+          <MyTeamView key={slug} divisionId={divisionId} teamId={myTeam} />
         ) : (
           <ScheduleView key={slug} divisionId={divisionId} />
         )}
@@ -277,7 +296,16 @@ function TeamName({ name, mine }: { name: string; mine: boolean }) {
   );
 }
 
-function MatchRow({ match: m }: { match: Match }) {
+function fmtShortDate(iso: string) {
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", {
+    timeZone: "UTC",
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+}
+
+function MatchRow({ match: m, showDate = false }: { match: Match; showDate?: boolean }) {
   const { teamId } = useMyTeam();
 
   return (
@@ -286,10 +314,17 @@ function MatchRow({ match: m }: { match: Match }) {
         isReplayed(m) ? "bg-ice/35" : ""
       } ${m.postponed ? "row-faded" : ""}`}
     >
-      <div className="grid grid-cols-[2.25rem_1fr] items-center gap-x-3 gap-y-1.5 px-1 py-3 sm:grid-cols-[2.25rem_3.25rem_1fr_5.5rem_1fr_7rem] sm:gap-x-4">
+      <div
+        className={`grid grid-cols-[2.25rem_1fr] items-center gap-x-3 gap-y-1.5 px-1 py-3 sm:gap-x-4 ${
+          showDate
+            ? "sm:grid-cols-[2.25rem_9.5rem_1fr_5.5rem_1fr_7rem]"
+            : "sm:grid-cols-[2.25rem_3.25rem_1fr_5.5rem_1fr_7rem]"
+        }`}
+      >
         <span className="meta-mono tabular-nums">{String(m.no).padStart(2, "0")}</span>
 
         <span className="meta-mono">
+          {showDate ? `${fmtShortDate(m.date)} · ` : ""}
           {m.time}
           <span className="sm:hidden"> · {m.venue}</span>
         </span>
@@ -372,87 +407,160 @@ const columns = [
 
 const MOBILE_FORM_GAMES = 3;
 
+type StandingEntry = { rank: number; row: Standing };
+
+/** Shared by the full table and the excerpt on the My Team view. */
+function StandingsTable({
+  entries,
+  teamId,
+  compact = false,
+}: {
+  entries: StandingEntry[];
+  teamId: string | null;
+  /** Drop the wide-screen minimum so an excerpt fits without scrolling. */
+  compact?: boolean;
+}) {
+  return (
+    <table className={`w-full text-sm ${compact ? "" : "sm:min-w-[640px]"}`}>
+      <thead>
+        <tr className="border-b border-border">
+          <th className="label-eyebrow py-2 pr-3 text-left font-normal">#</th>
+          <th className="label-eyebrow py-2 pr-3 text-left font-normal">Team</th>
+          {columns.map((c) => (
+            <th
+              key={c.key}
+              className={`label-eyebrow w-11 py-2 text-center font-normal ${
+                c.onMobile ? "" : "hidden sm:table-cell"
+              }`}
+            >
+              {c.label}
+            </th>
+          ))}
+          <th className="label-eyebrow w-12 py-2 text-center font-normal">Pts</th>
+          <th className="label-eyebrow w-20 py-2 pl-2 text-left font-normal sm:w-28 sm:pl-4">
+            Form
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {entries.map(({ rank, row: r }) => (
+          <tr
+            key={r.team.id}
+            className="border-b border-hairline transition-colors duration-150 last:border-b-0 hover:bg-secondary/70"
+          >
+            <td className="meta-mono py-3 pr-3 tabular-nums">{String(rank).padStart(2, "0")}</td>
+            <td className="py-3 pr-3 leading-tight">
+              <TeamName name={r.team.name} mine={!!teamId && r.team.id === teamId} />
+            </td>
+            {columns.map((c) => (
+              <td
+                key={c.key}
+                className={`py-3 text-center tabular-nums ${c.muted ? "text-muted-foreground" : ""} ${
+                  c.onMobile ? "" : "hidden sm:table-cell"
+                }`}
+              >
+                {c.key === "gd" && r.gd > 0 ? `+${r.gd}` : r[c.key]}
+              </td>
+            ))}
+            <td className="py-3 text-center font-medium tabular-nums">{r.pts}</td>
+            <td className="py-3 pl-2 sm:pl-4">
+              <span className="flex gap-1">
+                {r.form.map((f, idx) => (
+                  <span
+                    key={idx}
+                    title={formLabel[f]}
+                    className={`size-5 place-items-center rounded-sm border text-[10px] font-medium ${
+                      formColor[f]
+                    } ${idx < r.form.length - MOBILE_FORM_GAMES ? "hidden sm:grid" : "grid"}`}
+                  >
+                    {f}
+                  </span>
+                ))}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function StandingsKey({ rotateHint = true }: { rotateHint?: boolean }) {
+  return (
+    <div className="meta-mono mt-5 space-y-1.5 leading-relaxed">
+      <p>W/D/L = 3/1/0 pts · Sorted Pts &gt; GD &gt; GF</p>
+      <p>
+        Form runs left to right, oldest to most recent —{" "}
+        <span className="sm:hidden">last 3 games</span>
+        <span className="hidden sm:inline">last 5 games</span>
+      </p>
+      {rotateHint ? <p className="sm:hidden">Rotate your phone for the full table</p> : null}
+    </div>
+  );
+}
+
 function TableView({ divisionId }: { divisionId: DivisionId }) {
-  const rows = standings(divisionId);
   const { teamId } = useMyTeam();
+  const entries = standings(divisionId).map((row, i) => ({ rank: i + 1, row }));
 
   return (
     <div className="animate-rise">
       <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-        <table className="w-full text-sm sm:min-w-[640px]">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="label-eyebrow py-2 pr-3 text-left font-normal">#</th>
-              <th className="label-eyebrow py-2 pr-3 text-left font-normal">Team</th>
-              {columns.map((c) => (
-                <th
-                  key={c.key}
-                  className={`label-eyebrow w-11 py-2 text-center font-normal ${
-                    c.onMobile ? "" : "hidden sm:table-cell"
-                  }`}
-                >
-                  {c.label}
-                </th>
-              ))}
-              <th className="label-eyebrow w-12 py-2 text-center font-normal">Pts</th>
-              <th className="label-eyebrow w-20 py-2 pl-2 text-left font-normal sm:w-28 sm:pl-4">
-                Form
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r, i) => (
-              <tr
-                key={r.team.id}
-                className="border-b border-hairline transition-colors duration-150 last:border-b-0 hover:bg-secondary/70"
-              >
-                <td className="meta-mono py-3 pr-3 tabular-nums">
-                  {String(i + 1).padStart(2, "0")}
-                </td>
-                <td className="py-3 pr-3 leading-tight">
-                  <TeamName name={r.team.name} mine={!!teamId && r.team.id === teamId} />
-                </td>
-                {columns.map((c) => (
-                  <td
-                    key={c.key}
-                    className={`py-3 text-center tabular-nums ${
-                      c.muted ? "text-muted-foreground" : ""
-                    } ${c.onMobile ? "" : "hidden sm:table-cell"}`}
-                  >
-                    {c.key === "gd" && r.gd > 0 ? `+${r.gd}` : r[c.key]}
-                  </td>
-                ))}
-                <td className="py-3 text-center font-medium tabular-nums">{r.pts}</td>
-                <td className="py-3 pl-2 sm:pl-4">
-                  <span className="flex gap-1">
-                    {r.form.map((f, idx) => (
-                      <span
-                        key={idx}
-                        title={formLabel[f]}
-                        className={`size-5 place-items-center rounded-sm border text-[10px] font-medium ${
-                          formColor[f]
-                        } ${idx < r.form.length - MOBILE_FORM_GAMES ? "hidden sm:grid" : "grid"}`}
-                      >
-                        {f}
-                      </span>
-                    ))}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <StandingsTable entries={entries} teamId={teamId} />
       </div>
+      <StandingsKey />
+    </div>
+  );
+}
 
-      <div className="meta-mono mt-5 space-y-1.5 leading-relaxed">
-        <p>W/D/L = 3/1/0 pts · Sorted Pts &gt; GD &gt; GF</p>
-        <p>
-          Form runs left to right, oldest to most recent —{" "}
-          <span className="sm:hidden">last 3 games</span>
-          <span className="hidden sm:inline">last 5 games</span>
-        </p>
-        <p className="sm:hidden">Rotate your phone for the full table</p>
-      </div>
+/* ---------------------------------- my team --------------------------------- */
+
+function MyTeamView({ divisionId, teamId }: { divisionId: DivisionId; teamId: string }) {
+  const table = standings(divisionId).map((row, i) => ({ rank: i + 1, row }));
+  const index = table.findIndex((e) => e.row.team.id === teamId);
+  if (index === -1) return null;
+
+  // One place either side, so the excerpt shows who is being chased and chasing.
+  const from = Math.max(0, index - 1);
+  const to = Math.min(table.length, index + 2);
+  const excerpt = table.slice(from, to);
+  const fixtures = matchesOf(divisionId).filter((m) => m.homeId === teamId || m.awayId === teamId);
+  const played = fixtures.filter(isPlayed).length;
+  const postponed = fixtures.filter((m) => m.postponed).length;
+
+  return (
+    <div className="animate-rise">
+      <section>
+        <h2 className="label-eyebrow border-b border-border pb-2">Standings</h2>
+        <div className="relative mt-1">
+          <StandingsTable entries={excerpt} teamId={teamId} compact />
+          {/* Fades imply the rest of the table above and below the excerpt. */}
+          {from > 0 ? (
+            <div className="pointer-events-none absolute inset-x-0 top-8 h-10 bg-gradient-to-b from-background to-transparent" />
+          ) : null}
+          {to < table.length ? (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-background to-transparent" />
+          ) : null}
+        </div>
+        <StandingsKey rotateHint={false} />
+      </section>
+
+      <section className="mt-12">
+        <h2 className="label-eyebrow border-b border-border pb-2">
+          Fixtures · {played} played
+          {postponed > 0 ? ` · ${postponed} postponed` : ""} · {fixtures.length} total
+        </h2>
+        <ul>
+          {fixtures.map((m) => (
+            <MatchRow key={m.id} match={m} showDate />
+          ))}
+        </ul>
+        {fixtures.length === 0 ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            No fixtures published for this team yet.
+          </p>
+        ) : null}
+      </section>
     </div>
   );
 }
