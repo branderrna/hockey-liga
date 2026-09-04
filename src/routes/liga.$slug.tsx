@@ -266,17 +266,25 @@ function WeekendGames({ weekend }: { weekend: Weekend }) {
   );
 }
 
+/** The visitor's own team reads as inverted text on a solid chip. */
+function TeamName({ name, mine }: { name: string; mine: boolean }) {
+  return mine ? (
+    <span className="box-decoration-clone rounded-sm bg-primary px-1.5 py-0.5 font-semibold text-primary-foreground">
+      {name}
+    </span>
+  ) : (
+    <span className="font-medium">{name}</span>
+  );
+}
+
 function MatchRow({ match: m }: { match: Match }) {
   const { teamId } = useMyTeam();
-  const mine = !!teamId && (m.homeId === teamId || m.awayId === teamId);
-  const nameClass = (id: string | null) =>
-    teamId && id === teamId ? "font-semibold text-foreground" : "font-medium";
 
   return (
     <li
-      className={`border-b border-l-2 border-hairline transition-colors duration-150 hover:bg-secondary/70 ${
-        mine ? "border-l-foreground" : "border-l-transparent"
-      } ${isReplayed(m) ? "bg-ice/35" : ""} ${m.postponed ? "text-muted-foreground" : ""}`}
+      className={`border-b border-hairline transition-colors duration-150 hover:bg-secondary/70 ${
+        isReplayed(m) ? "bg-ice/35" : ""
+      } ${m.postponed ? "text-muted-foreground" : ""}`}
     >
       <div className="grid grid-cols-[2.25rem_1fr] items-center gap-x-3 gap-y-1.5 px-1 py-3 sm:grid-cols-[2.25rem_3.25rem_1fr_5.5rem_1fr_7rem] sm:gap-x-4">
         <span className="meta-mono tabular-nums">{String(m.no).padStart(2, "0")}</span>
@@ -287,12 +295,12 @@ function MatchRow({ match: m }: { match: Match }) {
         </span>
 
         <span className="col-span-2 grid grid-cols-[1fr_5.5rem_1fr] items-center gap-2 sm:contents">
-          <span className={`text-right text-sm leading-tight sm:truncate ${nameClass(m.homeId)}`}>
-            {m.homeName}
+          <span className="text-right text-sm leading-tight sm:truncate">
+            <TeamName name={m.homeName} mine={!!teamId && m.homeId === teamId} />
           </span>
           <Score match={m} />
-          <span className={`text-sm leading-tight sm:truncate ${nameClass(m.awayId)}`}>
-            {m.awayName}
+          <span className="text-sm leading-tight sm:truncate">
+            <TeamName name={m.awayName} mine={!!teamId && m.awayId === teamId} />
           </span>
         </span>
 
@@ -368,7 +376,7 @@ function TableView({ divisionId }: { divisionId: DivisionId }) {
         <table className="w-full text-sm sm:min-w-[640px]">
           <thead>
             <tr className="border-b border-border">
-              <th className="label-eyebrow py-2 pr-3 pl-2 text-left font-normal">#</th>
+              <th className="label-eyebrow py-2 pr-3 text-left font-normal">#</th>
               <th className="label-eyebrow py-2 pr-3 text-left font-normal">Team</th>
               {columns.map((c) => (
                 <th
@@ -390,19 +398,13 @@ function TableView({ divisionId }: { divisionId: DivisionId }) {
             {rows.map((r, i) => (
               <tr
                 key={r.team.id}
-                className={`border-b border-l-2 border-hairline transition-colors duration-150 last:border-b-0 hover:bg-secondary/70 ${
-                  r.team.id === teamId ? "border-l-foreground" : "border-l-transparent"
-                }`}
+                className="border-b border-hairline transition-colors duration-150 last:border-b-0 hover:bg-secondary/70"
               >
-                <td className="meta-mono py-3 pr-3 pl-2 tabular-nums">
+                <td className="meta-mono py-3 pr-3 tabular-nums">
                   {String(i + 1).padStart(2, "0")}
                 </td>
-                <td
-                  className={`py-3 pr-3 leading-tight ${
-                    r.team.id === teamId ? "font-semibold" : "font-medium"
-                  }`}
-                >
-                  {r.team.name}
+                <td className="py-3 pr-3 leading-tight">
+                  <TeamName name={r.team.name} mine={!!teamId && r.team.id === teamId} />
                 </td>
                 {columns.map((c) => (
                   <td
