@@ -32,9 +32,16 @@ The graph provides structural context; read the relevant source before changing 
 ```sh
 npm ci
 npm run lint
+npm run format:check
 npx tsc --noEmit
+npm test
+npx --no-install knip --include files,exports,dependencies,types
 npm run build
 ```
+
+This is the same set `.github/workflows/checks.yml` runs, and the deploy job
+only runs if it passes. The knip step is easy to forget and fails the build:
+removing the last consumer of an exported symbol makes that export dead code.
 
 Run the relevant checks after changes. Do not claim a task is complete without real command output.
 

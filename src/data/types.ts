@@ -1,9 +1,9 @@
 export type DivisionId = "women" | "premier" | "u21-girls" | "u21-boys";
 
 /** Ligas that have no fixtures in the sheet yet. Their pages render a placeholder. */
-export type UpcomingLigaSlug = "super" | "veterans" | "social" | "u14-boys" | "u14-girls";
+type UpcomingLigaSlug = "super" | "veterans" | "social" | "u14-boys" | "u14-girls";
 
-export type LigaSlug = DivisionId | UpcomingLigaSlug;
+type LigaSlug = DivisionId | UpcomingLigaSlug;
 
 export type Liga = {
   slug: LigaSlug;

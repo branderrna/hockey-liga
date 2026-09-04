@@ -3,13 +3,12 @@ import type {
   DivisionId,
   League,
   Liga,
-  LigaSlug,
   Match,
   Team,
   UpcomingLiga,
   Weekend,
 } from "./types";
-export type { ActiveLiga, DivisionId, Liga, LigaSlug, Match, Team, UpcomingLiga, Weekend };
+export type { ActiveLiga, DivisionId, Liga, Match, Team, UpcomingLiga, Weekend };
 
 export const SEASON = {
   name: "Hockey Liga 2026",
@@ -44,8 +43,6 @@ const leagues: League[] = [
 export const divisions = leagues.flatMap((l) =>
   l.divisions.map((d) => ({ ...d, leagueId: l.id, leagueName: l.name })),
 );
-
-export const divisionById = (id: DivisionId) => divisions.find((d) => d.id === id)!;
 
 export const teams: Team[] = [
   {
@@ -388,7 +385,7 @@ export const playedOf = (divisionId: DivisionId) => matchesOf(divisionId).filter
  */
 export const isReplayed = (m: Match) => !!m.note && /shift\w*\s+from\b/i.test(m.note);
 
-export const matchDates = (divisionId: DivisionId) => [
+const matchDates = (divisionId: DivisionId) => [
   ...new Set(matchesOf(divisionId).map((m) => m.date)),
 ];
 
@@ -451,11 +448,6 @@ export function standings(divisionId: DivisionId): Standing[] {
     );
 }
 
-export const nextDate = (divisionId: DivisionId) => {
-  const up = matchesOf(divisionId).filter((m) => !isPlayed(m));
-  return up[0]?.date ?? matchDates(divisionId)[0] ?? SEASON.start;
-};
-
 /*
  * Liga catalogue.
  *
@@ -463,7 +455,7 @@ export const nextDate = (divisionId: DivisionId) => {
  * before the sheet existed or have not started; their pages render a
  * placeholder until fixtures are either back-filled or published next season.
  */
-export const ligas: Liga[] = [
+const ligas: Liga[] = [
   {
     slug: "women",
     name: "Women's Hockey Liga",
@@ -546,7 +538,6 @@ export const ligas: Liga[] = [
 export const activeLigas = ligas.filter((l): l is ActiveLiga => l.status === "active");
 export const upcomingLigas = ligas.filter((l): l is UpcomingLiga => l.status === "upcoming");
 export const ligaBySlug = (slug: string) => ligas.find((l) => l.slug === slug);
-export const isLigaSlug = (slug: string): slug is LigaSlug => ligas.some((l) => l.slug === slug);
 
 const DAY_MS = 86_400_000;
 const dayOf = (iso: string) => Math.round(Date.parse(`${iso}T00:00:00Z`) / DAY_MS);
