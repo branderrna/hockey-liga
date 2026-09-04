@@ -46,8 +46,8 @@ function LigaCard({ liga, index }: { liga: ActiveLiga; index: number }) {
     >
       <div>
         <p className="label-eyebrow">{liga.group}</p>
-        <h2 className="mt-2 text-xl uppercase sm:text-2xl">{liga.short}</h2>
-        <p className="mt-1 text-sm text-muted-foreground uppercase">{liga.name}</p>
+        <h2 className="mt-2 text-xl sm:text-2xl">{liga.short}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{liga.name}</p>
       </div>
 
       <div className="flex items-end justify-between gap-4 border-t border-hairline pt-4">
@@ -100,7 +100,7 @@ function LandingPage() {
                 params={{ slug: liga.slug }}
                 className="group flex items-center justify-between gap-3 bg-card px-4 py-3 transition-colors hover:bg-secondary"
               >
-                <span className="truncate text-sm text-muted-foreground uppercase transition-colors group-hover:text-foreground">
+                <span className="truncate text-sm text-muted-foreground transition-colors group-hover:text-foreground">
                   {liga.name}
                 </span>
                 <ArrowRight

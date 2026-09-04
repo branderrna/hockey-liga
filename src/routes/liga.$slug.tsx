@@ -72,7 +72,7 @@ function LigaPage() {
       <div className="border-b border-hairline pb-7">
         <div className="mx-auto max-w-5xl px-5 pt-8 sm:px-8 lg:pt-12">
           <p className="label-eyebrow">{liga.group} · Season 2026</p>
-          <h1 className="mt-2 text-3xl uppercase sm:text-4xl">{liga.name}</h1>
+          <h1 className="mt-2 text-3xl sm:text-4xl">{liga.name}</h1>
           <p className="meta-mono mt-2">
             {teamsOf(divisionId).length} teams · {playedOf(divisionId).length} of{" "}
             {matchesOf(divisionId).length} games played
@@ -116,7 +116,7 @@ function ComingSoon({ liga }: { liga: Liga }) {
     <AppShell>
       <main className="mx-auto max-w-5xl px-5 py-14 sm:px-8 lg:py-20">
         <p className="label-eyebrow">{liga.group} · Coming soon</p>
-        <h1 className="mt-3 text-3xl uppercase sm:text-4xl">{liga.name}</h1>
+        <h1 className="mt-3 text-3xl sm:text-4xl">{liga.name}</h1>
         <div className="surface mt-8 max-w-xl p-6">
           <p className="text-sm leading-relaxed text-muted-foreground">
             This liga has no fixtures on the site yet. Its schedule and table will appear here once
