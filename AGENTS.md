@@ -6,6 +6,7 @@
 - Package manager: npm. Use `npm ci` for a clean install.
 - The app deploys to Cloudflare Workers from pushes to `main`. Work on a branch and do not push to `main` unless explicitly asked.
 - The repository is no longer developed through Lovable. Do not add Lovable editor sync, preview hooks, or Lovable-only dependencies.
+- Deferred work, and what is blocking each item, is recorded in [`BACKLOG.md`](BACKLOG.md). Update it when a block clears or a new one appears.
 
 ## Code graph
 
