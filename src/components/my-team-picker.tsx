@@ -155,7 +155,7 @@ export function InlineSelect({
             : "border-border text-muted-foreground hover:border-foreground/60 hover:text-foreground"
         }`}
       >
-        <span className={`truncate ${selected && uppercase ? "uppercase" : ""}`}>
+        <span className={`text-left ${selected && uppercase ? "uppercase" : ""}`}>
           {selected ? selected.label : placeholder}
         </span>
         <ChevronDown

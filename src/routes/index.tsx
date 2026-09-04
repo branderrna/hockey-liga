@@ -45,16 +45,16 @@ function LandingPage() {
       <main className="mx-auto max-w-4xl px-5 py-16 sm:px-8 sm:py-24 lg:py-28">
         <p className="label-eyebrow">{SEASON.name} · 2 Aug – 29 Nov</p>
 
-        <h1 className="mt-6 text-2xl leading-[1.6] font-normal tracking-tight sm:text-4xl sm:leading-[1.6]">
-          I play in{" "}
+        <h1 className="mt-6 flex flex-col items-start gap-3 text-2xl leading-tight font-normal tracking-tight sm:gap-4 sm:text-4xl">
+          <span>I play in</span>
           <InlineSelect
             placeholder="which liga"
             value={divisionId}
             options={ligaOptions}
             uppercase
             onChange={(next) => setMyTeam({ divisionId: next as DivisionId, teamId: null })}
-          />{" "}
-          for{" "}
+          />
+          <span>for</span>
           <InlineSelect
             placeholder="which team"
             value={teamId}
@@ -62,7 +62,6 @@ function LandingPage() {
             disabled={!divisionId}
             onChange={(next) => setMyTeam({ divisionId, teamId: next })}
           />
-          !
         </h1>
 
         <button
