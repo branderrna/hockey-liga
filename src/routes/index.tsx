@@ -1,15 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { LandingShell } from "@/components/site";
-import {
-  SEASON,
-  activeLigas,
-  matchesOf,
-  playedOf,
-  teamsOf,
-  upcomingLigas,
-  type ActiveLiga,
-} from "@/data/league";
+import { InlineSelect } from "@/components/my-team-picker";
+import { SEASON, activeLigas, teamsOf, type DivisionId } from "@/data/league";
+import { useMyTeam } from "@/lib/my-team";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -18,7 +12,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Pick a liga to see its weekend schedule and league table: Women's, Premier and Youth U21 Girls and Boys, played across Singapore from August to November 2026.",
+          "Pick your liga and team to see your schedule, scores and league table for the 2026 Hockey Liga season, played across Singapore from August to November.",
       },
       { property: "og:title", content: "Hockey Liga 2026 — Schedules & League Tables" },
       {
@@ -32,92 +26,73 @@ export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 
-function LigaCard({ liga, index }: { liga: ActiveLiga; index: number }) {
-  const games = matchesOf(liga.divisionId).length;
-  const played = playedOf(liga.divisionId).length;
-  const teams = teamsOf(liga.divisionId).length;
-
-  return (
-    <Link
-      to="/liga/$slug"
-      params={{ slug: liga.slug }}
-      style={{ animationDelay: `${index * 55}ms` }}
-      className="animate-rise surface group relative flex flex-col justify-between gap-6 p-5 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-foreground/45 hover:shadow-[0_1px_0_0_var(--color-hairline)] sm:p-6"
-    >
-      <div>
-        <p className="label-eyebrow">{liga.group}</p>
-        <h2 className="mt-2 text-xl sm:text-2xl">{liga.short}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{liga.name}</p>
-      </div>
-
-      <div className="flex items-end justify-between gap-4 border-t border-hairline pt-4">
-        <dl className="meta-mono flex gap-5">
-          <div>
-            <dt className="opacity-70">Teams</dt>
-            <dd className="mt-0.5 text-sm text-foreground tabular-nums">{teams}</dd>
-          </div>
-          <div>
-            <dt className="opacity-70">Games</dt>
-            <dd className="mt-0.5 text-sm text-foreground tabular-nums">
-              {played}/{games}
-            </dd>
-          </div>
-        </dl>
-        <ArrowRight
-          className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-hover:translate-x-1 group-hover:text-foreground"
-          aria-hidden="true"
-        />
-      </div>
-    </Link>
-  );
-}
-
 function LandingPage() {
+  const { divisionId, teamId, setMyTeam } = useMyTeam();
+  const navigate = useNavigate();
+
+  const ligaOptions = activeLigas.map((liga) => ({
+    value: liga.divisionId,
+    label: liga.name,
+  }));
+  const teamOptions = divisionId
+    ? teamsOf(divisionId).map((team) => ({ value: team.id, label: team.name }))
+    : [];
+
+  const ready = !!divisionId && !!teamId;
+
   return (
     <LandingShell>
-      <main className="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
+      <main className="mx-auto max-w-4xl px-5 py-16 sm:px-8 sm:py-24 lg:py-28">
         <p className="label-eyebrow">{SEASON.name} · 2 Aug – 29 Nov</p>
-        <h1 className="mt-3 max-w-xl text-3xl leading-tight sm:text-5xl">
-          Which liga are you following?
+
+        <h1 className="mt-6 text-2xl leading-[1.6] font-normal tracking-tight sm:text-4xl sm:leading-[1.6]">
+          I play in{" "}
+          <InlineSelect
+            placeholder="which liga"
+            value={divisionId}
+            options={ligaOptions}
+            onChange={(next) => setMyTeam({ divisionId: next as DivisionId, teamId: null })}
+          />{" "}
+          for{" "}
+          <InlineSelect
+            placeholder="which team"
+            value={teamId}
+            options={teamOptions}
+            disabled={!divisionId}
+            onChange={(next) => setMyTeam({ divisionId, teamId: next })}
+          />
+          !
         </h1>
-        <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Pick a liga for its weekend schedule, scores and league table.
-        </p>
 
-        <div className="mt-10 grid gap-4 sm:mt-14 sm:grid-cols-2">
-          {activeLigas.map((liga, i) => (
-            <LigaCard key={liga.slug} liga={liga} index={i} />
-          ))}
-        </div>
+        <button
+          type="button"
+          disabled={!ready}
+          onClick={() => {
+            if (divisionId) navigate({ to: "/liga/$slug", params: { slug: divisionId } });
+          }}
+          className={`group mt-12 inline-flex items-center gap-2 border-b-2 pb-1 text-lg transition-colors sm:text-xl ${
+            ready
+              ? "border-foreground text-foreground"
+              : "pointer-events-none border-transparent text-muted-foreground/50"
+          }`}
+        >
+          Proceed
+          <ArrowRight
+            className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+            aria-hidden="true"
+          />
+        </button>
 
-        <section className="mt-14">
-          <p className="label-eyebrow">Not running this season</p>
-          <div className="mt-4 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2">
-            {upcomingLigas.map((liga) => (
-              <Link
-                key={liga.slug}
-                to="/liga/$slug"
-                params={{ slug: liga.slug }}
-                className="group flex items-center justify-between gap-3 bg-card px-4 py-3 transition-colors hover:bg-secondary"
-              >
-                <span className="truncate text-sm text-muted-foreground transition-colors group-hover:text-foreground">
-                  {liga.name}
-                </span>
-                <ArrowRight
-                  className="size-3.5 shrink-0 text-muted-foreground/60 transition-transform duration-200 group-hover:translate-x-1"
-                  aria-hidden="true"
-                />
-              </Link>
-            ))}
-          </div>
-
+        <p className="mt-16 text-sm text-muted-foreground">
+          Not listed?{" "}
           <Link
-            to="/archive"
-            className="meta-mono mt-5 inline-block transition-colors hover:text-foreground"
+            to="/ligas"
+            className="underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground hover:text-foreground"
           >
-            See past years&rsquo; results →
+            Browse every liga
           </Link>
-        </section>
+          .
+        </p>
       </main>
     </LandingShell>
   );

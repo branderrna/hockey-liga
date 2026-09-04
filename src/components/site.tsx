@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { ChevronRight, Home, Info, Menu, X } from "lucide-react";
+import { ChevronRight, CornerUpLeft, Info, Menu, X } from "lucide-react";
 import { SEASON, activeLigas, upcomingLigas } from "@/data/league";
-import { MyTeamPicker } from "@/components/my-team-picker";
+import { ViewingAs } from "@/components/my-team-picker";
+import { useMyTeam } from "@/lib/my-team";
 import logo from "@/assets/liga-logo.jpg";
 
 const SEASON_RANGE = "2 Aug – 29 Nov 2026";
@@ -19,8 +20,8 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
     <nav className="flex h-full flex-col overflow-y-auto px-3 pb-8">
       <SectionLabel>Navigation</SectionLabel>
       <Link to="/" activeOptions={{ exact: true }} className={navLinkClass} onClick={onNavigate}>
-        <Home className="size-4 shrink-0" aria-hidden="true" />
-        Home
+        <CornerUpLeft className="size-4 shrink-0" aria-hidden="true" />
+        Back to start
       </Link>
       <Link to="/about" className={navLinkClass} onClick={onNavigate}>
         <Info className="size-4 shrink-0" aria-hidden="true" />
@@ -82,6 +83,8 @@ function Brand({ onClick }: { onClick?: () => void }) {
 /** Page shell for liga and content pages: fixed rail on desktop, drawer on mobile. */
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const { divisionId, teamId } = useMyTeam();
+  const viewingAs = !!divisionId && !!teamId;
 
   useEffect(() => {
     if (!open) return;
@@ -110,9 +113,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Menu className="size-5" />
           </button>
         </div>
-        <div className="border-t border-hairline px-3 py-2">
-          <MyTeamPicker />
-        </div>
+        {viewingAs ? (
+          <div className="border-t border-hairline px-3 py-2">
+            <ViewingAs />
+          </div>
+        ) : null}
       </header>
 
       {open ? (
@@ -141,9 +146,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       ) : null}
 
       <div className="min-w-0">
-        <div className="sticky top-0 z-30 hidden border-b border-hairline bg-background/90 px-8 py-2.5 backdrop-blur lg:flex lg:justify-end">
-          <MyTeamPicker />
-        </div>
+        {viewingAs ? (
+          <div className="sticky top-0 z-30 hidden border-b border-hairline bg-background/90 px-8 py-2.5 backdrop-blur lg:flex lg:justify-end">
+            <ViewingAs />
+          </div>
+        ) : null}
         {children}
       </div>
     </div>
@@ -181,7 +188,7 @@ export function LandingShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen">
       <header className="border-b border-hairline">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3 px-5 py-3 sm:px-8">
+        <div className="mx-auto flex max-w-5xl items-center gap-3 px-5 py-4 sm:px-8">
           <span className="flex items-center gap-2.5">
             <img
               src={logo}
@@ -191,10 +198,9 @@ export function LandingShell({ children }: { children: ReactNode }) {
             />
             <span className="text-sm font-medium tracking-tight">Hockey Liga</span>
           </span>
-          <MyTeamPicker className="order-last w-full sm:order-none sm:ml-auto sm:w-auto" />
           <Link
             to="/about"
-            className="meta-mono ml-auto flex items-center gap-1 transition-colors hover:text-foreground sm:ml-0"
+            className="meta-mono ml-auto flex items-center gap-1 transition-colors hover:text-foreground"
           >
             About
             <ChevronRight className="size-3" aria-hidden="true" />

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ArchiveRouteImport } from './routes/archive'
+import { Route as LigasRouteImport } from './routes/ligas'
 import { Route as TableRouteImport } from './routes/table'
 import { Route as LigaSlugRouteImport } from './routes/liga.$slug'
 
@@ -30,6 +31,11 @@ const ArchiveRoute = ArchiveRouteImport.update({
   path: '/archive',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LigasRoute = LigasRouteImport.update({
+  id: '/ligas',
+  path: '/ligas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TableRoute = TableRouteImport.update({
   id: '/table',
   path: '/table',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/archive': typeof ArchiveRoute
+  '/ligas': typeof LigasRoute
   '/table': typeof TableRoute
   '/liga/$slug': typeof LigaSlugRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/archive': typeof ArchiveRoute
+  '/ligas': typeof LigasRoute
   '/table': typeof TableRoute
   '/liga/$slug': typeof LigaSlugRoute
 }
@@ -60,21 +68,30 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/archive': typeof ArchiveRoute
+  '/ligas': typeof LigasRoute
   '/table': typeof TableRoute
   '/liga/$slug': typeof LigaSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/archive' | '/table' | '/liga/$slug'
+  fullPaths: '/' | '/about' | '/archive' | '/ligas' | '/table' | '/liga/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/archive' | '/table' | '/liga/$slug'
-  id: '__root__' | '/' | '/about' | '/archive' | '/table' | '/liga/$slug'
+  to: '/' | '/about' | '/archive' | '/ligas' | '/table' | '/liga/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/archive'
+    | '/ligas'
+    | '/table'
+    | '/liga/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ArchiveRoute: typeof ArchiveRoute
+  LigasRoute: typeof LigasRoute
   TableRoute: typeof TableRoute
   LigaSlugRoute: typeof LigaSlugRoute
 }
@@ -102,6 +119,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArchiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ligas': {
+      id: '/ligas'
+      path: '/ligas'
+      fullPath: '/ligas'
+      preLoaderRoute: typeof LigasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/table': {
       id: '/table'
       path: '/table'
@@ -123,6 +147,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ArchiveRoute: ArchiveRoute,
+  LigasRoute: LigasRoute,
   TableRoute: TableRoute,
   LigaSlugRoute: LigaSlugRoute,
 }

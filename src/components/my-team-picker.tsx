@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { ChevronDown } from "lucide-react";
-import { activeLigas, teamsOf, type DivisionId } from "@/data/league";
+import { activeLigas, teamsOf } from "@/data/league";
 import {
   MyTeamContext,
   NO_TEAM,
@@ -35,41 +35,33 @@ export function MyTeamProvider({ children }: { children: ReactNode }) {
   return <MyTeamContext.Provider value={value}>{children}</MyTeamContext.Provider>;
 }
 
-/** Same micro-type as the page eyebrows, so the control reads as chrome. */
-const TYPE = "font-mono text-[0.6875rem] uppercase tracking-[0.14em]";
-
-type Option = { value: string; label: string };
+export type Option = { value: string; label: string };
 
 /**
- * A listbox rather than a native <select>: the placeholder stays on the
- * trigger instead of masquerading as a selectable option, and the popup can
- * be drawn in the same hairline language as the rest of the page.
+ * A blank in a sentence that opens a listbox. The unfilled state reads as
+ * placeholder prose rather than a form control, so the line still scans as a
+ * sentence before anything is chosen.
  */
-function Dropdown({
-  label,
+export function InlineSelect({
+  placeholder,
   value,
   options,
   onChange,
   disabled = false,
-  className = "",
 }: {
-  label: string;
+  placeholder: string;
   value: string | null;
   options: Option[];
-  onChange: (value: string | null) => void;
+  onChange: (value: string) => void;
   disabled?: boolean;
-  className?: string;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLSpanElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  // Clearing is a real choice, so it lives in the list and takes part in
-  // keyboard navigation — unlike a placeholder, which does not.
-  const items: Option[] = value ? [...options, { value: "", label: "Clear" }] : options;
   const selected = options.find((o) => o.value === value) ?? null;
 
   const close = useCallback((focusTrigger = true) => {
@@ -101,16 +93,16 @@ function Dropdown({
     setActive(
       Math.max(
         0,
-        items.findIndex((o) => o.value === value),
+        options.findIndex((o) => o.value === value),
       ),
     );
     setOpen(true);
   };
 
   const choose = (index: number) => {
-    const option = items[index];
+    const option = options[index];
     if (!option) return;
-    onChange(option.value || null);
+    onChange(option.value);
     close();
   };
 
@@ -120,7 +112,7 @@ function Dropdown({
       close();
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
-      setActive((i) => Math.min(items.length - 1, i + 1));
+      setActive((i) => Math.min(options.length - 1, i + 1));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActive((i) => Math.max(0, i - 1));
@@ -129,7 +121,7 @@ function Dropdown({
       setActive(0);
     } else if (e.key === "End") {
       e.preventDefault();
-      setActive(items.length - 1);
+      setActive(options.length - 1);
     } else if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       choose(active);
@@ -139,14 +131,14 @@ function Dropdown({
   };
 
   return (
-    <div ref={wrapRef} className={`relative min-w-0 flex-1 ${className}`}>
+    <span ref={wrapRef} className="relative inline-block">
       <button
         ref={triggerRef}
         type="button"
         disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={label}
+        aria-label={placeholder}
         onClick={() => (open ? close(false) : openList())}
         onKeyDown={(e) => {
           if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
@@ -154,15 +146,15 @@ function Dropdown({
             openList();
           }
         }}
-        className={`${TYPE} flex w-full items-center justify-between gap-2 border-b py-1.5 text-left transition-colors disabled:pointer-events-none disabled:opacity-40 ${
+        className={`inline-flex max-w-full items-center gap-2 border-b-2 pb-0.5 text-left align-bottom transition-colors disabled:pointer-events-none disabled:opacity-45 ${
           selected
-            ? "border-foreground/50 text-foreground hover:border-foreground"
-            : "border-border text-muted-foreground hover:border-foreground/50 hover:text-foreground"
+            ? "border-foreground text-foreground"
+            : "border-border text-muted-foreground hover:border-foreground/60 hover:text-foreground"
         }`}
       >
-        <span className="truncate">{selected ? selected.label : label}</span>
+        <span className="truncate">{selected ? selected.label : placeholder}</span>
         <ChevronDown
-          className={`size-3 shrink-0 text-muted-foreground transition-transform duration-150 ${
+          className={`size-[0.5em] shrink-0 text-muted-foreground transition-transform duration-150 ${
             open ? "rotate-180" : ""
           }`}
           aria-hidden="true"
@@ -173,73 +165,51 @@ function Dropdown({
         <ul
           ref={listRef}
           role="listbox"
-          aria-label={label}
+          aria-label={placeholder}
           tabIndex={-1}
           aria-activedescendant={`${id}-${active}`}
           onKeyDown={onListKeyDown}
-          className="absolute top-full right-0 z-50 mt-1 max-h-64 w-max max-w-[min(20rem,78vw)] min-w-full overflow-y-auto border border-border bg-card py-1 shadow-[0_6px_20px_oklch(0_0_0/0.09)] outline-none"
+          className="absolute top-full left-0 z-50 mt-2 max-h-72 w-max max-w-[min(22rem,80vw)] min-w-full overflow-y-auto border border-border bg-card py-1 text-sm shadow-[0_6px_20px_oklch(0_0_0/0.09)] outline-none"
         >
-          {items.map((option, index) => {
-            const isSelected = !!option.value && option.value === value;
-            const isClear = !option.value;
-            return (
-              <li
-                key={option.value || "clear"}
-                id={`${id}-${index}`}
-                role="option"
-                aria-selected={isSelected}
-                data-index={index}
-                onMouseEnter={() => setActive(index)}
-                onClick={() => choose(index)}
-                className={`${TYPE} cursor-pointer px-2.5 py-1.5 ${
-                  isClear ? "mt-1 border-t border-hairline pt-2" : ""
-                } ${
-                  isSelected
-                    ? "bg-primary text-primary-foreground"
-                    : index === active
-                      ? "bg-secondary text-foreground"
-                      : "text-muted-foreground"
-                }`}
-              >
-                {option.label}
-              </li>
-            );
-          })}
+          {options.map((option, index) => (
+            <li
+              key={option.value}
+              id={`${id}-${index}`}
+              role="option"
+              aria-selected={option.value === value}
+              data-index={index}
+              onMouseEnter={() => setActive(index)}
+              onClick={() => choose(index)}
+              className={`cursor-pointer px-3 py-2 ${
+                option.value === value
+                  ? "bg-primary text-primary-foreground"
+                  : index === active
+                    ? "bg-secondary text-foreground"
+                    : "text-muted-foreground"
+              }`}
+            >
+              {option.label}
+            </li>
+          ))}
         </ul>
       ) : null}
-    </div>
+    </span>
   );
 }
 
-/** Liga first, then the teams in it. Both are remembered across pages. */
-export function MyTeamPicker({ className = "" }: { className?: string }) {
-  const { divisionId, teamId, setMyTeam } = useMyTeam();
+/** Read-only echo of the choice made on the landing page. */
+export function ViewingAs() {
+  const { divisionId, teamId } = useMyTeam();
+  if (!divisionId || !teamId) return null;
 
-  const ligaOptions = activeLigas.map((liga) => ({
-    value: liga.divisionId,
-    label: liga.short,
-  }));
-  const teamOptions = divisionId
-    ? teamsOf(divisionId).map((team) => ({ value: team.id, label: team.name }))
-    : [];
+  const team = teamsOf(divisionId).find((t) => t.id === teamId);
+  const liga = activeLigas.find((l) => l.divisionId === divisionId);
+  if (!team || !liga) return null;
 
   return (
-    <div className={`flex items-end gap-5 ${className}`}>
-      <Dropdown
-        label="My liga"
-        value={divisionId}
-        options={ligaOptions}
-        onChange={(next) => setMyTeam({ divisionId: next as DivisionId | null, teamId: null })}
-        className="sm:w-28 sm:flex-none"
-      />
-      <Dropdown
-        label="My team"
-        value={teamId}
-        options={teamOptions}
-        disabled={!divisionId}
-        onChange={(next) => setMyTeam({ divisionId, teamId: next })}
-        className="sm:w-44 sm:flex-none"
-      />
-    </div>
+    <p className="meta-mono truncate">
+      Viewing as <span className="text-foreground">{team.name}</span> in{" "}
+      <span className="text-foreground">{liga.short}</span>
+    </p>
   );
 }
