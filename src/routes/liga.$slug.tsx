@@ -485,7 +485,7 @@ function StandingsTable({
   );
 }
 
-function StandingsKey({ rotateHint = true }: { rotateHint?: boolean }) {
+function StandingsKey() {
   return (
     <div className="meta-mono mt-5 space-y-1.5 leading-relaxed">
       <p>W/D/L = 3/1/0 pts · Sorted Pts &gt; GD &gt; GF</p>
@@ -494,7 +494,7 @@ function StandingsKey({ rotateHint = true }: { rotateHint?: boolean }) {
         <span className="sm:hidden">last 3 games</span>
         <span className="hidden sm:inline">last 5 games</span>
       </p>
-      {rotateHint ? <p className="sm:hidden">Rotate your phone for the full table</p> : null}
+      <p className="sm:hidden">Rotate your phone for the full table</p>
     </div>
   );
 }
@@ -542,7 +542,6 @@ function MyTeamView({ divisionId, teamId }: { divisionId: DivisionId; teamId: st
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-background to-transparent" />
           ) : null}
         </div>
-        <StandingsKey rotateHint={false} />
       </section>
 
       <section className="mt-12">
