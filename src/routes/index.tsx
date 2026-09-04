@@ -66,35 +66,35 @@ function LandingPage() {
           />
         </h1>
 
-        <button
-          type="button"
-          disabled={!ready}
-          onClick={() => {
-            if (divisionId) navigate({ to: "/liga/$slug", params: { slug: divisionId } });
-          }}
-          className={`group mt-12 inline-flex items-center gap-2 rounded-sm px-4 py-2.5 text-base font-semibold transition-colors sm:text-lg ${
-            ready
-              ? "bg-primary text-primary-foreground"
-              : "pointer-events-none bg-secondary text-muted-foreground/60"
-          }`}
-        >
-          Proceed
-          <ArrowRight
-            className="size-4 transition-transform duration-200 group-hover:translate-x-1"
-            aria-hidden="true"
-          />
-        </button>
+        <div className="mt-12 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            disabled={!ready}
+            onClick={() => {
+              if (divisionId) navigate({ to: "/liga/$slug", params: { slug: divisionId } });
+            }}
+            className={`group inline-flex items-center gap-2 rounded-sm px-4 py-2.5 text-base font-semibold transition-colors sm:text-lg ${
+              ready
+                ? "bg-primary text-primary-foreground"
+                : "pointer-events-none bg-secondary text-muted-foreground/60"
+            }`}
+          >
+            Proceed
+            <ArrowRight
+              className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+              aria-hidden="true"
+            />
+          </button>
 
-        <p className="mt-16 text-sm text-muted-foreground">
-          Not listed?{" "}
+          {/* Secondary to Proceed: outlined, so a visitor whose liga is not in
+              the list still has somewhere to go. */}
           <Link
             to="/ligas"
-            className="underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground hover:text-foreground"
+            className="inline-flex items-center rounded-sm border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground sm:text-base"
           >
             Browse every liga
           </Link>
-          .
-        </p>
+        </div>
       </main>
     </LandingShell>
   );
