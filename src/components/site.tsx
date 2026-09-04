@@ -80,8 +80,10 @@ function Brand({ onClick }: { onClick?: () => void }) {
 /** Page shell for liga and content pages: fixed rail on desktop, drawer on mobile. */
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const { divisionId, teamId } = useMyTeam();
-  const viewingAs = !!divisionId && !!teamId;
+  // Kept while a liga is set even if the team is not: changing liga in the bar
+  // clears the team, and the bar has to stay put to pick the new one.
+  const { divisionId } = useMyTeam();
+  const viewingAs = !!divisionId;
 
   useEffect(() => {
     if (!open) return;

@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -9,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { ChevronDown } from "lucide-react";
-import { activeLigas, teamsOf } from "@/data/league";
+import { activeLigas, teamsOf, type DivisionId } from "@/data/league";
 import {
   MyTeamContext,
   NO_TEAM,
@@ -50,6 +51,7 @@ export function InlineSelect({
   disabled = false,
   uppercase = false,
   className = "",
+  variant = "blank",
 }: {
   placeholder: string;
   value: string | null;
@@ -60,10 +62,13 @@ export function InlineSelect({
   uppercase?: boolean;
   /** Sizing for the blank; the trigger inherits it. */
   className?: string;
+  /** "blank" is the ruled fill-in on the landing; "quiet" sits inside prose. */
+  variant?: "blank" | "quiet";
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
+  const [shift, setShift] = useState(0);
   const wrapRef = useRef<HTMLSpanElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -94,6 +99,20 @@ export function InlineSelect({
       ?.querySelector<HTMLElement>(`[data-index="${active}"]`)
       ?.scrollIntoView({ block: "nearest" });
   }, [active, open]);
+
+  // The popup is anchored to the trigger, which can sit anywhere on the line,
+  // so pull it back inside the viewport when it would run off the right edge.
+  useLayoutEffect(() => {
+    if (!open) {
+      setShift(0);
+      return;
+    }
+    const rect = listRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    // clientWidth, not innerWidth: the latter counts the scrollbar gutter.
+    const overflow = rect.right - (document.documentElement.clientWidth - 8);
+    if (overflow > 0) setShift(-overflow);
+  }, [open]);
 
   const openList = () => {
     setActive(
@@ -152,19 +171,25 @@ export function InlineSelect({
             openList();
           }
         }}
-        className={`inline-flex max-w-full items-center gap-2 border-b-2 pb-0.5 text-left align-bottom transition-colors disabled:pointer-events-none disabled:opacity-45 ${
-          selected
-            ? "border-foreground text-foreground"
-            : "border-border text-muted-foreground hover:border-foreground/60 hover:text-foreground"
-        }`}
+        className={
+          variant === "quiet"
+            ? `inline-flex max-w-full items-center gap-1 text-left underline decoration-transparent underline-offset-4 transition-colors hover:decoration-border disabled:pointer-events-none disabled:opacity-45 ${
+                selected ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`
+            : `inline-flex max-w-full items-center gap-2 border-b-2 pb-0.5 text-left align-bottom transition-colors disabled:pointer-events-none disabled:opacity-45 ${
+                selected
+                  ? "border-foreground text-foreground"
+                  : "border-border text-muted-foreground hover:border-foreground/60 hover:text-foreground"
+              }`
+        }
       >
         <span className={`text-left ${selected && uppercase ? "uppercase" : ""}`}>
           {selected ? selected.label : placeholder}
         </span>
         <ChevronDown
-          className={`size-[0.5em] shrink-0 text-muted-foreground transition-transform duration-150 ${
-            open ? "rotate-180" : ""
-          }`}
+          className={`shrink-0 text-muted-foreground transition-transform duration-150 ${
+            variant === "quiet" ? "size-3" : "size-[0.5em]"
+          } ${open ? "rotate-180" : ""}`}
           aria-hidden="true"
         />
       </button>
@@ -177,7 +202,8 @@ export function InlineSelect({
           tabIndex={-1}
           aria-activedescendant={`${id}-${active}`}
           onKeyDown={onListKeyDown}
-          className="absolute top-full left-0 z-50 mt-2 max-h-72 w-max max-w-[min(22rem,80vw)] overflow-y-auto border border-border bg-card py-1 text-sm shadow-[0_6px_20px_oklch(0_0_0/0.09)] outline-none"
+          style={{ marginLeft: shift }}
+          className="absolute top-full left-0 z-50 mt-2 max-h-72 w-max max-w-[min(22rem,80vw)] overflow-y-auto border border-border bg-card py-1 text-sm normal-case shadow-[0_6px_20px_oklch(0_0_0/0.09)] outline-none"
         >
           {options.map((option, index) => (
             <li
@@ -207,19 +233,33 @@ export function InlineSelect({
 
 /** Read-only echo of the choice made on the landing page. */
 export function ViewingAs() {
-  const { divisionId, teamId } = useMyTeam();
-  if (!divisionId || !teamId) return null;
+  const { divisionId, teamId, setMyTeam } = useMyTeam();
+  if (!divisionId) return null;
 
-  const team = teamsOf(divisionId).find((t) => t.id === teamId);
-  const liga = activeLigas.find((l) => l.divisionId === divisionId);
-  if (!team || !liga) return null;
+  const teamOptions = teamsOf(divisionId).map((team) => ({ value: team.id, label: team.name }));
+  const ligaOptions = activeLigas.map((liga) => ({ value: liga.divisionId, label: liga.name }));
 
   return (
     // Wraps rather than truncates: on a narrow screen the liga name is the
     // part that would be cut, and it is the half worth keeping.
     <p className="meta-mono leading-snug">
-      Viewing as <span className="text-foreground">{team.name}</span> in{" "}
-      <span className="text-foreground uppercase">{liga.name}</span>
+      Viewing as{" "}
+      <InlineSelect
+        variant="quiet"
+        placeholder="select team"
+        value={teamId}
+        options={teamOptions}
+        onChange={(next) => setMyTeam({ divisionId, teamId: next })}
+      />{" "}
+      in{" "}
+      <InlineSelect
+        variant="quiet"
+        uppercase
+        placeholder="select liga"
+        value={divisionId}
+        options={ligaOptions}
+        onChange={(next) => setMyTeam({ divisionId: next as DivisionId, teamId: null })}
+      />
     </p>
   );
 }

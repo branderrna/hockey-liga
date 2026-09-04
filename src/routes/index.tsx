@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { LandingShell } from "@/components/site";
 import { InlineSelect } from "@/components/my-team-picker";
 import { SEASON, activeLigas, teamsOf, type DivisionId } from "@/data/league";
-import { useMyTeam } from "@/lib/my-team";
+import { NO_TEAM, useMyTeam } from "@/lib/my-team";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -88,10 +88,10 @@ function LandingPage() {
         </div>
 
         {/* The liga manager runs every liga rather than playing in one, so his
-            way in is past the team picker entirely. */}
-        <Link to="/ligas" className="group mt-10 inline-block">
+            way in drops the team selection entirely. */}
+        <Link to="/ligas" onClick={() => setMyTeam(NO_TEAM)} className="group mt-10 inline-block">
           <span className="text-sm underline decoration-border underline-offset-4 transition-colors group-hover:text-foreground group-hover:decoration-foreground">
-            Enter <span className="font-medium">I AM GOPAL</span> mode
+            I am Gopal
           </span>
           <span className="meta-mono mt-1.5 block">browse every liga</span>
         </Link>
