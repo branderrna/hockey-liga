@@ -52,6 +52,7 @@ function LandingPage() {
             value={divisionId}
             options={ligaOptions}
             uppercase
+            className="text-3xl sm:text-5xl"
             onChange={(next) => setMyTeam({ divisionId: next as DivisionId, teamId: null })}
           />
           <span>for</span>
@@ -60,6 +61,7 @@ function LandingPage() {
             value={teamId}
             options={teamOptions}
             disabled={!divisionId}
+            className="text-3xl sm:text-5xl"
             onChange={(next) => setMyTeam({ divisionId, teamId: next })}
           />
         </h1>
@@ -70,10 +72,10 @@ function LandingPage() {
           onClick={() => {
             if (divisionId) navigate({ to: "/liga/$slug", params: { slug: divisionId } });
           }}
-          className={`group mt-12 inline-flex items-center gap-2 border-b-2 pb-1 text-lg transition-colors sm:text-xl ${
+          className={`group mt-12 inline-flex items-center gap-2 rounded-sm px-4 py-2.5 text-base font-semibold transition-colors sm:text-lg ${
             ready
-              ? "border-foreground text-foreground"
-              : "pointer-events-none border-transparent text-muted-foreground/50"
+              ? "bg-primary text-primary-foreground"
+              : "pointer-events-none bg-secondary text-muted-foreground/60"
           }`}
         >
           Proceed

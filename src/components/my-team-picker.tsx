@@ -49,6 +49,7 @@ export function InlineSelect({
   onChange,
   disabled = false,
   uppercase = false,
+  className = "",
 }: {
   placeholder: string;
   value: string | null;
@@ -57,6 +58,8 @@ export function InlineSelect({
   disabled?: boolean;
   /** Display-only casing; the underlying label text is left intact. */
   uppercase?: boolean;
+  /** Sizing for the blank; the trigger inherits it. */
+  className?: string;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -134,7 +137,7 @@ export function InlineSelect({
   };
 
   return (
-    <span ref={wrapRef} className="relative inline-block">
+    <span ref={wrapRef} className={`relative inline-block max-w-full ${className}`}>
       <button
         ref={triggerRef}
         type="button"
@@ -174,7 +177,7 @@ export function InlineSelect({
           tabIndex={-1}
           aria-activedescendant={`${id}-${active}`}
           onKeyDown={onListKeyDown}
-          className="absolute top-full left-0 z-50 mt-2 max-h-72 w-max max-w-[min(22rem,80vw)] min-w-full overflow-y-auto border border-border bg-card py-1 text-sm shadow-[0_6px_20px_oklch(0_0_0/0.09)] outline-none"
+          className="absolute top-full left-0 z-50 mt-2 max-h-72 w-max max-w-[min(22rem,80vw)] overflow-y-auto border border-border bg-card py-1 text-sm shadow-[0_6px_20px_oklch(0_0_0/0.09)] outline-none"
         >
           {options.map((option, index) => (
             <li
