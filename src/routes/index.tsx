@@ -51,6 +51,7 @@ function LandingPage() {
             placeholder="which liga"
             value={divisionId}
             options={ligaOptions}
+            uppercase
             onChange={(next) => setMyTeam({ divisionId: next as DivisionId, teamId: null })}
           />{" "}
           for{" "}

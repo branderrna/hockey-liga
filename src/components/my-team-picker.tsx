@@ -48,12 +48,15 @@ export function InlineSelect({
   options,
   onChange,
   disabled = false,
+  uppercase = false,
 }: {
   placeholder: string;
   value: string | null;
   options: Option[];
   onChange: (value: string) => void;
   disabled?: boolean;
+  /** Display-only casing; the underlying label text is left intact. */
+  uppercase?: boolean;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -152,7 +155,9 @@ export function InlineSelect({
             : "border-border text-muted-foreground hover:border-foreground/60 hover:text-foreground"
         }`}
       >
-        <span className="truncate">{selected ? selected.label : placeholder}</span>
+        <span className={`truncate ${selected && uppercase ? "uppercase" : ""}`}>
+          {selected ? selected.label : placeholder}
+        </span>
         <ChevronDown
           className={`size-[0.5em] shrink-0 text-muted-foreground transition-transform duration-150 ${
             open ? "rotate-180" : ""
@@ -180,7 +185,7 @@ export function InlineSelect({
               data-index={index}
               onMouseEnter={() => setActive(index)}
               onClick={() => choose(index)}
-              className={`cursor-pointer px-3 py-2 ${
+              className={`cursor-pointer px-3 py-2 ${uppercase ? "uppercase" : ""} ${
                 option.value === value
                   ? "bg-primary text-primary-foreground"
                   : index === active
@@ -207,9 +212,11 @@ export function ViewingAs() {
   if (!team || !liga) return null;
 
   return (
-    <p className="meta-mono truncate">
+    // Wraps rather than truncates: on a narrow screen the liga name is the
+    // part that would be cut, and it is the half worth keeping.
+    <p className="meta-mono leading-snug">
       Viewing as <span className="text-foreground">{team.name}</span> in{" "}
-      <span className="text-foreground">{liga.short}</span>
+      <span className="text-foreground">{liga.name}</span>
     </p>
   );
 }
