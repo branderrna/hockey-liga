@@ -589,14 +589,28 @@ export function weekendsOf(divisionId: DivisionId): Weekend[] {
 }
 
 /**
- * The weekend a visitor most likely wants: the last one with a result, or the
- * next one to be played if the liga has not started.
+ * The league plays on Singapore time, which sits at UTC+8 all year with no
+ * daylight saving, so shifting the epoch by eight hours gives today's calendar
+ * day there. Anchoring to the league's own zone rather than the viewer's also
+ * keeps the server render and the browser's hydration on the same day.
+ */
+const SGT_OFFSET_MS = 8 * 60 * 60 * 1000;
+const leagueToday = () => new Date(Date.now() + SGT_OFFSET_MS).toISOString().slice(0, 10);
+
+/**
+ * The weekend a visitor most likely wants: the one being played today, else the
+ * most recent one to have started. Scores are typed up well after the final
+ * whistle, so this follows the calendar instead of waiting for them — on a match
+ * day the current weekend wins even while every result is still blank. Before
+ * the liga's first fixture there is nothing behind us, so look ahead.
  */
 export function latestWeekendKey(divisionId: DivisionId): string | null {
   const weekends = weekendsOf(divisionId);
+  const today = leagueToday();
   for (let i = weekends.length - 1; i >= 0; i--) {
     const weekend = weekends[i];
-    if (weekend?.matches.some(isPlayed)) return weekend.key;
+    // Keys are the block's first ISO date, so they compare as strings.
+    if (weekend && weekend.key <= today) return weekend.key;
   }
   return weekends[0]?.key ?? null;
 }
