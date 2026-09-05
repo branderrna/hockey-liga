@@ -1422,10 +1422,10 @@ export const matches: Match[] = [
     "awayId": "u21-girls--crescent-fire-horse",
     "homeName": "REPUBLIC POLYTECHNIC",
     "awayName": "CRESCENT FIRE HORSE",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 20,
+    "awayGoals": 20,
     "postponed": false,
-    "note": null
+    "note": "test"
   },
   {
     "id": "m-2026-09-19-1600-ccab-aha-dc-uwcsea-dover",
