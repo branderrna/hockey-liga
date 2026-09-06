@@ -379,6 +379,10 @@ export const teams: Team[] = [
 ];
 
 import { matches } from "./matches.generated.ts";
+
+/** When the fixtures last changed. Re-exported so views read data from here. */
+export { fixturesUpdatedAt } from "./matches.generated.ts";
+
 export const teamsOf = (divisionId: DivisionId) => teams.filter((t) => t.divisionId === divisionId);
 
 export const matchesOf = (divisionId: DivisionId) =>

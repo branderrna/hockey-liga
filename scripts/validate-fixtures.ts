@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 
 import { divisions, SEASON, standings, teams } from "../src/data/league.ts";
-import { matches } from "../src/data/matches.generated.ts";
+import { fixturesUpdatedAt, matches } from "../src/data/matches.generated.ts";
+import { CURRENT_VERSION, releases } from "../src/data/versions.ts";
 import type { DivisionId } from "../src/data/types.ts";
 
 const divisionIds = new Set(divisions.map((division) => division.id));
@@ -23,6 +27,53 @@ assert.equal(isCalendarDate("2026-02-31"), false, "impossible calendar date acce
 assert.ok(isCalendarDate(SEASON.start), `invalid season start: ${SEASON.start}`);
 assert.ok(isCalendarDate(SEASON.end), `invalid season end: ${SEASON.end}`);
 assert.ok(SEASON.start <= SEASON.end, "season start is after season end");
+
+const updatedAt = new Date(fixturesUpdatedAt);
+assert.ok(
+  !Number.isNaN(updatedAt.getTime()),
+  `fixturesUpdatedAt is not a date: ${fixturesUpdatedAt}`,
+);
+// A minute of slack: the stamp is written on one runner and checked on another.
+assert.ok(
+  updatedAt.getTime() <= Date.now() + 60_000,
+  `fixturesUpdatedAt is in the future: ${fixturesUpdatedAt}`,
+);
+
+/*
+ * The release history and CHANGELOG.md are both kept by hand and share one
+ * numbering, so nothing but a check stops them drifting. See docs/versioning.md.
+ */
+const versionPattern = /^\d+\.\d+\.\d+$/;
+const seenVersions = new Set<string>();
+
+assert.ok(releases.length > 0, "no releases defined");
+assert.equal(CURRENT_VERSION, releases[0].version, "CURRENT_VERSION is not the newest release");
+
+for (const [index, release] of releases.entries()) {
+  assert.ok(versionPattern.test(release.version), `malformed version: ${release.version}`);
+  assert.ok(!seenVersions.has(release.version), `duplicate version: ${release.version}`);
+  seenVersions.add(release.version);
+  assert.ok(isCalendarDate(release.date), `invalid release date: ${release.version}`);
+  assert.ok(release.notes.length > 0, `release has no notes: ${release.version}`);
+
+  const previous = releases[index - 1];
+  if (previous) {
+    assert.ok(
+      previous.date >= release.date,
+      `releases are not ordered newest-first: ${previous.version} precedes ${release.version}`,
+    );
+  }
+}
+
+const changelog = readFileSync(
+  path.join(path.dirname(fileURLToPath(import.meta.url)), "../CHANGELOG.md"),
+  "utf8",
+);
+const newestHeading = changelog.match(/^## (.+)$/m)?.[1] ?? "";
+assert.ok(
+  newestHeading.startsWith(CURRENT_VERSION),
+  `CHANGELOG.md's newest entry is "${newestHeading}", expected it to start with ${CURRENT_VERSION}`,
+);
 
 for (const division of divisions) {
   assert.ok(!seenDivisionIds.has(division.id), `duplicate division id: ${division.id}`);

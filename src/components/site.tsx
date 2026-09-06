@@ -1,7 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
+} from "react";
 import { ChevronRight, CornerUpLeft, Info, Menu, X } from "lucide-react";
-import { SEASON, activeLigas, upcomingLigas } from "@/data/league";
+import { SEASON, activeLigas, fixturesUpdatedAt, upcomingLigas } from "@/data/league";
+import { CURRENT_VERSION, releases } from "@/data/versions";
 import { ViewingAs } from "@/components/my-team-picker";
 import logo from "@/assets/liga-logo.jpg";
 
@@ -76,6 +84,163 @@ function Brand({ onClick }: { onClick?: () => void }) {
   );
 }
 
+/*
+ * Both stamps are formatted with an explicit time zone, for the same reason
+ * `leagueToday` in src/data/league.ts anchors to one: a fixed zone renders
+ * identically on the server and in the browser, so hydration matches. Anything
+ * relative ("2 hours ago") would not, and would go stale on a page left open.
+ */
+const fmtUpdated = (iso: string) =>
+  new Date(iso).toLocaleString("en-GB", {
+    timeZone: "Asia/Singapore",
+    day: "numeric",
+    month: "short",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+const fmtReleaseDate = (iso: string) =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", {
+    timeZone: "UTC",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+/** The version in the footer, and the release history behind it. */
+function VersionHistory() {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Returns focus to the trigger, so closing does not strand the keyboard at
+  // the top of the document.
+  const close = useCallback(() => {
+    setOpen(false);
+    triggerRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, close]);
+
+  useEffect(() => {
+    if (open) panelRef.current?.focus();
+  }, [open]);
+
+  // `aria-modal` promises focus stays inside the panel, and the backdrop makes
+  // everything behind it unclickable, so Tab must not walk out there either.
+  const onPanelKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== "Tab") return;
+    const stops = panelRef.current?.querySelectorAll<HTMLElement>("button");
+    const first = stops?.[0];
+    const last = stops?.[stops.length - 1];
+    if (!first || !last) return;
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        className="meta-mono underline decoration-transparent underline-offset-4 transition-colors hover:text-foreground hover:decoration-border"
+      >
+        v{CURRENT_VERSION}
+      </button>
+
+      {open ? (
+        // Bottom-anchored on a phone, where the sheet rises from the footer it
+        // was opened from; centred once there is room for it.
+        <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center">
+          <button
+            type="button"
+            aria-label="Close version history"
+            onClick={close}
+            className="absolute inset-0 bg-foreground/20 backdrop-blur-[2px]"
+          />
+          <div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="version-history-title"
+            tabIndex={-1}
+            onKeyDown={onPanelKeyDown}
+            className="surface animate-rise relative flex max-h-[70vh] w-full max-w-md flex-col outline-none"
+          >
+            <div className="flex items-start justify-between gap-4 border-b border-hairline px-5 py-4">
+              <div>
+                <p className="label-eyebrow" id="version-history-title">
+                  What&rsquo;s changed
+                </p>
+                <p className="meta-mono mt-1.5">
+                  {SEASON.name} · v{CURRENT_VERSION}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={close}
+                aria-label="Close version history"
+                className="-mt-1 -mr-2 rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                <X className="size-4" aria-hidden="true" />
+              </button>
+            </div>
+
+            <ol className="flex flex-col gap-6 overflow-y-auto px-5 py-5">
+              {releases.map((release) => (
+                <li key={release.version}>
+                  <p className="label-eyebrow">
+                    v{release.version} · {fmtReleaseDate(release.date)}
+                  </p>
+                  <ul className="mt-2.5 flex flex-col gap-2 text-sm leading-relaxed text-muted-foreground">
+                    {release.notes.map((note) => (
+                      <li key={note} className="flex gap-2.5">
+                        <span aria-hidden="true" className="text-faded">
+                          &mdash;
+                        </span>
+                        <span>{note}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * Closes out every page: when the results last changed, then the version.
+ * `mt-auto` is what pins it to the bottom on a short page — both shells put it
+ * at the end of a flex column for that reason.
+ */
+function SiteFooter() {
+  return (
+    <footer className="mt-auto border-t border-hairline px-5 py-5 sm:px-8">
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-end gap-x-4 gap-y-1">
+        <p className="meta-mono">Results updated {fmtUpdated(fixturesUpdatedAt)}</p>
+        <VersionHistory />
+      </div>
+    </footer>
+  );
+}
+
 /** Page shell for liga and content pages: fixed rail on desktop, drawer on mobile. */
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -88,7 +253,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [open]);
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[15rem_1fr]">
+    // Flex column below `lg`, where the grid does not apply: it is what lets the
+    // content column stretch so the footer lands at the bottom of a short page.
+    <div className="flex min-h-screen flex-col lg:grid lg:grid-cols-[15rem_1fr]">
       <aside className="sticky top-0 hidden h-screen border-r border-hairline lg:flex lg:flex-col">
         <Brand />
         <SidebarNav />
@@ -137,11 +304,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       ) : null}
 
-      <div className="min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col">
         <div className="sticky top-0 z-30 hidden border-b border-hairline bg-background/90 px-8 py-2.5 backdrop-blur lg:flex lg:justify-end">
           <ViewingAs />
         </div>
         {children}
+        <SiteFooter />
       </div>
     </div>
   );
@@ -176,7 +344,7 @@ export function PageShell({
 /** Chrome-free shell for the landing page: no rail, no drawer. */
 export function LandingShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <header className="border-b border-hairline">
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-5 py-4 sm:px-8">
           <span className="flex items-center gap-2.5">
@@ -197,7 +365,8 @@ export function LandingShell({ children }: { children: ReactNode }) {
           </Link>
         </div>
       </header>
-      {children}
+      <div className="flex-1">{children}</div>
+      <SiteFooter />
     </div>
   );
 }

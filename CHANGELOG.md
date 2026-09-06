@@ -4,7 +4,56 @@ Notable changes to the site, kept by hand alongside the automated
 fixtures/results refresh (which does not get its own entry here every run —
 see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
 
-## 2026-09-04 (staging retired)
+This is the engineering log: the reasoning, the plumbing, and the things that
+were wrong. The visitor-facing release notes shown in the site's footer live in
+[`src/data/versions.ts`](src/data/versions.ts). Both share one numbering and
+`npm test` fails if they disagree — see [docs/versioning.md](docs/versioning.md).
+
+Versions before 0.6.0 were assigned retroactively; see that document for how.
+
+## 0.6.0 — 2026-09-06
+
+**Footer**
+
+- Every page now ends with a footer carrying the date the results were last
+  updated and the site's version. Until now a visitor looking at a blank score
+  had no way to tell a game not yet played from a page that had stopped
+  updating — the only freshness signal anywhere was a git commit timestamp.
+- `scripts/refresh-fixtures.ts` stamps `fixturesUpdatedAt` into the generated
+  data. It records when the fixtures last **changed**, not when the sheet was
+  last checked, and is carried forward untouched when a run finds nothing new.
+  That distinction is load-bearing: the refresh runs on every sheet edit and
+  daily, and `refresh-fixtures.yml` decides whether to commit by diffing the
+  generated file. A stamp that advanced on every run would make that diff dirty
+  every time, committing and redeploying the site several times an hour with no
+  data behind it.
+- Established a version scheme and applied it back over the project's history,
+  so the number in the footer means something from the first release rather than
+  starting at 0.1.0 today. `npm test` now checks the two records agree, that
+  release dates are real, and that the list stays ordered newest-first.
+
+## 0.5.1 — 2026-09-05
+
+**Fixes**
+
+- The schedule opens on the weekend being played today rather than on the last
+  weekend with a result, so on a match day the games in progress are what loads.
+
+## 0.5.0 — 2026-09-04
+
+Covers 2026-09-01 through 2026-09-04.
+
+**Interface**
+
+- Navigation rebuilt around per-liga pages. Each liga has its own page holding
+  the schedule and league table, replacing the single shared table route; the
+  old `/table` path redirects into it.
+- The landing page became a fill-in-the-blank team picker, and the chosen liga
+  and team persist, so a returning visitor lands on their own fixtures.
+- Added a My team view: one team's fixtures, results and form, without the rest
+  of the liga around it.
+
+### Staging retired
 
 **Deployment**
 
@@ -18,7 +67,7 @@ see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
   ref before the Cloudflare token is in scope, and the auto-push git hook in
   [docs/deploy.md](docs/deploy.md) only pushes `main`.
 
-## 2026-09-04 (preview deployments)
+### Preview deployments
 
 **Deployment**
 
@@ -37,7 +86,7 @@ see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
   this repository, it is transcribed in [docs/deploy.md](docs/deploy.md) along
   with which fields are load-bearing and why.
 
-## 2026-09-04 (later)
+### A duplicate deployment removed
 
 **Infrastructure**
 
@@ -50,7 +99,7 @@ see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
   [docs/deploy.md](docs/deploy.md) for how `wrangler deploy` produces this
   silently while `wrangler versions upload` fails loudly.
 
-## 2026-09-04
+### Deploy triggers and shared checks
 
 **Deployment triggers**
 
@@ -96,7 +145,7 @@ see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
   stray `·` separator in the footer.
 - `src/server.ts` imported `./lib/error-capture` twice — once bare, once named.
 
-## 2026-09-01
+### Fixtures refresh never triggered a deploy (2026-09-01)
 
 **Infrastructure**
 
@@ -109,7 +158,7 @@ see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
   explicitly triggers `deploy.yml` via `gh workflow run` after a
   successful commit. See [docs/deploy.md](docs/deploy.md).
 
-## 2026-08-23
+## 0.4.0 — 2026-08-23
 
 **Infrastructure**
 
@@ -119,7 +168,7 @@ see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
 - Fixtures-refresh schedule changed from once weekly (Wednesdays) to twice
   weekly — Sundays and Mondays at 03:00 Singapore time.
 
-## 2026-08-20
+## 0.3.0 — 2026-08-20
 
 **Local dev environment**
 
@@ -167,3 +216,10 @@ see [docs/fixtures-refresh.md](docs/fixtures-refresh.md)).
   currently treated the same as a weather postponement. Needs a decision on
   how those should read on the site before those rounds arrive.
 - Hosting/deployment not yet set up (planned for the following day).
+
+## 0.2.0 and earlier
+
+Predate this changelog. `0.2.0` (2026-08-16) added the three concurrent ligas
+and the About page; `0.1.0` (2026-08-10) was the first schedule and results
+pages. Both are reconstructed from `git log` and appear in
+[`src/data/versions.ts`](src/data/versions.ts) with visitor-facing notes only.

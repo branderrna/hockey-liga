@@ -2,6 +2,11 @@
 // Regenerated from the league Google Sheet. See .github/workflows/refresh-fixtures.yml
 import type { Match } from "./types.ts";
 
+// When the fixtures below last CHANGED — not when the sheet was last checked.
+// See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
+// matters.
+export const fixturesUpdatedAt = "2026-09-06T04:35:27.408Z";
+
 export const matches: Match[] = [
   {
     "id": "m-2026-08-02-1500-ccab-ora-thisisri",
