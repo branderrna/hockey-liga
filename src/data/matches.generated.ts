@@ -880,8 +880,8 @@ export const matches: Match[] = [
     "awayName": "REPUBLIC POLYTECHNIC",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null
+    "postponed": true,
+    "note": "Postponed due to haze"
   },
   {
     "id": "m-2026-09-05-1600-ccab-republic-polytechnic-uwcsea-dover",
@@ -896,8 +896,8 @@ export const matches: Match[] = [
     "awayName": "UWCSEA DOVER",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null
+    "postponed": true,
+    "note": "Postponed due to haze"
   },
   {
     "id": "m-2026-09-05-1700-ccab-aha-dc-crescent-fire-horse",
@@ -912,8 +912,8 @@ export const matches: Match[] = [
     "awayName": "CRESCENT FIRE HORSE",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null
+    "postponed": true,
+    "note": "Postponed due to haze"
   },
   {
     "id": "m-2026-09-05-1700-delta-hypernovas-lion-city-hockey-club",
@@ -928,8 +928,8 @@ export const matches: Match[] = [
     "awayName": "LION CITY HOCKEY CLUB",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null
+    "postponed": true,
+    "note": "Postponed due to haze"
   },
   {
     "id": "m-2026-09-05-1800-ccab-silversticks-senoritas-tornados",
@@ -944,8 +944,8 @@ export const matches: Match[] = [
     "awayName": "TORNADOS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null
+    "postponed": true,
+    "note": "Postponed due to haze"
   },
   {
     "id": "m-2026-09-05-1800-delta-jansenites-team-h-i",
@@ -961,7 +961,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null
+    "note": "Postponed due to haze"
   },
   {
     "id": "m-2026-09-05-1900-ccab-ora-tornados",
@@ -976,8 +976,8 @@ export const matches: Match[] = [
     "awayName": "TORNADOS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null
+    "postponed": true,
+    "note": "Postponed due to haze"
   },
   {
     "id": "m-2026-09-05-1900-delta-oldham-singapore-polytechnic",
@@ -992,8 +992,8 @@ export const matches: Match[] = [
     "awayName": "SINGAPORE POLYTECHNIC",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null
+    "postponed": true,
+    "note": "Postponed due to haze"
   },
   {
     "id": "m-2026-09-05-2000-delta-balestier-lions-hollandse",
@@ -1008,8 +1008,8 @@ export const matches: Match[] = [
     "awayName": "HOLLANDSE",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": "Timing changed to 8pm"
+    "postponed": true,
+    "note": "Timing changed to 8pm\nPostponed due to haze"
   },
   {
     "id": "m-2026-09-06-1500-ccab-republic-polytechnic-jansenites",
