@@ -23,7 +23,7 @@ const WORKFLOW_FILE = "refresh-fixtures.yml";
 const WORKFLOW_REF = "main";
 
 /** Only edits on this tab are worth a refresh — it is the tab the script reads. */
-const WATCHED_SHEET_NAME = "COMPLETE";
+const WATCHED_SHEET_NAME = "CURRENT";
 
 /** Script Property names. The token is never committed to the repository. */
 const TOKEN_PROPERTY = "GITHUB_TOKEN";
