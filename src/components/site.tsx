@@ -308,7 +308,14 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="sticky top-0 z-30 hidden border-b border-hairline bg-background/90 px-8 py-2.5 backdrop-blur lg:flex lg:justify-end">
           <ViewingAs />
         </div>
-        {children}
+        {/*
+         * Pages centre their own <main> with `mx-auto`, and a flex item with
+         * auto cross-axis margins does not stretch — it would size to
+         * max-content and sit at its `max-w-*` regardless of the viewport.
+         * This wrapper takes the stretch instead, so the page inside is laid
+         * out as an ordinary block against the real width.
+         */}
+        <div className="flex-1">{children}</div>
         <SiteFooter />
       </div>
     </div>
