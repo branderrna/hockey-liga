@@ -11,6 +11,21 @@ were wrong. The visitor-facing release notes shown in the site's footer live in
 
 Versions before 0.6.0 were assigned retroactively; see that document for how.
 
+## 0.7.1 — 2026-09-07
+
+**Quick start**
+
+- Branded the iPhone and Android setup screenshots with Hockey Liga.
+
+## 0.7.0 — 2026-09-07
+
+**Quick start**
+
+- Added an Add to Home Screen guide with platform-specific steps for Safari on
+  iPhone and iPad, and Chrome on Android.
+- Added official Apple and Chrome reference screenshots to make each browser's
+  menu easier to recognise.
+
 ## 0.6.0 — 2026-09-06
 
 **Footer**

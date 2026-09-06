@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "refresh-fixtures": "node scripts/refresh-fixtures.ts",
-    "test": "node --experimental-strip-types scripts/validate-fixtures.ts",
+    "test": "node --experimental-strip-types scripts/validate-fixtures.ts && node --experimental-strip-types scripts/validate-home-screen-guide.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
