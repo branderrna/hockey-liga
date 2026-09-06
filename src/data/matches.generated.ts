@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-09-06T05:39:53.192Z";
+export const fixturesUpdatedAt = "2026-09-06T13:39:52.289Z";
 
 export const matches: Match[] = [
   {
@@ -1027,8 +1027,8 @@ export const matches: Match[] = [
     "awayId": "u21-girls--jansenites",
     "homeName": "REPUBLIC POLYTECHNIC",
     "awayName": "JANSENITES",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 11,
+    "awayGoals": 0,
     "postponed": false,
     "note": null
   },
@@ -1043,8 +1043,8 @@ export const matches: Match[] = [
     "awayId": "u21-girls--uwcsea-dover",
     "homeName": "SCC",
     "awayName": "UWCSEA DOVER",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 11,
+    "awayGoals": 2,
     "postponed": false,
     "note": null
   },
@@ -1059,8 +1059,8 @@ export const matches: Match[] = [
     "awayId": "u21-boys--republic-polytechnic",
     "homeName": "LCH YOUNG BOYS",
     "awayName": "REPUBLIC POLYTECHNIC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 1,
+    "awayGoals": 2,
     "postponed": false,
     "note": null
   },
@@ -1075,8 +1075,8 @@ export const matches: Match[] = [
     "awayId": "women--ora",
     "homeName": "SCC",
     "awayName": "ORA",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 8,
+    "awayGoals": 0,
     "postponed": false,
     "note": null
   },
@@ -1091,8 +1091,8 @@ export const matches: Match[] = [
     "awayId": "women--theresian-fielders",
     "homeName": "SN ALUMNI",
     "awayName": "THERESIAN FIELDERS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 2,
+    "awayGoals": 1,
     "postponed": false,
     "note": null
   },
@@ -1107,8 +1107,8 @@ export const matches: Match[] = [
     "awayId": "premier--team-h-i",
     "homeName": "SG MASTERS",
     "awayName": "TEAM H.I.",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 4,
+    "awayGoals": 4,
     "postponed": false,
     "note": null
   },
@@ -1139,8 +1139,8 @@ export const matches: Match[] = [
     "awayId": "premier--jansenites",
     "homeName": "SINGAPORE KHALSA ASSOCIATION",
     "awayName": "JANSENITES",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 4,
+    "awayGoals": 0,
     "postponed": false,
     "note": null
   },
