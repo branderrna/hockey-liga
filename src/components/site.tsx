@@ -7,7 +7,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
 } from "react";
-import { ChevronRight, CornerUpLeft, Info, Menu, X } from "lucide-react";
+import { ChevronRight, CornerUpLeft, Info, Menu, Smartphone, X } from "lucide-react";
 import { SEASON, activeLigas, fixturesUpdatedAt, upcomingLigas } from "@/data/league";
 import { CURRENT_VERSION, releases } from "@/data/versions";
 import { ViewingAs } from "@/components/my-team-picker";
@@ -31,6 +31,10 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       <Link to="/about" className={navLinkClass} onClick={onNavigate}>
         <Info className="size-4 shrink-0" aria-hidden="true" />
         About
+      </Link>
+      <Link to="/add-to-home-screen" className={navLinkClass} onClick={onNavigate}>
+        <Smartphone className="size-4 shrink-0" aria-hidden="true" />
+        Add to home screen
       </Link>
 
       <SectionLabel>Ligas</SectionLabel>
@@ -358,7 +362,7 @@ export function LandingShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-hairline">
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-5 py-4 sm:px-8">
-          <span className="flex items-center gap-2.5">
+          <span className="flex shrink-0 items-center gap-2.5">
             <img
               src={logo}
               alt=""
@@ -367,13 +371,22 @@ export function LandingShell({ children }: { children: ReactNode }) {
             />
             <span className="text-sm font-medium tracking-tight">Hockey Liga</span>
           </span>
-          <Link
-            to="/about"
-            className="meta-mono ml-auto flex items-center gap-1 transition-colors hover:text-foreground"
-          >
-            About
-            <ChevronRight className="size-3" aria-hidden="true" />
-          </Link>
+          <div className="ml-auto flex items-center gap-4">
+            <Link
+              to="/about"
+              className="meta-mono flex shrink-0 items-center gap-1 whitespace-nowrap transition-colors hover:text-foreground"
+            >
+              About
+              <ChevronRight className="size-3" aria-hidden="true" />
+            </Link>
+            <Link
+              to="/add-to-home-screen"
+              className="meta-mono flex shrink-0 items-center gap-1 whitespace-nowrap transition-colors hover:text-foreground"
+            >
+              Add to home screen
+              <ChevronRight className="size-3" aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </header>
       <div className="flex-1">{children}</div>

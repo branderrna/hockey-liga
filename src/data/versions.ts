@@ -22,12 +22,9 @@ type Release = {
  * cannot disagree with the newest entry in the history behind it.
  */
 const CURRENT: Release = {
-  version: "0.6.0",
-  date: "2026-09-06",
-  notes: [
-    "Every page now shows when the results were last updated, so a blank score is clearly a game not yet played rather than a stale page.",
-    "Added this version history.",
-  ],
+  version: "0.7.0",
+  date: "2026-09-07",
+  notes: ["Added a quick guide for putting Hockey Liga on an iPhone or Android home screen."],
 };
 
 export const CURRENT_VERSION = CURRENT.version;
