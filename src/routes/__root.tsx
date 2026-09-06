@@ -10,6 +10,7 @@ import {
 import { type ReactNode } from "react";
 
 import { MyTeamProvider } from "@/components/my-team-picker";
+import { PullToRefresh } from "@/components/pull-to-refresh";
 
 import appCss from "../styles.css?url";
 
@@ -91,6 +92,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      // Launch from the home screen without browser chrome. Deliberately no
+      // `viewport-fit=cover`: left alone, iOS insets a standalone web view
+      // below the status bar and above the home indicator, so the layout does
+      // not have to manage safe areas itself.
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: "Hockey Liga" },
     ],
     links: [
       {
@@ -104,6 +113,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap",
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
   }),
 
@@ -133,6 +144,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <MyTeamProvider>
+        {/* Sits above the router so it also covers the 404 and error screens,
+            which are exactly where a home-screen visitor most needs a reload. */}
+        <PullToRefresh />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </MyTeamProvider>

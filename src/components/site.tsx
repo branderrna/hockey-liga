@@ -177,6 +177,7 @@ function VersionHistory() {
             aria-modal="true"
             aria-labelledby="version-history-title"
             tabIndex={-1}
+            data-no-pull-to-refresh
             onKeyDown={onPanelKeyDown}
             className="surface animate-rise relative flex max-h-[70vh] w-full max-w-md flex-col outline-none"
           >
@@ -287,7 +288,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-foreground/20 backdrop-blur-[2px]"
           />
-          <div className="animate-rise absolute inset-0 flex w-full flex-col bg-background">
+          <div
+            data-no-pull-to-refresh
+            className="animate-rise absolute inset-0 flex w-full flex-col bg-background"
+          >
             <div className="flex items-center justify-between">
               <Brand onClick={() => setOpen(false)} />
               <button
