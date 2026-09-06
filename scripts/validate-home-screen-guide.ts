@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -23,8 +23,16 @@ assert.match(guide, /Chrome/);
 assert.match(guide, /Add to Home Screen/);
 assert.match(guide, /support\.apple\.com/);
 assert.match(guide, /developer\.chrome\.com/);
-assert.match(guide, /IOS_REFERENCE_IMAGE/);
-assert.match(guide, /ANDROID_REFERENCE_IMAGE/);
-assert.match(guide, /Reference screenshot/);
+assert.match(guide, /\/guides\/ios-add-to-home-screen\.png/);
+assert.match(guide, /\/guides\/android-add-to-home-screen\.png/);
+assert.match(guide, /Edited reference/);
+assert.ok(
+  existsSync(resolve(repoRoot, "public/guides/ios-add-to-home-screen.png")),
+  "the iOS reference image should be present",
+);
+assert.ok(
+  existsSync(resolve(repoRoot, "public/guides/android-add-to-home-screen.png")),
+  "the Android reference image should be present",
+);
 
 console.log("home-screen guide contract passed");

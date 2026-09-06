@@ -12,10 +12,8 @@ import {
 import type { ReactNode } from "react";
 import { PageShell } from "@/components/site";
 
-const IOS_REFERENCE_IMAGE =
-  "https://help.apple.com/assets/69F8EBBDF3B89A4F6E0C704C/69F8EBC43862495245036393/en_US/b8e5c4bf66357ca92eedd4a8c688f595.png";
-const ANDROID_REFERENCE_IMAGE =
-  "https://developer.chrome.com/static/blog/a2hs-updates/image/a2hs-dialog-screenshot-8ea2a4d1d8e7d.png";
+const IOS_REFERENCE_IMAGE = "/guides/ios-add-to-home-screen.png";
+const ANDROID_REFERENCE_IMAGE = "/guides/android-add-to-home-screen.png";
 
 export const Route = createFileRoute("/add-to-home-screen")({
   head: () => ({
@@ -118,7 +116,7 @@ function PlatformCard({
             decoding="async"
           />
           <figcaption className="mt-2 flex min-h-11 items-center justify-center text-center text-xs text-muted-foreground">
-            Reference screenshot ·{" "}
+            Edited reference ·{" "}
             <a
               className="inline-flex min-h-11 items-center underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
               href={sourceUrl}

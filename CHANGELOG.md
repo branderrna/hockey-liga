@@ -11,6 +11,12 @@ were wrong. The visitor-facing release notes shown in the site's footer live in
 
 Versions before 0.6.0 were assigned retroactively; see that document for how.
 
+## 0.7.1 — 2026-09-07
+
+**Quick start**
+
+- Branded the iPhone and Android setup screenshots with Hockey Liga.
+
 ## 0.7.0 — 2026-09-07
 
 **Quick start**

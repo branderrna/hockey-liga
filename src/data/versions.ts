@@ -22,9 +22,9 @@ type Release = {
  * cannot disagree with the newest entry in the history behind it.
  */
 const CURRENT: Release = {
-  version: "0.7.0",
+  version: "0.7.1",
   date: "2026-09-07",
-  notes: ["Added a quick guide for putting Hockey Liga on an iPhone or Android home screen."],
+  notes: ["Branded the iPhone and Android setup screenshots with Hockey Liga."],
 };
 
 export const CURRENT_VERSION = CURRENT.version;
