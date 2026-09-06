@@ -1,4 +1,4 @@
-// Fetches the league's public Google Sheet ("COMPLETE" tab) and regenerates
+// Fetches the league's public Google Sheet ("CURRENT" tab) and regenerates
 // src/data/matches.generated.ts. Run by .github/workflows/refresh-fixtures.yml,
 // or manually with: node scripts/refresh-fixtures.ts
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -8,7 +8,7 @@ import { teams, SEASON } from "../src/data/league.ts";
 import type { DivisionId, Match } from "../src/data/types.ts";
 
 const SHEET_ID = "1xD2Yc5dJAlNe82Zps3b3bpT23XGXDl5hlOkGDum3vDA";
-const GID = "9556364"; // "COMPLETE" tab
+const GID = "9556364"; // "CURRENT" tab
 const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
 
 const CATEGORY_TO_DIVISION: Record<string, DivisionId> = {
