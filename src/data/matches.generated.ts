@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-09-06T13:49:51.660Z";
+export const fixturesUpdatedAt = "2026-09-06T17:39:54.146Z";
 
 export const matches: Match[] = [
   {
@@ -3750,6 +3750,6 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "test"
   }
 ];
