@@ -11,9 +11,16 @@ sidebar and on the landing page, but their pages render a placeholder and
 they are absent from the "My liga" picker — by design, since the picker only
 offers ligas that have fixtures behind them.
 
-**Blocked on:** those ligas have no rows in the league Google Sheet. Their
-2026 seasons finished before the sheet became the source of truth, so the
-results would have to be back-filled, or the ligas picked up next season.
+**Blocked on:** historical import and competition-format reconciliation, not missing
+source data. The workbook already contains `Super`, `Veterans`, `Social` and
+`U14 Fixtures` tabs. The individual U14 tabs overlap with the combined tab, so
+an authoritative source must be agreed before importing. Knockouts, placement
+games, shootouts and postponed attempts must not be treated as ordinary league
+results.
+
+The steps below describe the existing single-season importer. They are not a
+safe historical migration by themselves; season-aware storage and stage-aware
+standings are prerequisites for bringing earlier results onto the site.
 
 **To activate one:**
 
@@ -38,12 +45,18 @@ liga starts appearing everywhere the moment its status flips.
 `/archive` is a placeholder reached from a low-key link in the sidebar and on
 the landing page.
 
-**Blocked on:** no historical fixtures or tables have been collected. Earlier
-seasons predate the sheet.
+**Blocked on:** a season-aware importer and verified historical competition
+rules. Earlier fixtures exist in the workbook; historical tables were excluded
+from the initial inspection and have not been verified.
 
-Once the data exists it will need a season dimension — today `SEASON`,
-`ligas` and the generated fixtures all assume 2026 — so this is a larger
-change than back-filling a single liga.
+The existing `SEASON`, `ligas` and generated fixtures assume one season. A
+[TEST-tab Sheets helper](scripts/sheet-helper/README.md) is being tried first
+for season/liga/team setup. Actual in-Sheets acceptance testing is blocked by
+first-run Google authorization. Adding sidebar permissions to the existing project
+can require the original trigger creator to reauthorize; keep the live project at
+its original source until that can be completed. The helper does not import
+history, calculate standings or connect to the website. Production migration
+remains a separate approved task.
 
 ## Score at abandonment for postponed games
 
