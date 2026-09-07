@@ -141,6 +141,7 @@ async function main() {
     away: col("Away"),
     notes: col("Notes"),
   };
+  const roundColumn = col("Round");
   for (const [key, i] of Object.entries(idx)) {
     if (i === -1) throw new Error(`Could not find expected column "${key}" in sheet header`);
   }
@@ -184,6 +185,7 @@ async function main() {
     const venue = (row[idx.venue] ?? "").trim();
     const { postponed, homeGoals, awayGoals } = parseScore(row[idx.score] ?? "");
     const note = (row[idx.notes] ?? "").trim() || null;
+    const round = roundColumn === -1 ? undefined : (row[roundColumn] ?? "").trim() || undefined;
 
     const homeId = resolveTeamId(divisionId, homeName);
     const awayId = resolveTeamId(divisionId, awayName);
@@ -192,7 +194,7 @@ async function main() {
 
     const id = `m-${date}-${time.replace(":", "")}-${slugify(venue)}-${slugify(homeName)}-${slugify(awayName)}`;
 
-    matches.push({
+    const match: Match = {
       id,
       no,
       divisionId,
@@ -207,7 +209,9 @@ async function main() {
       awayGoals,
       postponed,
       note,
-    });
+    };
+    if (round) match.round = round;
+    matches.push(match);
   }
 
   matches.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));

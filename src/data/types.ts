@@ -52,6 +52,8 @@ export type Match = {
   awayGoals: number | null;
   postponed: boolean;
   note: string | null;
+  /** Raw value from the optional Round column (column F on U14 fixtures). */
+  round?: string;
 };
 
 /** Consecutive match days played as one block — in practice a Sat/Sun weekend. */

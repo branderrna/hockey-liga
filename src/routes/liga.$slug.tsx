@@ -19,6 +19,7 @@ import {
   type Standing,
   type Weekend,
 } from "@/data/league";
+import { formatFixtureRound } from "@/data/round";
 
 type View = "schedule" | "table" | "my-team";
 
@@ -343,13 +344,13 @@ function MatchRow({ match: m, showDate = false }: { match: Match; showDate?: boo
         <span className="meta-mono hidden truncate text-right sm:block">{m.venue}</span>
 
         {/* Spans the home/score/away columns so it centres on the score. */}
-        {m.note ? (
+        {m.round || m.note ? (
           <p
             className={`col-span-2 text-center text-xs leading-snug sm:col-start-3 sm:col-end-6 ${
               m.postponed ? "text-ot" : "text-muted-foreground"
             }`}
           >
-            {m.note}
+            {[m.round ? formatFixtureRound(m.round) : null, m.note].filter(Boolean).join(" · ")}
           </p>
         ) : null}
       </div>
