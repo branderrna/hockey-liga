@@ -12,7 +12,7 @@ workflow, so a sheet edit gets the same validation as a code change.
 ## How it fits together
 
 ```
-Google Sheet ("CURRENT" tab)
+Google Sheet ("2026/2" tab)
         │  an edit dispatches via scripts/sheet-refresh-trigger.gs (~10 min max)
         │  plus a daily 03:00 SGT cron, or a manual run from the Actions tab
         ▼
@@ -37,26 +37,23 @@ sheet-driven. The refresh script never touches anything else.
 
 ## The Google Sheet
 
-Source: the **"CURRENT"** tab of the league's Google Sheet (link shared with
+Source: the **"2026/2"** tab of the league's Google Sheet (link shared with
 "Anyone with the link → Viewer", so the script can read it without any API key or
 Google credentials — it just fetches the sheet's public CSV export).
 
 ### Renaming or replacing the tab
 
-The two scripts identify the source differently:
+The two scripts identify the source by the same stable sheet ID:
 
-- `scripts/refresh-fixtures.ts` fetches the fixed tab ID (`GID = "9556364"`),
-  not its displayed name. Renaming that same tab preserves the CSV source.
-- `scripts/sheet-refresh-trigger.gs` watches the displayed name through
-  `WATCHED_SHEET_NAME`. If the tab is renamed, update and save the copy in the
-  sheet's Apps Script editor as well as this repository's copy. Existing
-  installable triggers do not need reinstalling for a name-only change.
+- `scripts/refresh-fixtures.ts` fetches GID `9556364`, currently the `2026/2` tab.
+- `scripts/sheet-refresh-trigger.gs` filters edits by `WATCHED_SHEET_ID = 9556364`,
+  so edits to the archived `2026/1` tab cannot dispatch a live refresh. Renaming
+  the live tab does not affect either script.
 
-Creating a **new** `CURRENT` tab gives it a different tab ID. The edit trigger
-would watch the new tab, but the refresh script would still fetch the old one
-until its `GID` is updated. This is not an automatic season rollover: the site
-currently has one season configuration, one team list and one generated fixture
-file. Its season dates in `src/data/league.ts` control date parsing and validation.
+Creating a **new** `2026/2` tab gives it a different tab ID. Update both the
+refresh script's `GID` and the Apps Script `WATCHED_SHEET_ID`, then save the copy
+in the sheet's Apps Script editor. Existing installable triggers do not need
+reinstalling for this constant change.
 Supporting current and archived seasons together requires the season-aware data
 handling described in [Past seasons](../BACKLOG.md#past-seasons), rather than
 replacing the existing generated data with another season's fixtures.
@@ -64,16 +61,18 @@ replacing the existing generated data with another season's fixtures.
 Expected columns (header row, any order, matched by name — a stray trailing space
 in a header like `"Score "` is tolerated):
 
-| Column     | Meaning                                           |
-| ---------- | ------------------------------------------------- |
-| Day & Date | e.g. `Sunday, 02 Aug`                             |
-| Venue      | e.g. `CCAB`, `DELTA`                              |
-| Time       | 24h, no colon, e.g. `1500`                        |
-| Category   | `WOMEN`, `PREMIER`, `U21 GIRLS`, or `U21 BOYS`    |
-| Home       | home team name                                    |
-| Score      | see below                                         |
-| Away       | away team name                                    |
-| Notes      | free text — reschedule info, timing changes, etc. |
+| Column         | Meaning                                           |
+| -------------- | ------------------------------------------------- |
+| Day & Date     | e.g. `Sunday, 02 Aug`                             |
+| Venue          | e.g. `CCAB`, `DELTA`                              |
+| Time           | 24h, no colon, e.g. `1500`                        |
+| Category       | `WOMEN`, `PREMIER`, `U21 GIRLS`, or `U21 BOYS`    |
+| Home           | home team name                                    |
+| Score          | see below                                         |
+| Away           | away team name                                    |
+| Notes          | free text — reschedule info, timing changes, etc. |
+| Round          | optional round/phase, e.g. `1`, `QF1`, `SF1`      |
+| Shootout Score | optional shootout result, e.g. `4 - 5`            |
 
 **Score column convention:**
 
@@ -83,6 +82,38 @@ in a header like `"Score "` is tolerated):
   excluded from the league table regardless of any score also present in the cell
   (a leftover/partial score before the postponement). Put the reschedule details in
   the Notes column — the site displays that note next to a "PP" badge.
+- A note containing **`Postponed`** without a matching `PP` marker is treated as a
+  source-data conflict and fails the refresh instead of silently counting the row
+  as played. Fix the sheet row before retrying.
+
+**Round column convention:**
+
+- A numeric value such as `1` or `2` is a round-robin table round.
+- `QF1`, `SF1`, and `FINAL` identify knockout matches. Placing values such as
+  `3RD/4TH` and `5TH/6TH` are shown as readable placement labels.
+- The column is optional. Older/current rows without it continue to parse as one
+  standings set, so the existing 2026/2 tab remains valid.
+
+**Shootout Score convention:**
+
+- Leave it blank for ordinary wins, draws, postponed games, and unplayed fixtures.
+- For a shootout, enter the shootout result in home-away order (for example,
+  `4 - 5`). The site keeps the full-time score as the main scoreline and shows the
+  shootout result in parentheses below it.
+
+The completed `2026/1` tab is the archive's source of truth. It is treated as
+immutable after the one-time import/backfill: the site reads that tab server-side
+when a completed liga is opened, and no generated archive fixture file is stored
+in the repository or shipped as a frontend module.
+
+Validate the source without writing anything with:
+
+```sh
+npm run validate-archive-fixtures
+```
+
+That check confirms the expected match, team, knockout and shootout invariants
+against the Sheet currently published at the configured archive tab.
 
 Team names are matched (case-insensitive) against the existing roster in
 `league.ts` to link a fixture to a team page/colours. A name that doesn't match
@@ -158,7 +189,7 @@ update until this is fixed and the workflow re-runs).
 
 [`scripts/sheet-refresh-trigger.gs`](../scripts/sheet-refresh-trigger.gs) is Google
 Apps Script that lives in the sheet, not in this repo's build. It watches the
-"CURRENT" tab and dispatches `refresh-fixtures.yml` shortly after an edit, so a
+"2026/2" tab and dispatches `refresh-fixtures.yml` shortly after an edit, so a
 score entered in the sheet reaches the live site in minutes instead of waiting for
 the next daily run.
 
@@ -239,7 +270,7 @@ special "TBD" styling for them yet. Worth a decision before those rounds arrive.
 ## Troubleshooting
 
 - **Script errors with "Could not find header row"**: the sheet's column headers
-  changed. Check the "CURRENT" tab's header row still contains `Home`, `Score`,
+  changed. Check the "2026/2" tab's header row still contains `Home`, `Score`,
   and `Away` (extra whitespace is fine, renamed/removed columns are not).
 - **Script errors fetching the sheet**: the sheet's sharing setting changed. It
   needs to stay set to "Anyone with the link → Viewer" for the public CSV export

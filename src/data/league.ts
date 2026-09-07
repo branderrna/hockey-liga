@@ -1,14 +1,5 @@
-import type {
-  ActiveLiga,
-  DivisionId,
-  League,
-  Liga,
-  Match,
-  Team,
-  UpcomingLiga,
-  Weekend,
-} from "./types";
-export type { ActiveLiga, DivisionId, Liga, Match, Team, UpcomingLiga, Weekend };
+import type { ActiveLiga, DivisionId, Liga, League, Match, Team, Weekend } from "./types";
+export type { ActiveLiga, DivisionId, Liga, Match, Team, Weekend };
 
 const SEASON_START = "2026-08-02";
 const SEASON_END = "2026-11-29";
@@ -379,6 +370,7 @@ export const teams: Team[] = [
 ];
 
 import { matches } from "./matches.generated.ts";
+export { matches };
 
 /** When the fixtures last changed. Re-exported so views read data from here. */
 export { fixturesUpdatedAt } from "./matches.generated.ts";
@@ -465,11 +457,8 @@ export function standings(divisionId: DivisionId): Standing[] {
 }
 
 /*
- * Liga catalogue.
- *
- * `active` ligas are backed by fixtures in the sheet. `upcoming` ligas ran
- * before the sheet existed or have not started; their pages render a
- * placeholder until fixtures are either back-filled or published next season.
+ * Ongoing liga catalogue. Completed seasons live in Google Sheets and are
+ * exposed through the completed-liga catalogue in archive.ts.
  */
 const ligas: Liga[] = [
   {
@@ -504,55 +493,9 @@ const ligas: Liga[] = [
     status: "active",
     divisionId: "u21-boys",
   },
-  {
-    slug: "super",
-    name: "Super Hockey Liga",
-    short: "Super",
-    group: "Open",
-    status: "upcoming",
-    divisionId: null,
-    returns: "Season complete — results pending",
-  },
-  {
-    slug: "veterans",
-    name: "Veterans Hockey Liga",
-    short: "Veterans",
-    group: "Open",
-    status: "upcoming",
-    divisionId: null,
-    returns: "Season complete — results pending",
-  },
-  {
-    slug: "social",
-    name: "Social Hockey Liga",
-    short: "Social",
-    group: "Open",
-    status: "upcoming",
-    divisionId: null,
-    returns: "Season complete — results pending",
-  },
-  {
-    slug: "u14-boys",
-    name: "Youth Hockey Liga — U14 Boys",
-    short: "U14 Boys",
-    group: "Youth",
-    status: "upcoming",
-    divisionId: null,
-    returns: "Season complete — results pending",
-  },
-  {
-    slug: "u14-girls",
-    name: "Youth Hockey Liga — U14 Girls",
-    short: "U14 Girls",
-    group: "Youth",
-    status: "upcoming",
-    divisionId: null,
-    returns: "Season complete — results pending",
-  },
 ];
 
 export const activeLigas = ligas.filter((l): l is ActiveLiga => l.status === "active");
-export const upcomingLigas = ligas.filter((l): l is UpcomingLiga => l.status === "upcoming");
 export const ligaBySlug = (slug: string) => ligas.find((l) => l.slug === slug);
 
 const DAY_MS = 86_400_000;

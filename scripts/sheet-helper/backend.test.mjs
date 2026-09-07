@@ -343,7 +343,7 @@ function fixtureRow(overrides = {}) {
   ];
 }
 
-test("existing CURRENT refresh handler ignores helper TEST tab edits", () => {
+test("existing 2026/2 refresh handler watches the live sheet ID only", () => {
   let pendingWrites = 0;
   const context = vm.createContext({
     PropertiesService: {
@@ -359,11 +359,11 @@ test("existing CURRENT refresh handler ignores helper TEST tab edits", () => {
     trigger + "\n" + readFileSync(new URL("./Code.gs", import.meta.url), "utf8"),
     context,
   );
-  for (const title of ["TEST — Helper", "_TEST_Seasons", "_TEST_Ligas", "TEST_NEXT-27"]) {
-    context.onSheetEdit({ range: { getSheet: () => ({ getName: () => title }) } });
+  for (const sheetId of [1, 896089478]) {
+    context.onSheetEdit({ range: { getSheet: () => ({ getSheetId: () => sheetId }) } });
   }
   assert.equal(pendingWrites, 0);
-  context.onSheetEdit({ range: { getSheet: () => ({ getName: () => "CURRENT" }) } });
+  context.onSheetEdit({ range: { getSheet: () => ({ getSheetId: () => 9556364 }) } });
   assert.equal(pendingWrites, 1);
 });
 

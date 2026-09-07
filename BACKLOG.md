@@ -4,59 +4,17 @@ Work the site is deliberately shaped for but that cannot be finished yet,
 usually because the data does not exist. Each entry says what is blocking it
 and what to change when the block clears.
 
-## Activate the five dormant ligas
+## Completed 2026/1 ligas
 
-Super, Veterans, Social, Youth U14 Boys and Youth U14 Girls appear in the
-sidebar and on the landing page, but their pages render a placeholder and
-they are absent from the "My liga" picker — by design, since the picker only
-offers ligas that have fixtures behind them.
+Super, Veterans, Social, Youth U14 Boys and Youth U14 Girls are completed ligas.
+Their immutable fixtures and teams remain in the `2026/1` Google Sheet tab and are
+loaded server-side when a completed liga is opened. They use the same `/liga/<slug>`
+routes as ongoing ligas and appear under `COMPLETED LIGAS` in the sidebar.
 
-**Blocked on:** historical import and competition-format reconciliation, not missing
-source data. The workbook already contains `Super`, `Veterans`, `Social` and
-`U14 Fixtures` tabs. The individual U14 tabs overlap with the combined tab, so
-an authoritative source must be agreed before importing. Knockouts, placement
-games, shootouts and postponed attempts must not be treated as ordinary league
-results.
-
-The steps below describe the existing single-season importer. They are not a
-safe historical migration by themselves; season-aware storage and stage-aware
-standings are prerequisites for bringing earlier results onto the site.
-
-**To activate one:**
-
-1. Add its `Category` value to `CATEGORY_TO_DIVISION` in
-   [`scripts/refresh-fixtures.ts`](scripts/refresh-fixtures.ts), mapped to a
-   new division id.
-2. Add that id to the `DivisionId` union in
-   [`src/data/types.ts`](src/data/types.ts).
-3. Add its teams to `teams` in [`src/data/league.ts`](src/data/league.ts),
-   using the `<division>--<slug>` id convention.
-4. In the same file, change the liga's entry in `ligas` from
-   `status: "upcoming", divisionId: null` to
-   `status: "active", divisionId: "<the new id>"`.
-5. Run `npm run refresh-fixtures`, then `npm test` to validate the result.
-
-Nothing in the UI needs touching. The sidebar, the landing cards, the liga
-routes and the "My liga" picker are all derived from `activeLigas`, so the
-liga starts appearing everywhere the moment its status flips.
-
-## Past seasons
-
-`/archive` is a placeholder reached from a low-key link in the sidebar and on
-the landing page.
-
-**Blocked on:** a season-aware importer and verified historical competition
-rules. Earlier fixtures exist in the workbook; historical tables were excluded
-from the initial inspection and have not been verified.
-
-The existing `SEASON`, `ligas` and generated fixtures assume one season. A
-[TEST-tab Sheets helper](scripts/sheet-helper/README.md) is being tried first
-for season/liga/team setup. Actual in-Sheets acceptance testing is blocked by
-first-run Google authorization. Adding sidebar permissions to the existing project
-can require the original trigger creator to reauthorize; keep the live project at
-its original source until that can be completed. The helper does not import
-history, calculate standings or connect to the website. Production migration
-remains a separate approved task.
+The frontend does not contain a generated archive snapshot. To add another
+completed season, add its source-tab/catalogue metadata and a server-side parser
+boundary; do not copy its fixture rows into `src/data` or the current-season
+refresh workflow.
 
 ## Score at abandonment for postponed games
 

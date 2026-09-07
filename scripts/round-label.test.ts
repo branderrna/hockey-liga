@@ -4,13 +4,15 @@ import test from "node:test";
 import { formatFixtureRound } from "../src/data/round.ts";
 
 test("formats U14 knockout round abbreviations", () => {
-  assert.equal(formatFixtureRound("SF1"), "Semi Final 1");
-  assert.equal(formatFixtureRound("qf 2"), "Quarter Final 2");
+  assert.equal(formatFixtureRound("SF1"), "Semi-final 1");
+  assert.equal(formatFixtureRound("qf 2"), "Quarter-final 2");
+  assert.equal(formatFixtureRound("FINAL"), "Final");
 });
 
-test("formats ordinal placing rounds without changing the source value", () => {
-  assert.equal(formatFixtureRound("5TH/6TH"), "5TH/6TH Placing");
-  assert.equal(formatFixtureRound("3rd / 4th"), "3rd/4th Placing");
+test("formats placing rounds as readable ordinal labels", () => {
+  assert.equal(formatFixtureRound("5TH/6TH"), "5th/6th place");
+  assert.equal(formatFixtureRound("3rd / 4th"), "3rd/4th place");
+  assert.equal(formatFixtureRound("9TH-11TH"), "9th–11th place");
 });
 
 test("formats numeric league rounds", () => {
@@ -20,5 +22,5 @@ test("formats numeric league rounds", () => {
 
 test("leaves blank and unknown stage values alone", () => {
   assert.equal(formatFixtureRound(""), "");
-  assert.equal(formatFixtureRound("FINAL"), "FINAL");
+  assert.equal(formatFixtureRound("FINAL"), "Final");
 });

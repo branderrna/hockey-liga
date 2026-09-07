@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AddToHomeScreenRouteImport } from './routes/add-to-home-screen'
-import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as LigasRouteImport } from './routes/ligas'
 import { Route as TableRouteImport } from './routes/table'
 import { Route as LigaSlugRouteImport } from './routes/liga.$slug'
@@ -30,11 +29,6 @@ const AboutRoute = AboutRouteImport.update({
 const AddToHomeScreenRoute = AddToHomeScreenRouteImport.update({
   id: '/add-to-home-screen',
   path: '/add-to-home-screen',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ArchiveRoute = ArchiveRouteImport.update({
-  id: '/archive',
-  path: '/archive',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LigasRoute = LigasRouteImport.update({
@@ -57,7 +51,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/add-to-home-screen': typeof AddToHomeScreenRoute
-  '/archive': typeof ArchiveRoute
   '/ligas': typeof LigasRoute
   '/table': typeof TableRoute
   '/liga/$slug': typeof LigaSlugRoute
@@ -66,7 +59,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/add-to-home-screen': typeof AddToHomeScreenRoute
-  '/archive': typeof ArchiveRoute
   '/ligas': typeof LigasRoute
   '/table': typeof TableRoute
   '/liga/$slug': typeof LigaSlugRoute
@@ -76,7 +68,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/add-to-home-screen': typeof AddToHomeScreenRoute
-  '/archive': typeof ArchiveRoute
   '/ligas': typeof LigasRoute
   '/table': typeof TableRoute
   '/liga/$slug': typeof LigaSlugRoute
@@ -84,28 +75,15 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/about'
-    | '/add-to-home-screen'
-    | '/archive'
-    | '/ligas'
-    | '/table'
-    | '/liga/$slug'
+    '/' | '/about' | '/add-to-home-screen' | '/ligas' | '/table' | '/liga/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
-    | '/about'
-    | '/add-to-home-screen'
-    | '/archive'
-    | '/ligas'
-    | '/table'
-    | '/liga/$slug'
+    '/' | '/about' | '/add-to-home-screen' | '/ligas' | '/table' | '/liga/$slug'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/add-to-home-screen'
-    | '/archive'
     | '/ligas'
     | '/table'
     | '/liga/$slug'
@@ -115,7 +93,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AddToHomeScreenRoute: typeof AddToHomeScreenRoute
-  ArchiveRoute: typeof ArchiveRoute
   LigasRoute: typeof LigasRoute
   TableRoute: typeof TableRoute
   LigaSlugRoute: typeof LigaSlugRoute
@@ -142,13 +119,6 @@ declare module '@tanstack/react-router' {
       path: '/add-to-home-screen'
       fullPath: '/add-to-home-screen'
       preLoaderRoute: typeof AddToHomeScreenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/archive': {
-      id: '/archive'
-      path: '/archive'
-      fullPath: '/archive'
-      preLoaderRoute: typeof ArchiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ligas': {
@@ -179,7 +149,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AddToHomeScreenRoute: AddToHomeScreenRoute,
-  ArchiveRoute: ArchiveRoute,
   LigasRoute: LigasRoute,
   TableRoute: TableRoute,
   LigaSlugRoute: LigaSlugRoute,

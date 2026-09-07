@@ -76,8 +76,8 @@ def prepare(session, path, sheet_id, script_id):
     original = clean_files(content)
     merge_files(original, helper_files(sheet_id))
     code = "\n".join(f["source"] for f in original if f["type"] == "SERVER_JS")
-    if not re.search(r'const WATCHED_SHEET_NAME\s*=\s*"CURRENT"\s*;', code):
-        raise ValueError("Existing CURRENT trigger requires manual review")
+    if not re.search(r"const WATCHED_SHEET_ID\s*=\s*9556364\s*;", code):
+        raise ValueError("Existing 2026/2 trigger requires manual review")
     book = metadata(session, sheet_id)
     props = [sheet["properties"] for sheet in book["sheets"]]
     if set(TEST_TITLES) & {p["title"] for p in props}:
@@ -118,7 +118,7 @@ def tab_requests(ids):
             "gridProperties": {"rowCount": 1000 if index else 40, "columnCount": [8, 4, 3][index], "hideGridlines": index == 0}}}})
     content = {
         0: [[], ["", MARKER], [], ["", "HOCKEY LIGA / TEST WORKSPACE"], ["", "Your season. Your sheet."], [],
-            ["", "PREVIEW ONLY — LIVE CURRENT IS UNCHANGED"], [],
+            ["", "PREVIEW ONLY — LIVE 2026/2 IS UNCHANGED"], [],
             ["", "Open the helper"], ["", "Reload this workbook, then choose Liga helper → Open helper."],
             ["", "Use desktop Google Sheets. First use may request permission."], [],
             ["", "Create a draft season"], ["", "Add a liga, enter its teams, and schedule a fixture."],
@@ -126,7 +126,7 @@ def tab_requests(ids):
             ["", "Enter a result"], ["", "Use Open fixture sheet. Fill both scores and set Status to Played."],
             ["", "Choose Check season before switching the current TEST season."], [],
             ["", "Safe to try — not private"], ["", "These tabs inherit this workbook’s viewer/editor permissions."],
-            ["", "The existing refresh script still watches CURRENT only."],
+            ["", "The existing refresh script still watches 2026/2 only."],
             ["", "The live tabs, workbook timezone and refresh script files are unchanged."]],
         1: [["id", "name", "status", "sheetName"]], 2: [["seasonId", "name", "teams"]],
     }

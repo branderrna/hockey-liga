@@ -22,9 +22,12 @@ type Release = {
  * cannot disagree with the newest entry in the history behind it.
  */
 const CURRENT: Release = {
-  version: "0.7.1",
-  date: "2026-09-07",
-  notes: ["Branded the iPhone and Android setup screenshots with Hockey Liga."],
+  version: "0.8.0",
+  date: "2026-09-08",
+  notes: [
+    "Added the complete 2026/1 results archive with round-by-round tables and knockout brackets.",
+    "Round labels and shootout scores now appear in schedules and team views.",
+  ],
 };
 
 export const CURRENT_VERSION = CURRENT.version;

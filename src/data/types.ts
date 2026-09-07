@@ -1,9 +1,15 @@
-export type DivisionId = "women" | "premier" | "u21-girls" | "u21-boys";
+export type DivisionId =
+  | "women"
+  | "premier"
+  | "u21-girls"
+  | "u21-boys"
+  | "super"
+  | "veterans"
+  | "social"
+  | "u14-boys"
+  | "u14-girls";
 
-/** Ligas that have no fixtures in the sheet yet. Their pages render a placeholder. */
-type UpcomingLigaSlug = "super" | "veterans" | "social" | "u14-boys" | "u14-girls";
-
-type LigaSlug = DivisionId | UpcomingLigaSlug;
+type LigaSlug = DivisionId;
 
 export type Liga = {
   slug: LigaSlug;
@@ -11,13 +17,11 @@ export type Liga = {
   /** Sidebar and card label. */
   short: string;
   group: "Open" | "Youth";
-} & (
-  | { status: "active"; divisionId: DivisionId }
-  | { status: "upcoming"; divisionId: null; returns: string }
-);
+  status: "active";
+  divisionId: DivisionId;
+};
 
-export type ActiveLiga = Extract<Liga, { status: "active" }>;
-export type UpcomingLiga = Extract<Liga, { status: "upcoming" }>;
+export type ActiveLiga = Liga;
 
 export type League = {
   id: string;
@@ -52,8 +56,24 @@ export type Match = {
   awayGoals: number | null;
   postponed: boolean;
   note: string | null;
-  /** Raw value from the optional Round column (column F on U14 fixtures). */
+  /** Compact value from the source Round column, e.g. "1", "QF1", or "FINAL". */
   round?: string;
+  /** Shootout result, stored separately from the full-time score when applicable. */
+  shootoutHomeGoals?: number | null;
+  shootoutAwayGoals?: number | null;
+};
+
+export type Standing = {
+  team: Team;
+  gp: number;
+  w: number;
+  d: number;
+  l: number;
+  gf: number;
+  ga: number;
+  gd: number;
+  pts: number;
+  form: ("W" | "D" | "L")[];
 };
 
 /** Consecutive match days played as one block — in practice a Sat/Sun weekend. */

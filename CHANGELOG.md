@@ -11,6 +11,19 @@ were wrong. The visitor-facing release notes shown in the site's footer live in
 
 Versions before 0.6.0 were assigned retroactively; see that document for how.
 
+## 0.8.0 — 2026-09-08
+
+**Results archive and competition phases**
+
+- Added the completed 2026/1 ligas as a read-only Google Sheets source loaded by
+  the shared `/liga/:slug` route; no archive fixture snapshot is checked in.
+- Ongoing and completed ligas now have separate sidebar sections and direct
+  liga links.
+- Round labels are readable in schedules, and shootout results appear below the
+  full-time scoreline.
+- Added round switching to multi-round tables and a compact knockout run to My
+  Team. The live 2026/2 refresh remains compatible with the older sheet shape.
+
 ## 0.7.1 — 2026-09-07
 
 **Quick start**

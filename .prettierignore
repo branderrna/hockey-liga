@@ -10,3 +10,5 @@ src/data/matches.generated.ts
 # Archived agent planning records and skill definitions — not project source.
 .hermes
 .claude
+.agents
+.codex

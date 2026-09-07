@@ -200,3 +200,172 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* CSS bracket: cards remain live text and the connector rules stay legible
+   when the chart is horizontally scrolled on a phone. */
+.knockout-scroll {
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  scrollbar-width: thin;
+}
+
+.knockout-bracket {
+  display: flex;
+  min-width: max-content;
+  align-items: stretch;
+  gap: 2.25rem;
+}
+
+.knockout-stage,
+.knockout-center-column {
+  position: relative;
+  display: flex;
+  width: 12rem;
+  min-height: 31rem;
+  flex-direction: column;
+}
+
+.knockout-stage-list {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 1rem;
+}
+
+.knockout-center-column {
+  justify-content: center;
+  gap: 2.25rem;
+  padding-top: 1.6rem;
+}
+
+.knockout-match {
+  position: relative;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-card);
+  padding: 0.65rem 0.7rem;
+  font-size: 0.75rem;
+  line-height: 1.25;
+}
+
+.knockout-stage + .knockout-stage .knockout-match::before,
+.knockout-stage + .knockout-center-column .knockout-match::before {
+  position: absolute;
+  top: 50%;
+  left: -2.25rem;
+  width: 2.25rem;
+  border-top: 1px solid var(--color-border);
+  content: "";
+}
+
+.knockout-stage:not(:last-child) .knockout-match::after {
+  position: absolute;
+  top: 50%;
+  right: -2.25rem;
+  width: 2.25rem;
+  border-top: 1px solid var(--color-border);
+  content: "";
+}
+
+.knockout-match-final {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-primary) 12%, transparent);
+}
+
+.knockout-match-third {
+  background: var(--color-secondary);
+}
+
+.knockout-match-round,
+.knockout-compact-round {
+  margin-bottom: 0.45rem;
+  color: var(--color-muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.knockout-team {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.28rem 0;
+}
+
+.knockout-team + .knockout-team {
+  border-top: 1px solid var(--color-hairline);
+}
+
+.knockout-team > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.knockout-team-winner {
+  font-weight: 600;
+}
+
+.knockout-team-mine {
+  border-radius: 0.125rem;
+  background: var(--color-primary);
+  padding: 0.08rem 0.25rem;
+  color: var(--color-primary-foreground);
+}
+
+.knockout-shootout {
+  margin-top: 0.4rem;
+  color: var(--color-ot);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  text-align: right;
+}
+
+.knockout-compact-match {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: 0.55rem;
+  border-bottom: 1px solid var(--color-hairline);
+  padding: 0.65rem 0.25rem;
+}
+
+.knockout-compact-round {
+  margin: 0;
+}
+
+@media (max-width: 639px) {
+  .knockout-bracket {
+    gap: 2.25rem;
+  }
+
+  .knockout-stage,
+  .knockout-center-column {
+    width: 12rem;
+    min-height: 27rem;
+  }
+
+  .knockout-stage + .knockout-stage .knockout-match::before,
+  .knockout-stage + .knockout-center-column .knockout-match::before,
+  .knockout-stage:not(:last-child) .knockout-match::after {
+    width: 2.25rem;
+  }
+
+  .knockout-stage + .knockout-stage .knockout-match::before,
+  .knockout-stage + .knockout-center-column .knockout-match::before {
+    left: -2.25rem;
+  }
+
+  .knockout-stage:not(:last-child) .knockout-match::after {
+    right: -2.25rem;
+  }
+
+  .knockout-compact-match {
+    grid-template-columns: 5.5rem minmax(0, 1fr) auto auto auto;
+    gap: 0.4rem;
+  }
+}

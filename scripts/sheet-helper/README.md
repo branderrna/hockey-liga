@@ -1,7 +1,7 @@
 # Hockey Liga Sheets helper — TEST-tab preview
 
 A bound Apps Script sidebar for trying season, liga, team and fixture setup in
-`TEST_…` tabs. It does **not** publish website data or replace the live `CURRENT`
+`TEST_…` tabs. It does **not** publish website data or replace the live `2026/2`
 workflow. Real historical results are not preloaded.
 
 ## Preview capabilities
@@ -13,7 +13,7 @@ workflow. Real historical results are not preloaded.
 - Enter results directly in the generated fixture tab.
 - Validate dates, times, teams, duplicates, statuses, scores and shootout pairs.
 - Switch the current **test** season after validation. This only changes helper
-  metadata, not the live `CURRENT` tab, sheet gid, website or refresh configuration.
+  metadata, not the live `2026/2` tab, sheet gid, website or refresh configuration.
 
 Stages are League, Quarter-final, Semi-final, Final and Placement. Statuses are
 Scheduled, Played, Postponed and Cancelled. Supported stages are labels, not a
@@ -30,7 +30,7 @@ outside this preview.
 
 The bound spreadsheet ID, safety marker, metadata headers and exact fixture tab
 mapping are checked before helper writes. An edited metadata row cannot redirect
-writes to `CURRENT` or another existing tab. Hidden sheets and warning-only
+writes to `2026/2` or another existing tab. Hidden sheets and warning-only
 protections are **not security boundaries**: all test tabs inherit the workbook’s
 sharing permissions. Do not place credentials or confidential notes in them.
 
