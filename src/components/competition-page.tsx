@@ -542,9 +542,17 @@ function StandingsTable({
   );
 }
 
-function StandingsKey() {
+function StandingsKey({ continues }: { continues?: string }) {
   return (
     <div className="meta-mono mt-5 space-y-1.5 leading-relaxed">
+      {/* Without this the table reads as a puzzle: sides on the same number of
+          games that never met, and a leader who played nobody near them. */}
+      {continues ? (
+        <p>
+          Carried on from {continues} — the top and bottom halves play among themselves, and points
+          carry forward into this one table
+        </p>
+      ) : null}
       <p>W/D/L = 3/1/0 pts · Sorted Pts &gt; GD &gt; GF</p>
       <p>
         Form runs left to right, oldest to most recent —{" "}
@@ -632,6 +640,9 @@ function TableView({
   // still one league: a side from the bottom half can finish above one from
   // the top, and two tables would hide exactly that.
   const rows = standingsFor(dataset, divisionId, rounds.length > 0 ? selectedRound : undefined);
+  // Any round after the first carries its predecessor forward.
+  const previous = rounds[rounds.indexOf(selectedRound) - 1];
+  const carriedFrom = previous ? formatFixtureRound(previous) : null;
 
   const select = (next: string) => {
     setPhase(next);
@@ -645,6 +656,14 @@ function TableView({
         <KnockoutBracket dataset={dataset} divisionId={divisionId} teamId={teamId} />
       ) : (
         <>
+          {/* Without this the table reads as a puzzle: sides on the same number
+              of games that never met, and a leader who played nobody near them. */}
+          {carriedFrom ? (
+            <p className="meta-mono mb-3 leading-relaxed">
+              Carried on from {carriedFrom} — the top and bottom halves play among themselves, and
+              points carry forward into this one table
+            </p>
+          ) : null}
           <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
             <StandingsTable entries={rankEntries(rows)} teamId={teamId} />
           </div>

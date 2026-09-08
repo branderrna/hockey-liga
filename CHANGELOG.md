@@ -86,6 +86,14 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   than onto a line of its own, which also says which of the two won it. Rows
   stay uniform, since that is what lets a card's centre be a percentage and
   keeps the connectors in pure CSS.
+- A completed liga reads as part of one 2026 season: the sidebar drops the
+  "2026/1" tag, since the "Completed ligas" heading above it already says as
+  much, and the line over the title matches an ongoing liga. The browser tab
+  keeps the season, where telling two of them apart is the whole job.
+- A carried-forward round says so directly above the table. A table of sides on
+  the same number of games who never met, led by someone who played nobody near
+  them, is a puzzle without one line of explanation, and that line is no use
+  underneath.
 - A round played in two halves is still one table. The halves say who a side is
   scheduled against, not which league they are in, so a side from the bottom
   half can finish above one from the top: 2026/1 Super had SA Alumni 7th after

@@ -9,7 +9,7 @@ import {
 } from "react";
 import { ChevronRight, CornerUpLeft, Info, Menu, Smartphone, X } from "lucide-react";
 import { SEASON, activeLigas, fixturesUpdatedAt } from "@/data/league";
-import { ARCHIVE_SEASON, archivedLigas } from "@/data/archive";
+import { archivedLigas } from "@/data/archive";
 import { CURRENT_VERSION, releases } from "@/data/versions";
 import { ViewingAs } from "@/components/my-team-picker";
 import logo from "@/assets/liga-logo.jpg";
@@ -61,7 +61,6 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
           onClick={onNavigate}
         >
           <span className="flex-1 truncate">{liga.short}</span>
-          <span className="meta-mono shrink-0 opacity-70">{ARCHIVE_SEASON.label}</span>
         </Link>
       ))}
 

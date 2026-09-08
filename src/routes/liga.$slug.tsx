@@ -130,7 +130,7 @@ function ArchivedLigaPage({
 
   return (
     <CompetitionPage
-      seasonLabel={ARCHIVE_SEASON.label}
+      seasonLabel="Season 2026"
       liga={liga}
       dataset={dataset}
       sourceIssues={issues}
