@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-09-07T04:19:54.643Z";
+export const fixturesUpdatedAt = "2026-09-08T16:39:57.774Z";
 
 export const matches: Match[] = [
   {
@@ -982,7 +982,7 @@ export const matches: Match[] = [
     "homeGoals": 5,
     "awayGoals": 0,
     "postponed": false,
-    "note": "Postponed due to haze"
+    "note": "Walkover"
   },
   {
     "id": "m-2026-09-05-1900-delta-oldham-singapore-polytechnic",
@@ -2217,22 +2217,6 @@ export const matches: Match[] = [
     "note": "Game shifted to 20th Oct"
   },
   {
-    "id": "m-2026-10-10-1700-ccab-6th-8th",
-    "no": 134,
-    "divisionId": "premier",
-    "date": "2026-10-10",
-    "time": "17:00",
-    "venue": "CCAB",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "6TH",
-    "awayName": "8TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": "Timing changed, venue remains"
-  },
-  {
     "id": "m-2026-10-10-1700-ccab-scc-oldham",
     "no": 132,
     "divisionId": "women",
@@ -2297,38 +2281,6 @@ export const matches: Match[] = [
     "note": "Game shifted from 11th Oct, 3pm"
   },
   {
-    "id": "m-2026-10-10-1800-delta-1st-3rd",
-    "no": 136,
-    "divisionId": "premier",
-    "date": "2026-10-10",
-    "time": "18:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "1ST",
-    "awayName": "3RD",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": true,
-    "note": "Game shifted to 11th Oct, 3pm"
-  },
-  {
-    "id": "m-2026-10-10-1900-delta-5th-4th",
-    "no": 137,
-    "divisionId": "premier",
-    "date": "2026-10-10",
-    "time": "19:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "5TH",
-    "awayName": "4TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
-  },
-  {
     "id": "m-2026-10-11-1500-ccab-jansenites-crescent-fire-horse",
     "no": 138,
     "divisionId": "u21-girls",
@@ -2343,22 +2295,6 @@ export const matches: Match[] = [
     "awayGoals": null,
     "postponed": false,
     "note": null
-  },
-  {
-    "id": "m-2026-10-11-1500-delta-1st-3rd",
-    "no": 137,
-    "divisionId": "premier",
-    "date": "2026-10-11",
-    "time": "15:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "1ST",
-    "awayName": "3RD",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": "Game shifted from 10th Oct, 6pm"
   },
   {
     "id": "m-2026-10-11-1500-delta-lion-city-hockey-club-singapore-polytechnic",
@@ -2551,54 +2487,6 @@ export const matches: Match[] = [
     "awayGoals": null,
     "postponed": false,
     "note": "Venue Changed, timing remains"
-  },
-  {
-    "id": "m-2026-10-17-1800-delta-2nd-3rd",
-    "no": 147,
-    "divisionId": "premier",
-    "date": "2026-10-17",
-    "time": "18:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "2ND",
-    "awayName": "3RD",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": "Venue Changed, timinmg remains"
-  },
-  {
-    "id": "m-2026-10-17-1900-ccab-7th-9th",
-    "no": 148,
-    "divisionId": "premier",
-    "date": "2026-10-17",
-    "time": "19:00",
-    "venue": "CCAB",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "7TH",
-    "awayName": "9TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
-  },
-  {
-    "id": "m-2026-10-17-1900-delta-1st-5th",
-    "no": 151,
-    "divisionId": "premier",
-    "date": "2026-10-17",
-    "time": "19:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "1ST",
-    "awayName": "5TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
   },
   {
     "id": "m-2026-10-18-1500-ccab-scc-republic-polytechnic",
@@ -2825,54 +2713,6 @@ export const matches: Match[] = [
     "note": null
   },
   {
-    "id": "m-2026-10-24-1900-ccab-6th-9th",
-    "no": 162,
-    "divisionId": "premier",
-    "date": "2026-10-24",
-    "time": "19:00",
-    "venue": "CCAB",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "6TH",
-    "awayName": "9TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
-  },
-  {
-    "id": "m-2026-10-24-1900-delta-1st-4th",
-    "no": 165,
-    "divisionId": "premier",
-    "date": "2026-10-24",
-    "time": "19:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "1ST",
-    "awayName": "4TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
-  },
-  {
-    "id": "m-2026-10-24-2000-delta-2nd-5th",
-    "no": 166,
-    "divisionId": "premier",
-    "date": "2026-10-24",
-    "time": "20:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "2ND",
-    "awayName": "5TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
-  },
-  {
     "id": "m-2026-10-25-1500-ccab-ejc-tannibellies-scc",
     "no": 167,
     "divisionId": "u21-girls",
@@ -3081,38 +2921,6 @@ export const matches: Match[] = [
     "note": "Game shiftef from 23rd Aug, 6pm"
   },
   {
-    "id": "m-2026-10-31-1900-ccab-7th-8th",
-    "no": 177,
-    "divisionId": "premier",
-    "date": "2026-10-31",
-    "time": "19:00",
-    "venue": "CCAB",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "7TH",
-    "awayName": "8TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
-  },
-  {
-    "id": "m-2026-10-31-1900-delta-2nd-4th",
-    "no": 180,
-    "divisionId": "premier",
-    "date": "2026-10-31",
-    "time": "19:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "2ND",
-    "awayName": "4TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
-  },
-  {
     "id": "m-2026-11-01-1500-ccab-singapore-polytechnic-lch-young-boys",
     "no": 181,
     "divisionId": "u21-boys",
@@ -3207,22 +3015,6 @@ export const matches: Match[] = [
     "awayGoals": null,
     "postponed": false,
     "note": "Game shifted from 2nd Aug, 3pm."
-  },
-  {
-    "id": "m-2026-11-01-1900-delta-3rd-5th",
-    "no": 186,
-    "divisionId": "premier",
-    "date": "2026-11-01",
-    "time": "19:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "3RD",
-    "awayName": "5TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": "Timing changed, venue remains"
   },
   {
     "id": "m-2026-11-14-1500-ccab-republic-polytechnic-ora",
@@ -3321,54 +3113,6 @@ export const matches: Match[] = [
     "note": null
   },
   {
-    "id": "m-2026-11-14-1900-ccab-8th-9th",
-    "no": 191,
-    "divisionId": "premier",
-    "date": "2026-11-14",
-    "time": "19:00",
-    "venue": "CCAB",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "8TH",
-    "awayName": "9TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
-  },
-  {
-    "id": "m-2026-11-14-1900-delta-3rd-4th",
-    "no": 194,
-    "divisionId": "premier",
-    "date": "2026-11-14",
-    "time": "19:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "3RD",
-    "awayName": "4TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
-  },
-  {
-    "id": "m-2026-11-14-2000-delta-6th-7th",
-    "no": 195,
-    "divisionId": "premier",
-    "date": "2026-11-14",
-    "time": "20:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "6TH",
-    "awayName": "7TH",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
-  },
-  {
     "id": "m-2026-11-15-1500-ccab-singapore-polytechnic-ora",
     "no": 196,
     "divisionId": "u21-boys",
@@ -3459,22 +3203,6 @@ export const matches: Match[] = [
     "awayId": "women--crescent",
     "homeName": "SILVERSTICKS SENORITAS",
     "awayName": "CRESCENT",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": false,
-    "note": null
-  },
-  {
-    "id": "m-2026-11-15-1900-delta-1st-2nd",
-    "no": 202,
-    "divisionId": "premier",
-    "date": "2026-11-15",
-    "time": "19:00",
-    "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "1ST",
-    "awayName": "2ND",
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
