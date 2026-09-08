@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { AppShell } from "@/components/site";
 import { CompetitionPage, type CompetitionView } from "@/components/competition-page";
+import { InlineSelect } from "@/components/my-team-picker";
 import { getArchivedDataset } from "@/data/archive-loader";
 import { ARCHIVE_SEASON, archivedLigaBySlug } from "@/data/archive";
 import { teamsOf as datasetTeamsOf, type CompetitionDataset } from "@/data/competition";
@@ -133,21 +134,16 @@ function ArchivedLigaPage({
       {...(view ? { view } : {})}
       onViewChange={onViewChange}
       teamPicker={
-        <label className="block">
-          <span className="label-eyebrow mb-1.5 block">Archive team</span>
-          <select
-            value={selectedTeamId ?? ""}
-            onChange={(event) => onTeamChange(event.target.value)}
-            className="h-[42px] w-full rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none transition-colors focus:border-primary"
-          >
-            <option value="">Choose a team for My team</option>
-            {archiveTeams.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="meta-mono leading-snug">
+          View as{" "}
+          <InlineSelect
+            variant="quiet"
+            placeholder="select team"
+            value={selectedTeamId}
+            options={archiveTeams.map((team) => ({ value: team.id, label: team.name }))}
+            onChange={onTeamChange}
+          />
+        </div>
       }
     />
   );
