@@ -53,10 +53,13 @@ Neither script names a season. Both read the **`HELPER`** tab, row 1:
 - `scripts/refresh-fixtures.ts` reads B1 and C1, fetches fixtures by the **gid**,
   and writes B1 into `matches.generated.ts` as `seasonLabel`. `SEASON.label` in
   `src/data/league.ts` re-exports it, so the label on the site follows the sheet.
-- `scripts/sheet-refresh-trigger.gs` reads B1 to decide which tab's edits are
-  worth a refresh. If `HELPER` is missing or B1 is blank it watches **nothing**
-  rather than everything — a refresh that stops firing is covered by the daily
-  cron, one that fires on every unrelated edit is not.
+- `scripts/sheet-refresh-trigger.gs` reads **C1** to decide which tab's edits
+  are worth a refresh, comparing it against `sheet.getSheetId()`. Matching on gid
+  rather than name means it watches exactly the tab the refresh script fetches, by
+  the same identifier, so a rename cannot silently stop refreshes. If `HELPER` is
+  missing or C1 is not a gid it watches **nothing** rather than everything — a
+  refresh that stops firing is covered by the daily cron, one that fires on every
+  unrelated edit is not.
 
 `HELPER`'s own gid (`932175786`) is the one identifier still in the code. That tab
 is never renamed or recreated, so it outlives every season.
@@ -272,7 +275,7 @@ update until this is fixed and the workflow re-runs).
 
 [`scripts/sheet-refresh-trigger.gs`](../scripts/sheet-refresh-trigger.gs) is Google
 Apps Script that lives in the sheet, not in this repo's build. It watches the
-tab named in `HELPER!B1` and dispatches `refresh-fixtures.yml` shortly after an edit, so a
+tab whose gid is in `HELPER!C1` and dispatches `refresh-fixtures.yml` shortly after an edit, so a
 score entered in the sheet reaches the live site in minutes instead of waiting for
 the next daily run.
 
@@ -357,6 +360,9 @@ special "TBD" styling for them yet. Worth a decision before those rounds arrive.
   and `Away` (extra whitespace is fine, renamed/removed columns are not).
 - **Script errors with "HELPER!B1 is empty" or "HELPER!C1 must be..."**: the
   `HELPER` tab is missing, renamed, or its row 1 is not `label | name | gid`.
+- **Sheet edits stop triggering refreshes after a tab was duplicated or
+  recreated**: the new tab has a new gid. Update `HELPER!C1`. The daily cron keeps
+  fixtures moving meanwhile, but it will be fetching the old tab until C1 is fixed.
 - **Script errors fetching the sheet**: the sheet's sharing setting changed. It
   needs to stay set to "Anyone with the link → Viewer" for the public CSV export
   to work without credentials.

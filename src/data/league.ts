@@ -1,21 +1,11 @@
 import type { ActiveLiga, DivisionId, Liga, League, Match, Team } from "./types";
-import * as generated from "./matches.generated.ts";
+import { fixturesUpdatedAt, matches, seasonLabel } from "./matches.generated.ts";
 
 export type { ActiveLiga, DivisionId, Match, Team };
 
 const SEASON_START = "2026-08-02";
 const SEASON_END = "2026-11-29";
 const SEASON_YEAR = SEASON_START.slice(0, 4);
-
-/*
- * Read off the namespace with a fallback rather than as a named import, because
- * scripts/refresh-fixtures.ts imports this module in order to WRITE that file.
- * A hard import would wedge the generator the moment the export it produces is
- * missing — a fresh checkout before the first run, or a reverted data commit —
- * with no way to regenerate it. Falling back to the year keeps the site sensible
- * until the next refresh fills the real label in.
- */
-const seasonLabel = (generated as { seasonLabel?: string }).seasonLabel ?? SEASON_YEAR;
 
 /*
  * The season's bounds. `start` and `end` are load-bearing, not decoration:
@@ -386,10 +376,10 @@ export const teams: Team[] = [
   },
 ];
 
-export const { matches } = generated;
+export { matches };
 
 /** When the fixtures last changed. Re-exported so views read data from here. */
-export const { fixturesUpdatedAt } = generated;
+export { fixturesUpdatedAt };
 
 export const teamsOf = (divisionId: DivisionId) => teams.filter((t) => t.divisionId === divisionId);
 
