@@ -4,7 +4,7 @@ A scheduled agent that checks the league sheet's Notes column against
 [`notes-grammar.md`](notes-grammar.md), proposes fixes, and applies nothing
 until a human approves.
 
-Schedule: Daily 03:00 Singapore time — `0 19 * * *` UTC.
+Schedule: Daily 03:00 Singapore time — `0 3 * * *` in the Hermes scheduler's `+08` timezone.
 
 The prompt below is model- and harness-agnostic. It needs Google Sheets read and write
 access, a copy of the grammar document, and read-only GitHub Actions access for the
@@ -92,7 +92,7 @@ These are runtime instructions for installing this prompt as a Hermes cron job. 
 Use the repository root as the job working directory so the grammar path is unambiguous:
 
 ```yaml
-schedule: "0 19 * * *"
+schedule: "0 3 * * *"
 skills:
   - google-workspace
 enabled_toolsets:
@@ -103,7 +103,7 @@ deliver: origin
 attach_to_session: true
 ```
 
-`0 19 * * *` runs daily at 19:00 UTC, which is 03:00 in Singapore the following day. `attach_to_session: true` makes the delivery continuable: it does not keep an agent process alive or consume tokens while waiting, but it associates a later Telegram reply with the audit brief. This file-backed job reads the prompt of record at each invocation, so edits are picked up automatically. If a job embeds a copy instead, update the stored prompt when this file changes.
+`0 3 * * *` runs daily at 03:00 in the Hermes scheduler's configured timezone (`+08` in this environment). `attach_to_session: true` makes the delivery continuable: it does not keep an agent process alive or consume tokens while waiting, but it associates a later Telegram reply with the audit brief. This file-backed job reads the prompt of record at each invocation, so edits are picked up automatically. If a job embeds a copy instead, update the stored prompt when this file changes.
 
 The scheduled job needs:
 
