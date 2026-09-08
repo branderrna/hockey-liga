@@ -41,6 +41,27 @@ export const CURRENT_VERSION = CURRENT.version;
 export const releases: Release[] = [
   CURRENT,
   {
+    version: "0.7.1",
+    date: "2026-09-07",
+    notes: ["The Add to Home Screen screenshots now carry Hockey Liga branding."],
+  },
+  {
+    version: "0.7.0",
+    date: "2026-09-07",
+    notes: [
+      "Added an Add to Home Screen guide, with the steps for Safari on iPhone and iPad and for Chrome on Android.",
+      "Each browser's steps come with a screenshot of the menu to look for.",
+    ],
+  },
+  {
+    version: "0.6.0",
+    date: "2026-09-06",
+    notes: [
+      "Every page now ends with the date the results were last updated, so a blank score reads as a game not yet played rather than a page that stopped updating.",
+      "The footer also carries the site's version. Clicking it opens this history.",
+    ],
+  },
+  {
     version: "0.5.1",
     date: "2026-09-05",
     notes: ["The schedule opens on the weekend being played today."],

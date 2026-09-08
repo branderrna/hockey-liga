@@ -86,6 +86,16 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   than onto a line of its own, which also says which of the two won it. Rows
   stay uniform, since that is what lets a card's centre be a percentage and
   keeps the connectors in pure CSS.
+- Restored three releases to the site's history. 0.6.0, 0.7.0 and 0.7.1 were in
+  this log but not in `versions.ts`, so the footer's history jumped from 0.8.0
+  to 0.5.1 and a visitor lost the footer feature and the Add to Home Screen
+  guide. Two had been missing since they shipped; 0.7.1 went when 0.8.0
+  overwrote it instead of moving it down the list.
+- The check that was supposed to prevent that now compares both records in
+  full. It only ever matched the newest pair, so a version in one and absent
+  from the other passed silently — which is how three could go. 0.6.0's own
+  entry claimed the check made "the two records agree", which it did not, and
+  docs/versioning.md said the same; both now describe what it does.
 - A completed liga reads as part of one 2026 season: the sidebar drops the
   "2026/1" tag, since the "Completed ligas" heading above it already says as
   much, and the line over the title matches an ongoing liga. The browser tab
