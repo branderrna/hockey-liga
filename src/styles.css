@@ -200,3 +200,299 @@
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * CSS bracket. Every column shares one row grid, so a card's centre lands at
+ * the same height in every column and the connectors can be drawn as three
+ * plain rules: a stub out of the winner's card, a vertical in the gutter
+ * joining the two games that feed the next one, and a stub into that card.
+ * Cards stay live text, so the chart survives being scrolled on a phone.
+ */
+.knockout-chart {
+  --knockout-fade: 1.25rem;
+  --knockout-gap: 2.25rem;
+  --knockout-card: 11rem;
+  --knockout-row: 7.5rem;
+  margin: 0;
+  margin-top: 1.75rem;
+}
+
+.knockout-chart-title {
+  margin-bottom: 0.85rem;
+  color: var(--color-foreground);
+}
+
+/* The chart's own scroller. The bar is hidden because the stage buttons and
+   the edge fades say the same thing more quietly; without either of those
+   this would be an unlabelled scrollbar under a wall of cards. */
+.knockout-scroll {
+  overflow-x: auto;
+  /* Read back in JS when a chart opens on a later stage, so that column lands
+     clear of the fade rather than under it. One source of truth for both. */
+  scroll-padding-left: var(--knockout-fade);
+  scrollbar-width: none;
+}
+
+/* With the bar hidden, dragging is how a mouse crosses a chart wider than the
+   window. The cursor is the only thing that says so, so it appears exactly
+   when there is somewhere to drag to. */
+.knockout-scroll[data-scrollable] {
+  cursor: grab;
+}
+
+.knockout-scroll[data-dragging] {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.knockout-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Fades stand in for the hidden bar: content continues where the page dims. */
+.knockout-viewport {
+  position: relative;
+}
+
+.knockout-viewport::before,
+.knockout-viewport::after {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  width: var(--knockout-fade);
+  opacity: 0;
+  content: "";
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.knockout-viewport::before {
+  left: 0;
+  background: linear-gradient(to right, var(--color-background), transparent);
+}
+
+.knockout-viewport::after {
+  right: 0;
+  background: linear-gradient(to left, var(--color-background), transparent);
+}
+
+.knockout-viewport[data-start]::before,
+.knockout-viewport[data-end]::after {
+  opacity: 1;
+}
+
+.knockout-bracket {
+  display: flex;
+  gap: var(--knockout-gap);
+}
+
+/* Columns share the container's spare width instead of leaving it blank on
+   the right. The gutter stays fixed, because the connector rules are drawn
+   half a gutter out of one card and half a gutter into the next. */
+.knockout-column {
+  display: flex;
+  min-width: var(--knockout-card);
+  flex: 1 1 var(--knockout-card);
+  flex-direction: column;
+}
+
+.knockout-column-head {
+  min-height: 1.1rem;
+  margin-bottom: 0.6rem;
+}
+
+.knockout-column-body {
+  display: grid;
+  flex: 1;
+  grid-template-rows: repeat(var(--knockout-rows), var(--knockout-row));
+}
+
+.knockout-slot {
+  position: relative;
+  display: grid;
+  align-content: center;
+  /* Symmetric, so the card stays centred on the row its connectors point at. */
+  padding: 0.45rem 0;
+}
+
+/* The vertical joining the two games that feed this card, in the gutter. */
+.knockout-slot[data-join]::before {
+  position: absolute;
+  top: var(--knockout-join-from);
+  left: calc(var(--knockout-gap) / -2);
+  height: calc(var(--knockout-join-to) - var(--knockout-join-from));
+  border-left: 1px solid var(--color-border);
+  content: "";
+}
+
+.knockout-match {
+  position: relative;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-card);
+  padding: 0.5rem 0.6rem;
+  /* Set small so a club's full name stays on one line at this column width.
+     Every card is then the same height, which is what lets the rows stay
+     uniform and the connectors stay pure CSS. */
+  font-size: 0.7rem;
+  line-height: 1.25;
+}
+
+/* Half-gutter stubs: out of a card whose winner goes on, into the card it
+   goes on to. Together they cross the gap and meet the vertical. */
+.knockout-match[data-advances]::after,
+.knockout-match[data-fed]::before {
+  position: absolute;
+  top: 50%;
+  width: calc(var(--knockout-gap) / 2);
+  border-top: 1px solid var(--color-border);
+  content: "";
+}
+
+.knockout-match[data-advances]::after {
+  right: calc(var(--knockout-gap) / -2);
+}
+
+.knockout-match[data-fed]::before {
+  left: calc(var(--knockout-gap) / -2);
+}
+
+.knockout-match-final {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-primary) 12%, transparent);
+}
+
+/* Deciders hung under the chart. They keep the card look so they read as part
+   of the bracket, and sit in a row of their own so no column carries a blank. */
+.knockout-extras {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  gap: 0.75rem;
+}
+
+.knockout-extras .knockout-match {
+  width: var(--knockout-card);
+  flex: 0 1 var(--knockout-card);
+}
+
+/* A play-off between two beaten sides: part of the bracket above it, but not
+   on any path through it, so it is set back rather than wired in. */
+.knockout-match-attached {
+  border-style: dashed;
+  background: var(--color-secondary);
+}
+
+.knockout-match-round,
+.knockout-compact-round {
+  margin-bottom: 0.3rem;
+  color: var(--color-muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.knockout-team {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
+}
+
+.knockout-team + .knockout-team {
+  border-top: 1px solid var(--color-hairline);
+}
+
+.knockout-team > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.knockout-team-winner {
+  font-weight: 600;
+}
+
+.knockout-team-mine {
+  border-radius: 0.125rem;
+  background: var(--color-primary);
+  padding: 0.08rem 0.25rem;
+  color: var(--color-primary-foreground);
+}
+
+/* Shown against each side's score, so it adds no line to the card. */
+.knockout-shootout {
+  margin-left: 0.2rem;
+  color: var(--color-ot);
+  font-size: 0.625rem;
+}
+
+/* The seeding the sheet records, kept for cards nothing is drawn into. It
+   wraps rather than truncating: a route cut off mid-phrase says less than no
+   route at all, and the rows are uniform enough to absorb the second line. */
+.knockout-match-note {
+  margin-top: 0.3rem;
+  color: var(--color-muted-foreground);
+  font-size: 0.625rem;
+  line-height: 1.35;
+}
+
+/* One row per game in the selected team's run: the stage, who they met, and
+   how it went. The grid is on the list rather than on each row, so the stage
+   column is sized once by its longest label and the opponents line up under
+   each other. The stage never wraps. */
+.knockout-compact-run {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 0.85rem;
+}
+
+.knockout-compact-match {
+  display: contents;
+}
+
+.knockout-compact-match > * {
+  border-bottom: 1px solid var(--color-hairline);
+  padding: 0.65rem 0;
+}
+
+.knockout-compact-round {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.knockout-compact-opponent {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.knockout-compact-score {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 639px) {
+  /* Charts scroll independently on a phone, so lining their columns up across
+     charts buys nothing there — and a chart that starts at the semi-finals
+     would spend half the screen on the columns it skips. Dropped, so each
+     chart begins at its own first game. */
+  .knockout-column[data-empty] {
+    display: none;
+  }
+
+  .knockout-chart {
+    --knockout-gap: 1.5rem;
+    --knockout-card: 9.5rem;
+    --knockout-row: 9.5rem;
+  }
+
+  .knockout-compact-run {
+    column-gap: 0.55rem;
+  }
+}

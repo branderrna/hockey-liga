@@ -8,7 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import { ChevronRight, CornerUpLeft, Info, Menu, Smartphone, X } from "lucide-react";
-import { SEASON, activeLigas, fixturesUpdatedAt, upcomingLigas } from "@/data/league";
+import { SEASON, activeLigas, fixturesUpdatedAt } from "@/data/league";
+import { archivedLigas } from "@/data/archive";
 import { CURRENT_VERSION, releases } from "@/data/versions";
 import { ViewingAs } from "@/components/my-team-picker";
 import logo from "@/assets/liga-logo.jpg";
@@ -37,7 +38,7 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         Add to home screen
       </Link>
 
-      <SectionLabel>Ligas</SectionLabel>
+      <SectionLabel>Ongoing ligas</SectionLabel>
       {activeLigas.map((liga) => (
         <Link
           key={liga.slug}
@@ -50,8 +51,8 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         </Link>
       ))}
 
-      <SectionLabel>Coming soon</SectionLabel>
-      {upcomingLigas.map((liga) => (
+      <SectionLabel>Completed ligas</SectionLabel>
+      {archivedLigas.map((liga) => (
         <Link
           key={liga.slug}
           to="/liga/$slug"
@@ -60,17 +61,8 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
           onClick={onNavigate}
         >
           <span className="flex-1 truncate">{liga.short}</span>
-          <span className="meta-mono shrink-0 opacity-70">Soon</span>
         </Link>
       ))}
-
-      <Link
-        to="/archive"
-        className="meta-mono mt-6 px-3 py-2 transition-colors hover:text-foreground"
-        onClick={onNavigate}
-      >
-        See past years&rsquo; results →
-      </Link>
 
       <div className="mt-auto border-t border-hairline px-3 pt-4">
         <p className="meta-mono">{SEASON.name}</p>

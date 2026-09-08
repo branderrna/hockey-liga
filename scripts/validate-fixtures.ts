@@ -75,6 +75,29 @@ assert.ok(
   `CHANGELOG.md's newest entry is "${newestHeading}", expected it to start with ${CURRENT_VERSION}`,
 );
 
+/*
+ * Every release has to appear in both records. Matching only the newest pair
+ * let three of them go missing from the site's history while the engineering
+ * log kept them, because a version present in one and absent from the other
+ * broke nothing a check was looking at. The last heading is prose rather than
+ * a version ("0.2.0 and earlier"), so the comparison stops where it starts
+ * summarising.
+ */
+const changelogVersions = [...changelog.matchAll(/^## (\d+\.\d+\.\d+) /gm)].map(
+  (match) => match[1],
+);
+const summarised = changelogVersions[changelogVersions.length - 1];
+const logged = new Set(changelogVersions);
+const listed = new Set(releases.map((release) => release.version));
+
+for (const version of logged) {
+  assert.ok(listed.has(version), `${version} is in CHANGELOG.md but missing from versions.ts`);
+}
+for (const version of listed) {
+  if (version < summarised) continue;
+  assert.ok(logged.has(version), `${version} is in versions.ts but missing from CHANGELOG.md`);
+}
+
 for (const division of divisions) {
   assert.ok(!seenDivisionIds.has(division.id), `duplicate division id: ${division.id}`);
   seenDivisionIds.add(division.id);
@@ -127,6 +150,34 @@ for (const match of matches) {
   ] as const) {
     if (score === null) continue;
     assert.ok(Number.isInteger(score) && score >= 0, `invalid ${side} score: ${match.id}`);
+  }
+
+  if (match.round !== undefined) {
+    assert.ok(match.round.trim().length > 0, `empty round: ${match.id}`);
+  }
+
+  const shootoutHome = match.shootoutHomeGoals;
+  const shootoutAway = match.shootoutAwayGoals;
+  assert.equal(
+    shootoutHome == null,
+    shootoutAway == null,
+    `match has an incomplete shootout score: ${match.id}`,
+  );
+  for (const [side, score] of [
+    ["home shootout", shootoutHome],
+    ["away shootout", shootoutAway],
+  ] as const) {
+    if (score == null) continue;
+    assert.ok(Number.isInteger(score) && score >= 0, `invalid ${side} score: ${match.id}`);
+  }
+  if (shootoutHome != null || shootoutAway != null) {
+    assert.equal(
+      match.homeGoals,
+      match.awayGoals,
+      `shootout match must be tied at full time: ${match.id}`,
+    );
+    assert.ok(!match.postponed, `shootout match cannot be postponed: ${match.id}`);
+    assert.notEqual(shootoutHome, shootoutAway, `shootout match must have a winner: ${match.id}`);
   }
 }
 

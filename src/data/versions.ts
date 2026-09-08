@@ -22,15 +22,45 @@ type Release = {
  * cannot disagree with the newest entry in the history behind it.
  */
 const CURRENT: Release = {
-  version: "0.7.1",
-  date: "2026-09-07",
-  notes: ["Branded the iPhone and Android setup screenshots with Hockey Liga."],
+  version: "0.8.0",
+  date: "2026-09-08",
+  notes: [
+    "Added the complete 2026/1 results archive with round-by-round tables and knockout brackets.",
+    "Knockout brackets are drawn as they were played: four quarter-finals into two semi-finals into the final, with lines that follow the winner.",
+    "Play-off brackets for the lower places are shown as separate charts, lined up with the main one so each stage sits in the same column.",
+    "The bracket has its own tab beside the round tables, and My team shows your knockout run as who you played and how it finished.",
+    "A round where the top and bottom halves play separately stays one league table, with points carried forward, so a team can still climb past the half above it. The table says so above it.",
+    "A bracket wider than the window can be dragged across, or swiped on a phone.",
+    "Round labels and shootout scores now appear in schedules and team views.",
+    "If a row of a completed season cannot be read from the league sheet, the page now says so and shows the rest, instead of failing to load.",
+  ],
 };
 
 export const CURRENT_VERSION = CURRENT.version;
 
 export const releases: Release[] = [
   CURRENT,
+  {
+    version: "0.7.1",
+    date: "2026-09-07",
+    notes: ["The Add to Home Screen screenshots now carry Hockey Liga branding."],
+  },
+  {
+    version: "0.7.0",
+    date: "2026-09-07",
+    notes: [
+      "Added an Add to Home Screen guide, with the steps for Safari on iPhone and iPad and for Chrome on Android.",
+      "Each browser's steps come with a screenshot of the menu to look for.",
+    ],
+  },
+  {
+    version: "0.6.0",
+    date: "2026-09-06",
+    notes: [
+      "Every page now ends with the date the results were last updated, so a blank score reads as a game not yet played rather than a page that stopped updating.",
+      "The footer also carries the site's version. Clicking it opens this history.",
+    ],
+  },
   {
     version: "0.5.1",
     date: "2026-09-05",

@@ -10,9 +10,11 @@ release history.
 | Release history shown in the app | Visitors              | [`src/data/versions.ts`](../src/data/versions.ts) |
 | Engineering log                  | Whoever works on this | [`CHANGELOG.md`](../CHANGELOG.md)                 |
 
-They share one numbering, and `npm test` fails if the newest version in `versions.ts` is not the
-version on the topmost `CHANGELOG.md` heading. That check exists because two hand-kept records
-drift silently otherwise.
+They share one numbering, and `npm test` fails if the two disagree: the newest version in
+`versions.ts` must be the version on the topmost `CHANGELOG.md` heading, and every release must
+appear in both. That check exists because two hand-kept records drift silently otherwise — it
+originally compared only the newest pair, and three releases went missing from the site history
+before anyone noticed.
 
 They are not duplicates. `versions.ts` says what changed on the site in terms a visitor would
 recognise; `CHANGELOG.md` records the reasoning, the deployment plumbing, and the things that were

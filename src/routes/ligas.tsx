@@ -1,15 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { LandingShell } from "@/components/site";
-import {
-  SEASON,
-  activeLigas,
-  matchesOf,
-  playedOf,
-  teamsOf,
-  upcomingLigas,
-  type ActiveLiga,
-} from "@/data/league";
+import { SEASON, activeLigas, matchesOf, playedOf, teamsOf, type ActiveLiga } from "@/data/league";
+import { ARCHIVE_SEASON, archivedLigas } from "@/data/archive";
 
 export const Route = createFileRoute("/ligas")({
   head: () => ({
@@ -91,9 +84,9 @@ function AllLigasPage() {
         </div>
 
         <section className="mt-14">
-          <p className="label-eyebrow">Not running this season</p>
+          <p className="label-eyebrow">Completed ligas</p>
           <div className="mt-4 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2">
-            {upcomingLigas.map((liga) => (
+            {archivedLigas.map((liga) => (
               <Link
                 key={liga.slug}
                 to="/liga/$slug"
@@ -103,20 +96,10 @@ function AllLigasPage() {
                 <span className="truncate text-sm text-muted-foreground transition-colors group-hover:text-foreground">
                   {liga.name}
                 </span>
-                <ArrowRight
-                  className="size-3.5 shrink-0 text-muted-foreground/60 transition-transform duration-200 group-hover:translate-x-1"
-                  aria-hidden="true"
-                />
+                <span className="meta-mono shrink-0">{ARCHIVE_SEASON.label}</span>
               </Link>
             ))}
           </div>
-
-          <Link
-            to="/archive"
-            className="meta-mono mt-5 inline-block transition-colors hover:text-foreground"
-          >
-            See past years&rsquo; results →
-          </Link>
         </section>
       </main>
     </LandingShell>
