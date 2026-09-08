@@ -22,8 +22,34 @@ const GITHUB_REPO = "hockey-liga";
 const WORKFLOW_FILE = "refresh-fixtures.yml";
 const WORKFLOW_REF = "main";
 
-/** Only edits on this tab are worth a refresh — it is the tab the script reads. */
-const WATCHED_SHEET_NAME = "CURRENT";
+/**
+ * Where the live season is recorded. B1 is the tab's name and the site's season
+ * label; C1 is that tab's gid. Reading it per edit rather than hardcoding a
+ * season means a rollover is a HELPER edit and nothing else.
+ */
+const HELPER_SHEET_NAME = "HELPER";
+const HELPER_GID_CELL = "C1";
+
+/**
+ * The gid of the tab whose edits are worth a refresh.
+ *
+ * Matched on gid rather than name so this watches exactly the tab
+ * scripts/refresh-fixtures.ts fetches, by the same identifier. A renamed tab
+ * keeps its gid, so a rename cannot silently stop refreshes; a duplicated tab
+ * gets a new one, and C1 has to be updated either way for the fetch to be right.
+ *
+ * Returns null if HELPER is missing or C1 is not a gid, which makes onSheetEdit
+ * match nothing rather than every tab. A refresh that stops firing is recoverable
+ * (the daily cron still runs); one that fires on every unrelated edit is not.
+ * Note that 0 is a valid gid — the first sheet ever created in a spreadsheet —
+ * so this reports "unknown" as null, never as a falsy number.
+ */
+function watchedSheetGid() {
+  const helper = SpreadsheetApp.getActive().getSheetByName(HELPER_SHEET_NAME);
+  if (!helper) return null;
+  const raw = String(helper.getRange(HELPER_GID_CELL).getValue() || "").trim();
+  return /^[0-9]+$/.test(raw) ? Number(raw) : null;
+}
 
 /** Script Property names. The token is never committed to the repository. */
 const TOKEN_PROPERTY = "GITHUB_TOKEN";
@@ -47,7 +73,8 @@ const FLUSH_INTERVAL_MINUTES = 10;
  */
 function onSheetEdit(e) {
   if (!e || !e.range) return;
-  if (e.range.getSheet().getName() !== WATCHED_SHEET_NAME) return;
+  const watched = watchedSheetGid();
+  if (watched === null || e.range.getSheet().getSheetId() !== watched) return;
   PropertiesService.getScriptProperties().setProperty(PENDING_PROPERTY, "1");
 }
 

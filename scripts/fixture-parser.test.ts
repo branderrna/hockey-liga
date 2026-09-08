@@ -145,3 +145,24 @@ test("promotes a seeding play-off to a play-in when a knockout row points back a
     ["PLAY-IN", "2", "QF3", "2"],
   );
 });
+
+test("still finds the seed pairing when an operational clause follows it", () => {
+  const rows = parseCsv(
+    [
+      "No.,Day & Date,Venue,Time,Category,Round,Home,Score,Away,Shootout Score,PP,Notes",
+      '1,"Saturday,_09 May",DELTA,1800,SOCIAL,2,OLDHAM,4 - 0,HYPERNOVAS,,,6th vs 7th. Time changed',
+      '2,"Saturday,_16 May",DELTA,1900,SOCIAL,QF3,BARKERITES,2 - 1,OLDHAM,,,3rd vs Winner of 6th/7th play-in. Venue changed',
+    ].join("\n"),
+  );
+
+  const parsed = parseFixtureRows(rows, {
+    seasonYear: "2026",
+    categoryToDivision: { SOCIAL: "social" },
+    resolveTeamId: (divisionId, name) => `${divisionId}--${name.toLowerCase()}`,
+  });
+
+  assert.deepEqual(
+    parsed.matches.map((match) => match.round),
+    ["PLAY-IN", "QF3"],
+  );
+});

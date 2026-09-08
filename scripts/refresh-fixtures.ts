@@ -1,6 +1,6 @@
-// Fetches the league's public Google Sheet ("CURRENT" tab) and regenerates
-// src/data/matches.generated.ts. Run by .github/workflows/refresh-fixtures.yml,
-// or manually with: node scripts/refresh-fixtures.ts
+// Fetches the league's public Google Sheet (the live season tab named by HELPER)
+// and regenerates src/data/matches.generated.ts. Run by
+// .github/workflows/refresh-fixtures.yml, or manually: node scripts/refresh-fixtures.ts
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -9,8 +9,39 @@ import { parseCsv, parseFixtureRows } from "../src/data/fixture-parser.ts";
 import type { DivisionId } from "../src/data/types.ts";
 
 const SHEET_ID = "1xD2Yc5dJAlNe82Zps3b3bpT23XGXDl5hlOkGDum3vDA";
-const GID = "9556364"; // "CURRENT" tab
-const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+
+/*
+ * The one gid that stays in the code. The HELPER tab is never renamed or
+ * recreated, so its gid outlives every season; the live season's own name and
+ * gid are read out of it. A season rollover is then two cells in the sheet
+ * rather than an edit here — see docs/fixtures-refresh.md.
+ */
+const HELPER_GID = "932175786";
+
+const csvUrl = (gid: string) =>
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
+
+async function fetchCsv(gid: string, what: string): Promise<string> {
+  const res = await fetch(csvUrl(gid));
+  if (!res.ok) throw new Error(`Failed to fetch ${what}: ${res.status} ${res.statusText}`);
+  return res.text();
+}
+
+/**
+ * Reads the live season from HELPER row 1: a label in A1, the season name in
+ * B1, and that tab's gid in C1. The name is the tab's name and the site's
+ * season label; the gid is what actually gets fetched, because a tab renamed
+ * mid-season keeps its gid while a duplicated tab silently gets a new one.
+ */
+async function fetchSeasonSource(): Promise<{ label: string; gid: string }> {
+  const [row] = parseCsv(await fetchCsv(HELPER_GID, "the HELPER tab"));
+  const label = row?.[1]?.trim() ?? "";
+  const gid = row?.[2]?.trim() ?? "";
+  if (!label) throw new Error("HELPER!B1 is empty: it must name the live season's tab");
+  if (!/^[0-9]+$/.test(gid))
+    throw new Error(`HELPER!C1 must be that tab's numeric gid, got "${gid}"`);
+  return { label, gid };
+}
 
 const CATEGORY_TO_DIVISION: Record<string, DivisionId> = {
   WOMEN: "women",
@@ -28,10 +59,9 @@ function resolveTeamId(divisionId: DivisionId, name: string): string | null {
 }
 
 async function main() {
-  const res = await fetch(CSV_URL);
-  if (!res.ok) throw new Error(`Failed to fetch sheet: ${res.status} ${res.statusText}`);
-  const csvText = await res.text();
-  const rows = parseCsv(csvText);
+  const season = await fetchSeasonSource();
+  console.log(`Live season: ${season.label} (gid ${season.gid})`);
+  const rows = parseCsv(await fetchCsv(season.gid, `the "${season.label}" tab`));
 
   const { matches, unresolvedTeams, skippedRows } = parseFixtureRows(rows, {
     seasonYear: SEASON.start.slice(0, 4),
@@ -68,7 +98,9 @@ async function main() {
   // refresh-fixtures.yml's `git diff --quiet` check still short-circuits before
   // committing. A stamp that advanced on every run would commit and redeploy
   // the site every few minutes with no data change behind it.
-  const unchanged = previous.includes(`export const matches: Match[] = ${body};`);
+  const unchanged =
+    previous.includes(`export const matches: Match[] = ${body};`) &&
+    previous.includes(`export const seasonLabel = "${season.label}";`);
   const updatedAt =
     (unchanged ? previous.match(/^export const fixturesUpdatedAt = "([^"]+)";$/m)?.[1] : null) ??
     new Date().toISOString();
@@ -82,11 +114,18 @@ import type { Match } from "./types.ts";
 // matters.
 export const fixturesUpdatedAt = "${updatedAt}";
 
+// The live season, from HELPER!B1. Generated rather than hand-kept so the label
+// on the site follows the sheet through a rollover without a code change.
+// @public because league.ts reads it off the module namespace rather than as a
+// named import, which knip cannot follow. See the comment on SEASON there.
+/** @public */
+export const seasonLabel = "${season.label}";
+
 export const matches: Match[] = ${body};
 `;
 
   writeFileSync(outPath, out);
-  console.log(`Wrote ${matches.length} matches to ${outPath}`);
+  console.log(`Wrote ${matches.length} matches (${season.label}) to ${outPath}`);
 }
 
 main().catch((err) => {
