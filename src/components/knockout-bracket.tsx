@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { formatFixtureRound } from "@/data/round";
 import {
   bracketsOf,
@@ -76,7 +76,12 @@ function scrollToColumn(scroller: HTMLDivElement, index: number, behavior: Scrol
 function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | null }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const opened = useRef(false);
+  const drag = useRef<{ from: number; left: number; pointer: number } | null>(null);
   const [edges, setEdges] = useState({ start: false, end: false });
+  const [dragging, setDragging] = useState(false);
+
+  // A fade at either edge means there is more chart than fits.
+  const scrollable = edges.start || edges.end;
 
   const first = Math.max(
     0,
@@ -113,6 +118,53 @@ function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | 
     };
   }, [first]);
 
+  /*
+   * Drag to pan, because the scrollbar is hidden and a mouse has no other
+   * obvious way across a chart wider than the window. Touch and pen are left
+   * alone: they already pan, with momentum this would only take away.
+   */
+  const startDrag = (event: PointerEvent<HTMLDivElement>) => {
+    const scroller = scrollRef.current;
+    if (!scroller || event.pointerType !== "mouse" || event.button !== 0) return;
+    if (scroller.scrollWidth <= scroller.clientWidth) return;
+    drag.current = { from: event.clientX, left: scroller.scrollLeft, pointer: event.pointerId };
+    // Capture keeps the drag alive past the chart's edges. It throws if the
+    // pointer is already gone, which must not take the drag down with it.
+    try {
+      scroller.setPointerCapture(event.pointerId);
+    } catch {
+      /* the drag still works, it just stops at the edge */
+    }
+    setDragging(true);
+  };
+
+  const moveDrag = (event: PointerEvent<HTMLDivElement>) => {
+    const scroller = scrollRef.current;
+    if (!drag.current || !scroller) return;
+    scroller.scrollLeft = drag.current.left - (event.clientX - drag.current.from);
+  };
+
+  const endDrag = () => {
+    const scroller = scrollRef.current;
+    if (drag.current && scroller?.hasPointerCapture(drag.current.pointer)) {
+      scroller.releasePointerCapture(drag.current.pointer);
+    }
+    drag.current = null;
+    setDragging(false);
+  };
+
+  // A drag that ends off the page never delivers pointerup, and the chart
+  // would then follow the cursor with no button held.
+  useLayoutEffect(() => {
+    if (!dragging) return;
+    window.addEventListener("pointerup", endDrag);
+    window.addEventListener("pointercancel", endDrag);
+    return () => {
+      window.removeEventListener("pointerup", endDrag);
+      window.removeEventListener("pointercancel", endDrag);
+    };
+  });
+
   return (
     <figure className="knockout-chart">
       <figcaption className="label-eyebrow knockout-chart-title">{bracket.title}</figcaption>
@@ -128,6 +180,12 @@ function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | 
           role="region"
           aria-label={`${bracket.title} bracket`}
           tabIndex={0}
+          {...(scrollable ? { "data-scrollable": "" } : {})}
+          {...(dragging ? { "data-dragging": "" } : {})}
+          onPointerDown={startDrag}
+          onPointerMove={moveDrag}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
         >
           <div
             className="knockout-bracket"

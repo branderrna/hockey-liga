@@ -48,6 +48,11 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   favour of a fade at whichever edge has more content. Stage buttons that
   jumped the chart were tried and dropped: they duplicated the column headings
   already on screen and were their own source of bugs. The fades carry it.
+- Drag to pan the chart with a mouse. Hiding the scrollbar left a desktop
+  window too narrow for the whole bracket with no obvious way across it, since
+  a mouse has no equivalent of a swipe. The grab cursor appears only when there
+  is somewhere to drag to. Touch and pen are deliberately untouched, because
+  they already pan and hijacking them would only cost the momentum.
 - A chart that opens on a later stage lands it clear of the fade rather than
   under it, so the first column never reads as clipped down one side. The inset
   is declared once in CSS as the scroller's scroll-padding and read back in JS.

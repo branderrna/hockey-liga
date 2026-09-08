@@ -233,6 +233,18 @@
   scrollbar-width: none;
 }
 
+/* With the bar hidden, dragging is how a mouse crosses a chart wider than the
+   window. The cursor is the only thing that says so, so it appears exactly
+   when there is somewhere to drag to. */
+.knockout-scroll[data-scrollable] {
+  cursor: grab;
+}
+
+.knockout-scroll[data-dragging] {
+  cursor: grabbing;
+  user-select: none;
+}
+
 .knockout-scroll::-webkit-scrollbar {
   display: none;
 }
