@@ -1,11 +1,21 @@
 import type { ActiveLiga, DivisionId, Liga, League, Match, Team } from "./types";
-import { fixturesUpdatedAt, matches, seasonLabel } from "./matches.generated.ts";
+import * as generated from "./matches.generated.ts";
 
 export type { ActiveLiga, DivisionId, Match, Team };
 
 const SEASON_START = "2026-08-02";
 const SEASON_END = "2026-11-29";
 const SEASON_YEAR = SEASON_START.slice(0, 4);
+
+/*
+ * Read off the namespace with a fallback, not as a named import, because
+ * scripts/refresh-fixtures.ts imports this module in order to WRITE that file.
+ * A named import wedges the generator whenever the export it produces is not
+ * there yet — resolving a merge conflict by taking the other side's generated
+ * file is enough to do it — leaving no way to regenerate. Falling back to the
+ * year keeps the site sensible until the next refresh fills the label in.
+ */
+const seasonLabel = (generated as { seasonLabel?: string }).seasonLabel ?? SEASON_YEAR;
 
 /*
  * The season's bounds. `start` and `end` are load-bearing, not decoration:
@@ -376,10 +386,10 @@ export const teams: Team[] = [
   },
 ];
 
-export { matches };
+export const { matches } = generated;
 
 /** When the fixtures last changed. Re-exported so views read data from here. */
-export { fixturesUpdatedAt };
+export const { fixturesUpdatedAt } = generated;
 
 export const teamsOf = (divisionId: DivisionId) => teams.filter((t) => t.divisionId === divisionId);
 

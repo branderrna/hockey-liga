@@ -116,6 +116,9 @@ export const fixturesUpdatedAt = "${updatedAt}";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
+// @public because league.ts reads it off the module namespace rather than as a
+// named import, which knip cannot follow. See the comment on SEASON there.
+/** @public */
 export const seasonLabel = "${season.label}";
 
 export const matches: Match[] = ${body};
