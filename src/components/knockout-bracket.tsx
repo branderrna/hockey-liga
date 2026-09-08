@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { formatFixtureRound } from "@/data/round";
 import {
   bracketsOf,
@@ -51,34 +51,137 @@ export function KnockoutBracket({
   );
 }
 
+function columnAt(scroller: HTMLDivElement, index: number): HTMLElement | undefined {
+  return scroller.querySelectorAll<HTMLElement>(".knockout-column")[index];
+}
+
+/** Brings a stage to the left edge of its chart, however wide the columns are. */
+function scrollToColumn(scroller: HTMLDivElement, index: number, behavior: ScrollBehavior) {
+  const column = columnAt(scroller, index);
+  if (!column) return;
+  const delta = column.getBoundingClientRect().left - scroller.getBoundingClientRect().left;
+  scroller.scrollTo({ left: scroller.scrollLeft + delta, behavior });
+}
+
 function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | null }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const opened = useRef(false);
+  const [scrollable, setScrollable] = useState(false);
+  const [edges, setEdges] = useState({ start: false, end: false });
+  const [nearest, setNearest] = useState(0);
+
+  // Only stages this chart actually reaches are worth offering as a jump.
+  const stages = bracket.columns
+    .map((column, index) => ({ title: column.title, index, filled: column.slots.length > 0 }))
+    .filter((stage) => stage.filled && stage.title);
+  const first = stages[0]?.index ?? 0;
+  const active = [...stages].reverse().find((stage) => stage.index <= nearest)?.index ?? first;
+
+  useLayoutEffect(() => {
+    const scroller = scrollRef.current;
+    if (!scroller) return;
+
+    const measure = () => {
+      const overflow = scroller.scrollWidth - scroller.clientWidth;
+      const left = scroller.getBoundingClientRect().left;
+      let closest = 0;
+      let best = Infinity;
+      scroller.querySelectorAll<HTMLElement>(".knockout-column").forEach((column, index) => {
+        // A column collapsed on a narrow screen has no position to be near.
+        if (column.clientWidth === 0) return;
+        const distance = Math.abs(column.getBoundingClientRect().left - left);
+        if (distance < best) {
+          best = distance;
+          closest = index;
+        }
+      });
+
+      // Compared before storing, so scrolling only re-renders when something
+      // a reader can see has actually changed.
+      const overflows = overflow > 1;
+      const start = scroller.scrollLeft > 1;
+      const end = scroller.scrollLeft < overflow - 1;
+      setScrollable((was) => (was === overflows ? was : overflows));
+      setNearest((was) => (was === closest ? was : closest));
+      setEdges((was) => (was.start === start && was.end === end ? was : { start, end }));
+
+      // A chart that starts at a later stage opens on it. Its leading columns
+      // are empty by design, and on a phone they are a screen of nothing.
+      if (!opened.current && overflow > 1) {
+        opened.current = true;
+        scrollToColumn(scroller, first, "instant");
+      }
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(scroller);
+    scroller.addEventListener("scroll", measure, { passive: true });
+    return () => {
+      observer.disconnect();
+      scroller.removeEventListener("scroll", measure);
+    };
+  }, [first]);
+
   return (
     <figure className="knockout-chart">
       <figcaption className="label-eyebrow knockout-chart-title">{bracket.title}</figcaption>
+
+      {/* Offered only when the chart does not fit, so a phone can jump between
+          stages instead of hunting for them by dragging. */}
+      {scrollable && stages.length > 1 ? (
+        <div className="knockout-stages">
+          {stages.map((stage) => (
+            <button
+              key={stage.index}
+              type="button"
+              aria-pressed={stage.index === active}
+              onClick={() => {
+                const scroller = scrollRef.current;
+                if (scroller) scrollToColumn(scroller, stage.index, "smooth");
+              }}
+            >
+              {stage.title}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       <div
-        className="knockout-scroll"
-        role="region"
-        aria-label={`${bracket.title} bracket`}
-        tabIndex={0}
+        className="knockout-viewport"
+        {...(edges.start ? { "data-start": "" } : {})}
+        {...(edges.end ? { "data-end": "" } : {})}
       >
         <div
-          className="knockout-bracket"
-          style={{ "--knockout-rows": bracket.rows } as CSSProperties}
+          ref={scrollRef}
+          className="knockout-scroll"
+          role="region"
+          aria-label={`${bracket.title} bracket`}
+          tabIndex={0}
         >
-          {bracket.columns.map((column, index) => (
-            // The heading box is always present, empty columns included, so
-            // every column's first row starts at the same height.
-            <div key={`${index}-${column.title}`} className="knockout-column">
-              <div className="knockout-column-head">
-                {column.title ? <h3 className="label-eyebrow">{column.title}</h3> : null}
+          <div
+            className="knockout-bracket"
+            style={{ "--knockout-rows": bracket.rows } as CSSProperties}
+          >
+            {bracket.columns.map((column, index) => (
+              // The heading box is always present, empty columns included, so
+              // every column's first row starts at the same height.
+              <div
+                key={`${index}-${column.title}`}
+                className="knockout-column"
+                {...(column.slots.length === 0 ? { "data-empty": "" } : {})}
+              >
+                <div className="knockout-column-head">
+                  {column.title ? <h3 className="label-eyebrow">{column.title}</h3> : null}
+                </div>
+                <div className="knockout-column-body">
+                  {column.slots.map((slot) => (
+                    <BracketSlotCard key={slot.match.id} slot={slot} teamId={teamId} />
+                  ))}
+                </div>
               </div>
-              <div className="knockout-column-body">
-                {column.slots.map((slot) => (
-                  <BracketSlotCard key={slot.match.id} slot={slot} teamId={teamId} />
-                ))}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </figure>

@@ -32,6 +32,18 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   the connectors are three plain rules instead of guesses. The old chart sorted
   cards into stage columns and drew a line from every card to every neighbour,
   which is why the lines did not mean anything.
+- Fixed a chart on a phone opening on nothing. The shared column hierarchy
+  means a placing bracket's leading columns are empty by design, which on a
+  narrow screen was a screenful of blank space above the title. Charts now open
+  on their own first stage, and on a phone the empty columns are dropped
+  entirely: charts scroll independently there, so lining their columns up
+  across charts buys nothing that a chart starting at its own first game does
+  not buy more cheaply. The desktop alignment is untouched.
+- A chart that does not fit gets a row of stage buttons that scroll it, the way
+  a bracket on a phone usually works. Dragging still works and moves the
+  underline with it. The scrollbar is hidden in favour of edge fades, which say
+  the same thing without a grey bar under the cards; the buttons only appear
+  when there is something to scroll to.
 - Moved the bracket into the phase switcher beside the numbered rounds, where
   it reads as the phase that followed them rather than as an appendix to the
   last round's table. Selecting it does not disturb which round the tables are
