@@ -322,11 +322,14 @@ function winnerForDisplay(match: Match): string | null {
 }
 
 /**
- * The selected team's run through the knockout, read from their side: the
- * opponent rather than both names, and their own score first. Naming the team
- * on every row of their own page says nothing, and once the row reads "v
- * someone" the scoreline has to be theirs first or it reports the wrong result
- * whenever they played away.
+ * The selected team's run through the knockout, read from their side rather
+ * than the sheet's: their own name first whether they were home or away, and
+ * their own score first with it. Once a row is ordered that way the score has
+ * to follow, or it reports the wrong result every time they played away.
+ *
+ * Their name is dropped where the row is tight, because every row of their own
+ * page carries it and the opponent is the part that differs. A phone turned
+ * landscape has the width and gets it back.
  */
 function CompactBracket({ matches, teamId }: { matches: Match[]; teamId: string }) {
   if (matches.length === 0) return null;
@@ -344,6 +347,11 @@ function CompactBracket({ matches, teamId }: { matches: Match[]; teamId: string 
           <li key={match.id} className="knockout-compact-match" role="listitem">
             <span className="knockout-compact-round">{formatFixtureRound(match.round ?? "")}</span>
             <span className="knockout-compact-opponent text-sm">
+              {/* Hidden where the row is tight, since the whole section is
+                  this team's; a phone turned landscape gets it back. */}
+              <span className="hidden sm:inline">
+                {match.homeId === teamId ? match.homeName : match.awayName}{" "}
+              </span>
               <span className="text-muted-foreground">v</span>{" "}
               {match.homeId === teamId ? match.awayName : match.homeName}
             </span>

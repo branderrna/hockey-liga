@@ -62,12 +62,14 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   for, so switching back lands where you left.
 - Seeding notes on a card wrap instead of truncating. A route cut off
   mid-phrase says less than no route at all, and the rows have the headroom.
-- The My Team knockout run reads from the selected team's side: the opponent
-  rather than both names, and their own score first. Naming the team on every
-  row of their own page says nothing, and once a row reads "v someone" the
-  scoreline has to be theirs first or it reports the wrong result whenever they
-  played away. The grid moved onto the list so the opponents line up under each
-  other and the stage never wraps.
+- The My Team knockout run reads from the selected team's side rather than the
+  sheet's: their own name first whether they were home or away, and their own
+  score first with it. Once a row is ordered that way the score has to follow,
+  or it reports the wrong result every time they played away. Their name is
+  dropped where the row is tight, since every row of their own page carries it
+  and the opponent is the part that differs; a phone turned landscape has the
+  width and gets it back. The grid moved onto the list so the opponents line up
+  under each other and the stage never wraps.
 - Laid the charts out against one column hierarchy per division, keyed by
   rounds from each chart's own decider rather than by stage name. The
   semi-finals of a 5th-8th bracket now sit under the semi-finals of the
