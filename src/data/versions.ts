@@ -29,7 +29,7 @@ const CURRENT: Release = {
     "Knockout brackets are drawn as they were played: four quarter-finals into two semi-finals into the final, with lines that follow the winner.",
     "Play-off brackets for the lower places are shown as separate charts, lined up with the main one so each stage sits in the same column.",
     "The bracket has its own tab beside the round tables, and My team shows your knockout run as who you played and how it finished.",
-    "A round played in two pools now has a table for each, showing which half of the league it was.",
+    "A round played in two pools now has a table for each, showing which half of the league it was, with points carried forward from the round before.",
     "A bracket wider than the window can be dragged across, or swiped on a phone.",
     "Round labels and shootout scores now appear in schedules and team views.",
     "If a row of a completed season cannot be read from the league sheet, the page now says so and shows the rest, instead of failing to load.",

@@ -86,6 +86,21 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   than onto a line of its own, which also says which of the two won it. Rows
   stay uniform, since that is what lets a card's centre be a percentage and
   keeps the connectors in pure CSS.
+- A numbered round continues the one before it rather than starting a fresh
+  table. Super and Premier both run a second round where points and goals carry
+  forward and only the fixtures change, the top half playing among themselves
+  and the bottom half likewise. Counting a round alone put the leaders at the
+  bottom of their own pool the day it opened: Super's Round 2 table had
+  THISISRI 4th on 3 points having led Round 1 on 25. `standingsFor` now counts
+  every round up to the one asked for, so the pools show a season table split
+  in two. A season that resets instead is a different shape and is left to
+  BACKLOG.md rather than guessed at from the fixtures.
+- A round whose sides are still seeded by finishing position is kept out of the
+  table switcher until its clubs are named. The switcher opens on the latest
+  round, so a published-but-unseeded round meant a visitor's first sight of the
+  league table was every team on zero, with the real one a click away. Those
+  fixtures still show in the schedule, where the date and venue are the point,
+  and the round earns its table on the day the names arrive.
 - Read two things out of the 2026/1 notes that the sheet records nowhere else,
   because that tab is immutable and cannot be corrected at source. A seeding
   play-off filed under a numeric round becomes a `PLAY-IN` when a knockout row

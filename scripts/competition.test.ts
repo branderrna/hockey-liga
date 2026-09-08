@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   bracketsOf,
+  matchesOf,
   collapseKnockoutMatches,
   isKnockoutRound,
   knockoutStage,
@@ -10,6 +11,7 @@ import {
   poolsOf,
   pooledStandingsFor,
   standingsFor,
+  tableRoundsOf,
   winnerId,
 } from "../src/data/competition.ts";
 import type { CompetitionDataset } from "../src/data/competition.ts";
@@ -73,11 +75,16 @@ const dataset: CompetitionDataset = {
   ],
 };
 
-test("numeric round discovery and standings filtering exclude knockout games", () => {
+test("a later round carries the earlier ones forward, and never the knockout", () => {
   assert.deepEqual(numericRoundsOf(dataset, "social"), ["1", "2"]);
-  assert.equal(standingsFor(dataset, "social", "1").find((row) => row.team.id === "a")?.gp, 1);
-  assert.equal(standingsFor(dataset, "social", "2").find((row) => row.team.id === "a")?.gp, 1);
-  assert.equal(standingsFor(dataset, "social").find((row) => row.team.id === "a")?.gp, 2);
+  const gpAfter = (round?: string) =>
+    standingsFor(dataset, "social", round).find((row) => row.team.id === "a")?.gp;
+  // Team A played once in each round, so round 2 stands at two games, not one.
+  assert.equal(gpAfter("1"), 1);
+  assert.equal(gpAfter("2"), 2);
+  assert.equal(gpAfter(), 2);
+  // A knockout win is not a league game at any round.
+  assert.equal(standingsFor(dataset, "social", "2").find((row) => row.team.id === "b")?.gp, 1);
 });
 
 test("knockout classification and shootout winner resolution are explicit", () => {
@@ -259,4 +266,40 @@ test("a hung decider costs the grid no row the other columns would leave blank",
       `${chart.title} still places a hung decider in the grid`,
     );
   }
+});
+
+test("a round still seeded by finishing position is not offered as a table", () => {
+  const seeded: CompetitionDataset = {
+    teams: [team("a", "A"), team("b", "B"), team("c", "C")],
+    matches: [
+      tie("r1-1", 1, "1", "a", "b", 2, 0),
+      tie("r1-2", 2, "1", "b", "c", 1, 0),
+      tie("r1-3", 3, "1", "a", "c", 3, 1),
+      // Round 2 is published but its sides are still "1ST" and "3RD".
+      match({
+        id: "r2-1",
+        no: 4,
+        round: "2",
+        homeId: null,
+        awayId: null,
+        homeName: "1ST",
+        awayName: "3RD",
+        note: "1st vs 3rd",
+      }),
+    ],
+  };
+
+  assert.deepEqual(numericRoundsOf(seeded, "social"), ["1", "2"]);
+  // Offering it would open the table on nine teams at zero, so it waits.
+  assert.deepEqual(tableRoundsOf(seeded, "social"), ["1"]);
+  // The fixture is still in the schedule, which is where it is useful.
+  assert.equal(matchesOf(seeded, "social").filter((m) => m.round === "2").length, 1);
+
+  // The day the clubs are named, the round earns its table.
+  const named: CompetitionDataset = {
+    teams: seeded.teams,
+    matches: [...seeded.matches.slice(0, 3), tie("r2-1", 4, "2", "a", "c", 1, 1)],
+  };
+  assert.deepEqual(tableRoundsOf(named, "social"), ["1", "2"]);
+  assert.equal(standingsFor(named, "social", "2").find((row) => row.team.id === "a")?.gp, 3);
 });

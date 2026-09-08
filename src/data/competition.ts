@@ -152,14 +152,41 @@ export function hasKnockoutOf(dataset: CompetitionDataset, divisionId: DivisionI
   return matchesOf(dataset, divisionId).some((match) => isKnockoutRound(match.round));
 }
 
+/**
+ * Rounds worth offering as a table. A round whose fixtures are still seeded by
+ * finishing position ("1ST v 3RD") has no clubs to count, so its table would be
+ * every team on zero — and since the switcher opens on the latest round, that
+ * empty table would be the first thing a visitor saw. Such a round still shows
+ * in the schedule, where the fixture is the point; it earns a table on the day
+ * the names arrive, which is the day the round before it finishes.
+ */
+export function tableRoundsOf(dataset: CompetitionDataset, divisionId: DivisionId): string[] {
+  const seeded = (round: string) =>
+    matchesOf(dataset, divisionId).some(
+      (match) => match.round === round && match.homeId && match.awayId,
+    );
+  return numericRoundsOf(dataset, divisionId).filter(seeded);
+}
+
+/**
+ * A later round carries the earlier ones forward. The league's second round is
+ * a continuation of the first, not a separate competition: points and goals
+ * accumulate, and all that changes is who a side is scheduled against, since
+ * the table splits into pools that play among themselves. Counting a round on
+ * its own would drop the leaders to the bottom of their own pool on the day
+ * the round opened. Should a season ever run its second round as a fresh
+ * table, that becomes a property of the season rather than a change here —
+ * see BACKLOG.md.
+ */
 function standingsMatches(
   dataset: CompetitionDataset,
   divisionId: DivisionId,
   round?: string,
 ): Match[] {
   return playedOf(dataset, divisionId).filter((match) => {
-    if (round) return match.round === round;
-    return !isKnockoutRound(match.round);
+    if (!round) return !isKnockoutRound(match.round);
+    if (!match.round || !isLeagueRound(match.round)) return false;
+    return Number(match.round) <= Number(round);
   });
 }
 

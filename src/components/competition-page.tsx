@@ -8,8 +8,8 @@ import {
   isReplayed,
   latestWeekendKey,
   matchesOf,
-  numericRoundsOf,
   pooledStandingsFor,
+  tableRoundsOf,
   teamsOf,
   weekendsOf,
   type CompetitionDataset,
@@ -633,7 +633,7 @@ function TableView({
   divisionId: DivisionId;
   teamId: string | null;
 }) {
-  const rounds = numericRoundsOf(dataset, divisionId);
+  const rounds = tableRoundsOf(dataset, divisionId);
   // Selecting the knockout must not change which round the tables are for, so
   // the phase is tracked separately from the round it falls back to.
   const [selectedRound, setSelectedRound] = useSelectedRound(rounds);
@@ -684,7 +684,7 @@ function MyTeamView({
   divisionId: DivisionId;
   teamId: string;
 }) {
-  const rounds = numericRoundsOf(dataset, divisionId);
+  const rounds = tableRoundsOf(dataset, divisionId);
   const [selectedRound, setSelectedRound] = useSelectedRound(rounds);
   const tableRound = rounds.length > 0 ? selectedRound : undefined;
   const groups = pooledStandingsFor(dataset, divisionId, tableRound);

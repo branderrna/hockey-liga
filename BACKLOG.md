@@ -45,6 +45,29 @@ but it is not attributed to a team, so it cannot skew a standings row.
 decided. Nothing to change in code — the names resolve on the next refresh
 once the sheet is updated.
 
+Such a round is deliberately kept out of the table switcher until its clubs are
+named — see `tableRoundsOf` — because a table of every team on zero would
+otherwise be the first thing a visitor saw. The fixtures still show in the
+schedule throughout.
+
+## A second round that starts a fresh table
+
+Today a numbered round continues the one before it. Super and Premier both run
+a second round where the table carries forward and only the fixtures change,
+with the top half playing among themselves and the bottom half likewise, so
+`standingsFor` counts every round up to the one asked for.
+
+A future season may instead run its second round as separate pools with their
+own tables, starting from zero. That is a different competition shape, not a
+display option, and it cannot be inferred: a round with two pools looks
+identical either way, and only the league knows whether the points reset.
+
+**Blocked on:** a season that actually does it, and a way for the sheet to say
+so. When it happens, make it a property of the season rather than a branch in
+`standingsMatches` — the archive catalogue in `archive.ts` and the live
+`SEASON` in `league.ts` are the places that already describe a season's shape.
+Do not guess it from the fixtures.
+
 ## Team logos
 
 The schedule and standings show team names only. Crests were mentioned as
