@@ -55,12 +55,19 @@ schedule throughout.
 Today a numbered round continues the one before it. Super and Premier both run
 a second round where the table carries forward and only the fixtures change,
 with the top half playing among themselves and the bottom half likewise, so
-`standingsFor` counts every round up to the one asked for.
+`standingsFor` counts every round up to the one asked for and the site shows
+one table throughout. The halves are a scheduling detail, not a division of the
+league: a side from the bottom half can finish above one from the top, which is
+exactly what a table per half would hide. The 2026/1 Super season did it — SA
+Alumni were 7th after Round 1 and finished 5th, above Masters O50s who were 5th.
 
 A future season may instead run its second round as separate pools with their
 own tables, starting from zero. That is a different competition shape, not a
 display option, and it cannot be inferred: a round with two pools looks
-identical either way, and only the league knows whether the points reset.
+identical either way, and only the league knows whether the points reset. Note
+that pool detection and per-pool tables were built and then removed once the
+continuation rule was understood, so this starts from nothing rather than from
+a switch — see the 0.8.0 entry in CHANGELOG.md.
 
 **Blocked on:** a season that actually does it, and a way for the sheet to say
 so. When it happens, make it a property of the season rather than a branch in

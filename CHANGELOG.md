@@ -86,15 +86,23 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   than onto a line of its own, which also says which of the two won it. Rows
   stay uniform, since that is what lets a card's centre be a percentage and
   keeps the connectors in pure CSS.
+- A round played in two halves is still one table. The halves say who a side is
+  scheduled against, not which league they are in, so a side from the bottom
+  half can finish above one from the top: 2026/1 Super had SA Alumni 7th after
+  Round 1 and 5th at the end, above Masters O50s who were 5th. A table per half
+  hid exactly that, ranking SA Alumni 1st of the bottom five and Masters 5th of
+  the top five. Pool detection and per-pool tables are gone with it; what is
+  left is one table per round, and BACKLOG.md keeps the case for bringing pools
+  back if a season ever runs them as separate competitions.
 - A numbered round continues the one before it rather than starting a fresh
   table. Super and Premier both run a second round where points and goals carry
   forward and only the fixtures change, the top half playing among themselves
   and the bottom half likewise. Counting a round alone put the leaders at the
   bottom of their own pool the day it opened: Super's Round 2 table had
   THISISRI 4th on 3 points having led Round 1 on 25. `standingsFor` now counts
-  every round up to the one asked for, so the pools show a season table split
-  in two. A season that resets instead is a different shape and is left to
-  BACKLOG.md rather than guessed at from the fixtures.
+  every round up to the one asked for. A season that resets instead is a
+  different shape and is left to BACKLOG.md rather than guessed at from the
+  fixtures.
 - A round whose sides are still seeded by finishing position is kept out of the
   table switcher until its clubs are named. The switcher opens on the latest
   round, so a published-but-unseeded round meant a visitor's first sight of the

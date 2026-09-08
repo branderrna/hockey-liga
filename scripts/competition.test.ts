@@ -8,8 +8,6 @@ import {
   isKnockoutRound,
   knockoutStage,
   numericRoundsOf,
-  poolsOf,
-  pooledStandingsFor,
   standingsFor,
   tableRoundsOf,
   winnerId,
@@ -201,43 +199,6 @@ test("every card sits centred between the two games that feed it", () => {
   assert.equal(final?.advances, false);
 });
 
-/* A round the two halves of the table played separately. */
-const pooledDataset: CompetitionDataset = {
-  teams: ["a", "b", "c", "d", "e", "f"].map((id) => team(id, id.toUpperCase())),
-  matches: [
-    tie("r1-1", 1, "1", "a", "d", 3, 0),
-    tie("r1-2", 2, "1", "b", "e", 3, 0),
-    tie("r1-3", 3, "1", "c", "f", 3, 0),
-    tie("r1-4", 4, "1", "a", "b", 1, 0),
-    tie("r1-5", 5, "1", "d", "e", 1, 0),
-    tie("r2-1", 6, "2", "a", "b", 1, 0),
-    tie("r2-2", 7, "2", "b", "c", 1, 0),
-    tie("r2-3", 8, "2", "a", "c", 1, 0),
-    tie("r2-4", 9, "2", "d", "e", 1, 0),
-    tie("r2-5", 10, "2", "e", "f", 1, 0),
-    tie("r2-6", 11, "2", "d", "f", 1, 0),
-  ],
-};
-
-test("a round whose halves never meet is read as two pools, seeded off the round before", () => {
-  assert.deepEqual(poolsOf(pooledDataset, "social", "1"), []);
-
-  const groups = pooledStandingsFor(pooledDataset, "social", "2");
-  assert.deepEqual(
-    groups.map((group) => [group.pool?.label, group.pool?.detail, group.rows.length]),
-    [
-      ["Top 3", "1st–3rd after Round 1", 3],
-      ["Bottom 3", "4th–6th after Round 1", 3],
-    ],
-  );
-  assert.deepEqual(
-    groups[0]?.rows.map((row) => row.team.id),
-    ["a", "b", "c"],
-  );
-  // Without a round to seed from there is one table, as before.
-  assert.equal(pooledStandingsFor(pooledDataset, "social").length, 1);
-});
-
 test("every chart in a division shares one column hierarchy, aligned on its decider", () => {
   const charts = bracketsOf(drawDataset, "social");
   const widths = new Set(charts.map((chart) => chart.columns.length));
@@ -266,6 +227,35 @@ test("a hung decider costs the grid no row the other columns would leave blank",
       `${chart.title} still places a hung decider in the grid`,
     );
   }
+});
+
+/* A round the two halves of the table played separately. */
+const pooledDataset: CompetitionDataset = {
+  teams: ["a", "b", "c", "d", "e", "f"].map((id) => team(id, id.toUpperCase())),
+  matches: [
+    tie("r1-1", 1, "1", "a", "d", 3, 0),
+    tie("r1-2", 2, "1", "b", "e", 3, 0),
+    tie("r1-3", 3, "1", "c", "f", 3, 0),
+    tie("r1-4", 4, "1", "a", "b", 1, 0),
+    tie("r1-5", 5, "1", "d", "e", 1, 0),
+    // Round 2: the top three meet, the bottom three meet, one table throughout.
+    tie("r2-1", 6, "2", "a", "b", 1, 0),
+    tie("r2-2", 7, "2", "b", "c", 1, 0),
+    tie("r2-3", 8, "2", "a", "c", 1, 0),
+    tie("r2-4", 9, "2", "d", "e", 5, 0),
+    tie("r2-5", 10, "2", "e", "f", 1, 0),
+    tie("r2-6", 11, "2", "d", "f", 5, 0),
+  ],
+};
+
+test("a round played in halves is still one table, so a side can cross between them", () => {
+  const after1 = standingsFor(pooledDataset, "social", "1").map((row) => row.team.id);
+  const after2 = standingsFor(pooledDataset, "social", "2").map((row) => row.team.id);
+  // D played only the bottom half in round 2 and still climbs past C, who
+  // played only the top half. Two tables would have hidden the crossover.
+  assert.ok(after1.indexOf("d") > after1.indexOf("c"), "D starts below C");
+  assert.ok(after2.indexOf("d") < after2.indexOf("c"), "D finishes above C");
+  assert.equal(after2.length, 6, "one table holding every team, not one per half");
 });
 
 test("a round still seeded by finishing position is not offered as a table", () => {

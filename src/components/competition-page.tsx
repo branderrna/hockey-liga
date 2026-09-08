@@ -8,12 +8,11 @@ import {
   isReplayed,
   latestWeekendKey,
   matchesOf,
-  pooledStandingsFor,
+  standingsFor,
   tableRoundsOf,
   teamsOf,
   weekendsOf,
   type CompetitionDataset,
-  type PoolStandings,
 } from "@/data/competition";
 import { formatFixtureRound } from "@/data/round";
 import type { DivisionId, Liga, Match, Standing, Weekend } from "@/data/types";
@@ -610,19 +609,8 @@ function useSelectedRound(rounds: string[]): [string, (round: string) => void] {
   return [selectedRound, setSelectedRound];
 }
 
-const rankEntries = (group: PoolStandings): StandingEntry[] =>
-  group.rows.map((row, index) => ({ rank: index + 1, row }));
-
-/** A round played in separate pools gets one table per pool, each ranked 1..n. */
-function PoolHeading({ group }: { group: PoolStandings }) {
-  if (!group.pool) return null;
-  return (
-    <div className="mt-8 flex items-baseline justify-between gap-4 first:mt-0">
-      <h3 className="label-eyebrow text-foreground">{group.pool.label}</h3>
-      {group.pool.detail ? <p className="meta-mono">{group.pool.detail}</p> : null}
-    </div>
-  );
-}
+const rankEntries = (rows: Standing[]): StandingEntry[] =>
+  rows.map((row, index) => ({ rank: index + 1, row }));
 
 function TableView({
   dataset,
@@ -640,11 +628,10 @@ function TableView({
   const [phase, setPhase] = useState<string | null>(null);
   const phases = hasKnockoutOf(dataset, divisionId) ? [...rounds, KNOCKOUT_PHASE] : rounds;
   const activePhase = phase && phases.includes(phase) ? phase : selectedRound;
-  const groups = pooledStandingsFor(
-    dataset,
-    divisionId,
-    rounds.length > 0 ? selectedRound : undefined,
-  );
+  // One table, whichever round is selected. A round played in two halves is
+  // still one league: a side from the bottom half can finish above one from
+  // the top, and two tables would hide exactly that.
+  const rows = standingsFor(dataset, divisionId, rounds.length > 0 ? selectedRound : undefined);
 
   const select = (next: string) => {
     setPhase(next);
@@ -658,14 +645,9 @@ function TableView({
         <KnockoutBracket dataset={dataset} divisionId={divisionId} teamId={teamId} />
       ) : (
         <>
-          {groups.map((group) => (
-            <div key={group.pool?.key ?? "all"}>
-              <PoolHeading group={group} />
-              <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-                <StandingsTable entries={rankEntries(group)} teamId={teamId} />
-              </div>
-            </div>
-          ))}
+          <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+            <StandingsTable entries={rankEntries(rows)} teamId={teamId} />
+          </div>
           <StandingsKey />
         </>
       )}
@@ -687,12 +669,7 @@ function MyTeamView({
   const rounds = tableRoundsOf(dataset, divisionId);
   const [selectedRound, setSelectedRound] = useSelectedRound(rounds);
   const tableRound = rounds.length > 0 ? selectedRound : undefined;
-  const groups = pooledStandingsFor(dataset, divisionId, tableRound);
-  // In a pooled round the neighbours worth showing are the team's own pool.
-  const group =
-    groups.find((entry) => entry.rows.some((row) => row.team.id === teamId)) ?? groups[0];
-  if (!group) return null;
-  const table = rankEntries(group);
+  const table = rankEntries(standingsFor(dataset, divisionId, tableRound));
   const index = table.findIndex((entry) => entry.row.team.id === teamId);
   if (index === -1) return null;
 
@@ -708,9 +685,7 @@ function MyTeamView({
   return (
     <div className="animate-rise">
       <section>
-        <h2 className="label-eyebrow border-b border-border pb-2">
-          Standings{group.pool ? ` · ${group.pool.label}` : ""}
-        </h2>
+        <h2 className="label-eyebrow border-b border-border pb-2">Standings</h2>
         <RoundSwitcher rounds={rounds} activeRound={selectedRound} onChange={setSelectedRound} />
         <div className="relative mt-1">
           <StandingsTable entries={excerpt} teamId={teamId} compact />

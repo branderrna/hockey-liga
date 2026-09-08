@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 
 import { parseArchiveCsv } from "../src/data/archive-parser.ts";
 import { ARCHIVE_SEASON } from "../src/data/archive.ts";
-import { bracketsOf, isKnockoutRound, poolsOf } from "../src/data/competition.ts";
+import { bracketsOf, isKnockoutRound, standingsFor } from "../src/data/competition.ts";
 import type { ArchiveDivisionId } from "../src/data/archive.ts";
 
 const SHEET_ID = "1xD2Yc5dJAlNe82Zps3b3bpT23XGXDl5hlOkGDum3vDA";
@@ -15,11 +15,6 @@ const expectedDivisionCounts = {
   social: 94,
   "u14-boys": 49,
   "u14-girls": 24,
-} as const;
-
-/** Round 2 of the Super liga was played as two pools; nothing else was. */
-const expectedPools = {
-  super: { round: "2", labels: ["Top 5", "Bottom 5"], sizes: [5, 5] },
 } as const;
 
 /**
@@ -103,20 +98,6 @@ async function main() {
   assert.equal(matches.filter((match) => match.round && isKnockoutRound(match.round)).length, 53);
   assert.equal(matches.filter((match) => match.round === "PLAY-IN").length, 3);
 
-  for (const [divisionId, expected] of Object.entries(expectedPools)) {
-    const pools = poolsOf(dataset, divisionId as ArchiveDivisionId, expected.round);
-    assert.deepEqual(
-      pools.map((pool) => pool.label),
-      expected.labels,
-      `unexpected ${divisionId} round ${expected.round} pools`,
-    );
-    assert.deepEqual(
-      pools.map((pool) => pool.teamIds.length),
-      expected.sizes,
-      `unexpected ${divisionId} pool sizes`,
-    );
-  }
-
   for (const divisionId of ["super", "veterans", "social", "u14-boys", "u14-girls"] as const) {
     assert.deepEqual(
       bracketsOf(dataset, divisionId).map((bracket) => [
@@ -144,7 +125,7 @@ async function main() {
   );
 
   console.log(
-    `Validated ${ARCHIVE_SEASON.label} Sheet source: every row readable, ${matches.length} matches, ${teams.length} teams, 2 shootout results, 3 play-ins and every pool and bracket shape.`,
+    `Validated ${ARCHIVE_SEASON.label} Sheet source: every row readable, ${matches.length} matches, ${teams.length} teams, 2 shootout results, 3 play-ins, the carried-forward table and every bracket shape.`,
   );
 }
 

@@ -1,4 +1,4 @@
-import { formatFixtureRound, ordinal } from "./round.ts";
+import { ordinal } from "./round.ts";
 import type { DivisionId, Match, Standing, Team, Weekend } from "./types.ts";
 
 export type CompetitionDataset = {
@@ -171,12 +171,12 @@ export function tableRoundsOf(dataset: CompetitionDataset, divisionId: DivisionI
 /**
  * A later round carries the earlier ones forward. The league's second round is
  * a continuation of the first, not a separate competition: points and goals
- * accumulate, and all that changes is who a side is scheduled against, since
- * the table splits into pools that play among themselves. Counting a round on
- * its own would drop the leaders to the bottom of their own pool on the day
- * the round opened. Should a season ever run its second round as a fresh
- * table, that becomes a property of the season rather than a change here —
- * see BACKLOG.md.
+ * accumulate, and all that changes is who a side is scheduled against: the
+ * table splits into halves that play among themselves, but it stays one table,
+ * and a side from the bottom half can finish above one from the top. Counting
+ * a round on its own would drop the leaders to the foot of it on the day it
+ * opened. Should a season ever run its second round as a fresh table, that
+ * becomes a property of the season rather than a change here — see BACKLOG.md.
  */
 function standingsMatches(
   dataset: CompetitionDataset,
@@ -315,108 +315,6 @@ function knockoutOrder(round: string | undefined): number {
 
 export function knockoutMatchesOf(dataset: CompetitionDataset, divisionId: DivisionId): Match[] {
   return collapseKnockoutMatches(matchesOf(dataset, divisionId));
-}
-
-/* ----------------------------------- pools ---------------------------------- */
-
-export type Pool = {
-  key: string;
-  label: string;
-  /** Where the members finished in the round before, e.g. "1st-5th after Round 1". */
-  detail: string | null;
-  teamIds: string[];
-};
-
-/** Below this a disconnected group is treated as a sparse round, not a pool. */
-const MIN_POOL_TEAMS = 3;
-
-/**
- * A round played as separate groups — a top half and a bottom half, say — has
- * no marker of its own in the sheet. Teams that never meet inside the round are
- * in different pools; one connected group is an ordinary round.
- */
-export function poolsOf(
-  dataset: CompetitionDataset,
-  divisionId: DivisionId,
-  round: string,
-): Pool[] {
-  const parent = new Map<string, string>();
-  const members = new Set<string>();
-  const find = (id: string): string => {
-    const up = parent.get(id) ?? id;
-    if (up === id) return id;
-    const root = find(up);
-    parent.set(id, root);
-    return root;
-  };
-
-  for (const match of matchesOf(dataset, divisionId)) {
-    if (match.round !== round || !match.homeId || !match.awayId) continue;
-    members.add(match.homeId);
-    members.add(match.awayId);
-    const home = find(match.homeId);
-    const away = find(match.awayId);
-    if (home !== away) parent.set(home, away);
-  }
-
-  const groups = new Map<string, string[]>();
-  for (const id of members) {
-    const root = find(id);
-    groups.set(root, [...(groups.get(root) ?? []), id]);
-  }
-  if (groups.size < 2) return [];
-  if ([...groups.values()].some((group) => group.length < MIN_POOL_TEAMS)) return [];
-
-  const rounds = numericRoundsOf(dataset, divisionId);
-  const previousRound = rounds[rounds.indexOf(round) - 1];
-  const rankBefore = new Map<string, number>();
-  if (previousRound) {
-    standingsFor(dataset, divisionId, previousRound).forEach((row, index) =>
-      rankBefore.set(row.team.id, index + 1),
-    );
-  }
-  const nameOf = (id: string) => dataset.teams.find((team) => team.id === id)?.name ?? id;
-  const rankOf = (id: string) => rankBefore.get(id) ?? Number.MAX_SAFE_INTEGER;
-  const bySeed = (a: string, b: string) =>
-    rankOf(a) - rankOf(b) || nameOf(a).localeCompare(nameOf(b));
-
-  const pools = [...groups.values()]
-    .map((teamIds) => [...teamIds].sort(bySeed))
-    .sort((a, b) => bySeed(a[0]!, b[0]!));
-
-  // Only claim "top/bottom" when the previous round's table actually says so.
-  const seeded =
-    previousRound !== undefined && pools.every((ids) => ids.every((id) => rankBefore.has(id)));
-  const split = seeded && pools.length === 2 && rankOf(pools[0]!.at(-1)!) < rankOf(pools[1]![0]!);
-
-  return pools.map((teamIds, index) => ({
-    key: `${round}-${index + 1}`,
-    label: split
-      ? `${index === 0 ? "Top" : "Bottom"} ${teamIds.length}`
-      : `Pool ${String.fromCharCode(65 + index)}`,
-    detail:
-      seeded && previousRound
-        ? `${ordinal(rankOf(teamIds[0]!))}–${ordinal(rankOf(teamIds.at(-1)!))} after ${formatFixtureRound(previousRound)}`
-        : null,
-    teamIds,
-  }));
-}
-
-export type PoolStandings = { pool: Pool | null; rows: Standing[] };
-
-/** A round's standings, split by pool when the round was played in pools. */
-export function pooledStandingsFor(
-  dataset: CompetitionDataset,
-  divisionId: DivisionId,
-  round?: string,
-): PoolStandings[] {
-  const rows = standingsFor(dataset, divisionId, round);
-  const pools = round ? poolsOf(dataset, divisionId, round) : [];
-  if (pools.length === 0) return [{ pool: null, rows }];
-  return pools.map((pool) => ({
-    pool,
-    rows: rows.filter((row) => pool.teamIds.includes(row.team.id)),
-  }));
 }
 
 /* ---------------------------------- bracket --------------------------------- */
