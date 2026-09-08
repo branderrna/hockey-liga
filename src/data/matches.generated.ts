@@ -5,11 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-09-08T18:58:10.893Z";
-
-// The live season, from HELPER!B1. Generated rather than hand-kept so the label
-// on the site follows the sheet through a rollover without a code change.
-export const seasonLabel = "2026/2";
+export const fixturesUpdatedAt = "2026-09-08T18:59:52.376Z";
 
 export const matches: Match[] = [
   {
