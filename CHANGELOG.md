@@ -11,6 +11,16 @@ were wrong. The visitor-facing release notes shown in the site's footer live in
 
 Versions before 0.6.0 were assigned retroactively; see that document for how.
 
+## 0.8.1 — 2026-09-09
+
+**Completed ligas**
+
+- The liga index listed each completed liga as `2026/1`, which reads as a
+  different season from the 2026 everything else is labelled with. It now says
+  `2026`, from `ARCHIVE_SEASON.year` rather than a literal, so it follows the
+  season if that ever moves. The sidebar and the liga header already dropped the
+  tag in 0.8.0; this was the one place left.
+
 ## 0.8.0 — 2026-09-08
 
 **Results archive and competition phases**

@@ -96,7 +96,7 @@ function AllLigasPage() {
                 <span className="truncate text-sm text-muted-foreground transition-colors group-hover:text-foreground">
                   {liga.name}
                 </span>
-                <span className="meta-mono shrink-0">{ARCHIVE_SEASON.label}</span>
+                <span className="meta-mono shrink-0">{ARCHIVE_SEASON.year}</span>
               </Link>
             ))}
           </div>
