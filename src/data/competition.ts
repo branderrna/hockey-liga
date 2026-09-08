@@ -417,6 +417,8 @@ export type Bracket = {
   title: string;
   rows: number;
   columns: BracketColumn[];
+  /** Deciders between beaten sides, hung under the chart rather than in it. */
+  extras: BracketSlot[];
 };
 
 const STAGE_TITLE: Record<KnockoutStage, string> = {
@@ -573,28 +575,29 @@ export function bracketsOf(dataset: CompetitionDataset, divisionId: DivisionId):
     let rows = 0;
     for (const root of groupRoots) rows += place(root, rows, 0).span;
 
-    // A host is always a root, so its decider shares the last column.
+    /*
+     * Deciders between two beaten sides belong to this bracket but sit on no
+     * path through it, so they hang under the chart rather than taking a row
+     * of the grid. A row of their own was a row every other column left blank,
+     * which on a phone showing the left of the chart was a screen of nothing
+     * between one chart and the next.
+     */
     const attached = roots.filter((root) => groupRoots.includes(hostOf.get(root.id) as Match));
-    for (const match of attached) {
-      const host = hostOf.get(match.id)!;
-      push(0, {
-        stage: knockoutStage(host.round) ?? "placing",
-        slot: {
-          match,
-          row: rows++,
-          span: 1,
-          feedsIn: 0,
-          join: null,
-          advances: false,
-          attached: true,
-        },
-      });
-    }
+    const extras: BracketSlot[] = attached.map((match) => ({
+      match,
+      row: 0,
+      span: 1,
+      feedsIn: 0,
+      join: null,
+      advances: false,
+      attached: true,
+    }));
 
     return {
       key,
       title: key === "main" ? "Championship" : (placingRange([...groupRoots, ...attached]) ?? key),
       rows,
+      extras,
       byDepth,
       order: key === "main" ? -1 : knockoutOrder(groupRoots[0]?.round),
     };
@@ -617,6 +620,7 @@ export function bracketsOf(dataset: CompetitionDataset, divisionId: DivisionId):
       key: chart.key,
       title: chart.title,
       rows: chart.rows,
+      extras: chart.extras,
       columns: Array.from({ length: depth + 1 }, (_, index) => {
         const placed = chart.byDepth.get(depth - index) ?? [];
         const named = placed.find((entry) => !entry.slot.attached) ?? placed[0];

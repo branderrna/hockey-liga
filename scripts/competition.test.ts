@@ -151,13 +151,16 @@ test("a knockout draw becomes one tree per competition, not a pile of cards", ()
     [
       ["Quarter-finals", 4],
       ["Semi-finals", 2],
-      ["Final", 2],
+      ["Final", 1],
     ],
   );
-  // The third-place play-off hangs off the final rather than growing the tree.
-  const final = championship?.columns.at(-1)?.slots ?? [];
-  assert.equal(final[0]?.match.round, "FINAL");
-  assert.equal(final[1]?.attached, true);
+  // The third-place play-off settles this bracket but sits on no path through
+  // it, so it hangs under the chart instead of taking a row of the grid.
+  assert.deepEqual(
+    championship?.extras.map((slot) => [slot.match.round, slot.attached]),
+    [["3RD/4TH", true]],
+  );
+  assert.equal(championship?.rows, 4);
 
   assert.equal(consolation?.title, "5th–8th place");
   assert.deepEqual(
@@ -242,4 +245,18 @@ test("every chart in a division shares one column hierarchy, aligned on its deci
   assert.equal(columnOf(consolation!, "5TH/6TH"), columnOf(championship!, "FINAL"));
   // Columns a chart does not reach are empty and unnamed, not missing.
   assert.deepEqual(consolation?.columns[0], { title: "", slots: [] });
+});
+
+test("a hung decider costs the grid no row the other columns would leave blank", () => {
+  for (const chart of bracketsOf(drawDataset, "social")) {
+    const deepest = Math.max(
+      ...chart.columns.flatMap((column) => column.slots.map((s) => s.row + s.span)),
+    );
+    assert.equal(chart.rows, deepest, `${chart.title} reserves rows nothing occupies`);
+    assert.equal(
+      chart.columns.every((column) => column.slots.every((slot) => !slot.attached)),
+      true,
+      `${chart.title} still places a hung decider in the grid`,
+    );
+  }
 });

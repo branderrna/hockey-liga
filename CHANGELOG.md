@@ -32,6 +32,15 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   the connectors are three plain rules instead of guesses. The old chart sorted
   cards into stage columns and drew a line from every card to every neighbour,
   which is why the lines did not mean anything.
+- A decider between two beaten sides, like a third-place play-off, now hangs
+  under its chart instead of taking a grid row. The row was one every other
+  column left blank, which on a phone showing the left of a chart was a screen
+  of empty space before the next one. It settles the bracket but sits on no
+  path through it, so it was never part of the tree.
+- Fixed the last stage never registering as the active one. The chart scrolls a
+  stage to its left edge, which the final column can never reach, so by
+  distance it never won and its button looked dead. At the end of the scroll
+  the last stage is now the active one.
 - Fixed a chart on a phone opening on nothing. The shared column hierarchy
   means a placing bracket's leading columns are empty by design, which on a
   narrow screen was a screenful of blank space above the title. Charts now open

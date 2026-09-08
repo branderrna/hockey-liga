@@ -86,15 +86,20 @@ function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | 
       const left = scroller.getBoundingClientRect().left;
       let closest = 0;
       let best = Infinity;
+      let last = 0;
       scroller.querySelectorAll<HTMLElement>(".knockout-column").forEach((column, index) => {
         // A column collapsed on a narrow screen has no position to be near.
         if (column.clientWidth === 0) return;
+        last = index;
         const distance = Math.abs(column.getBoundingClientRect().left - left);
         if (distance < best) {
           best = distance;
           closest = index;
         }
       });
+      // Scrolled fully right, the last column still cannot reach the left edge,
+      // so by distance it never wins and its stage looked unselectable.
+      if (overflow > 0 && scroller.scrollLeft >= overflow - 1) closest = last;
 
       // Compared before storing, so scrolling only re-renders when something
       // a reader can see has actually changed.
@@ -136,6 +141,11 @@ function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | 
               key={stage.index}
               type="button"
               aria-pressed={stage.index === active}
+              ref={
+                stage.index === active
+                  ? (button) => button?.scrollIntoView({ block: "nearest", inline: "nearest" })
+                  : null
+              }
               onClick={() => {
                 const scroller = scrollRef.current;
                 if (scroller) scrollToColumn(scroller, stage.index, "smooth");
@@ -184,6 +194,17 @@ function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | 
           </div>
         </div>
       </div>
+
+      {/* Games this bracket settled that sit on no path through it. Under the
+          chart rather than in it, so they cost no row the other columns would
+          have to leave blank. */}
+      {bracket.extras.length > 0 ? (
+        <div className="knockout-extras">
+          {bracket.extras.map((slot) => (
+            <BracketMatch key={slot.match.id} slot={slot} teamId={teamId} />
+          ))}
+        </div>
+      ) : null}
     </figure>
   );
 }

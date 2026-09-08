@@ -33,16 +33,16 @@ const expectedPools = {
  */
 const expectedBrackets: Partial<Record<ArchiveDivisionId, [string, number[]][]>> = {
   social: [
-    ["Championship", [3, 4, 2, 2]],
-    ["5th–8th place", [0, 0, 2, 2]],
+    ["Championship", [3, 4, 2, 1]],
+    ["5th–8th place", [0, 0, 2, 1]],
     ["9th–11th place", [0, 0, 0, 3]],
   ],
   "u14-boys": [
-    ["Championship", [4, 2, 2]],
-    ["5th–8th place", [0, 2, 2]],
+    ["Championship", [4, 2, 1]],
+    ["5th–8th place", [0, 2, 1]],
   ],
   "u14-girls": [
-    ["Championship", [2, 2, 2]],
+    ["Championship", [2, 2, 1]],
     ["5th–6th place", [0, 0, 1]],
   ],
 };

@@ -271,7 +271,7 @@
   display: flex;
   overflow-x: auto;
   margin-bottom: 0.9rem;
-  gap: 1.1rem;
+  gap: 0.85rem;
   scrollbar-width: none;
 }
 
@@ -283,7 +283,7 @@
   border-bottom: 2px solid transparent;
   padding-bottom: 0.3rem;
   color: var(--color-muted-foreground);
-  font-size: 0.8125rem;
+  font-size: 0.78rem;
   white-space: nowrap;
   transition:
     color 0.15s ease,
@@ -374,6 +374,20 @@
 .knockout-match-final {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-primary) 12%, transparent);
+}
+
+/* Deciders hung under the chart. They keep the card look so they read as part
+   of the bracket, and sit in a row of their own so no column carries a blank. */
+.knockout-extras {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  gap: 0.75rem;
+}
+
+.knockout-extras .knockout-match {
+  width: var(--knockout-card);
+  flex: 0 1 var(--knockout-card);
 }
 
 /* A play-off between two beaten sides: part of the bracket above it, but not
