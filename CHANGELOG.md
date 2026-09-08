@@ -32,6 +32,22 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   the connectors are three plain rules instead of guesses. The old chart sorted
   cards into stage columns and drew a line from every card to every neighbour,
   which is why the lines did not mean anything.
+- Laid the charts out against one column hierarchy per division, keyed by
+  rounds from each chart's own decider rather than by stage name. The
+  semi-finals of a 5th-8th bracket now sit under the semi-finals of the
+  championship, and a chart that starts later leaves its leading columns empty
+  instead of sliding left and reading as an earlier round. Column headings stay
+  per chart, since that column is a final in one and a placing game in another.
+- Columns share the container's spare width instead of leaving it blank on the
+  right, and the chart no longer sizes itself to `max-content`, which was
+  producing a scrollbar with room still to spare. The gutter stays fixed at
+  `--knockout-gap`, because the connectors are drawn half a gutter out of one
+  card and half a gutter into the next.
+- Took roughly a fifth off the chart height. Wider columns keep club names on
+  one line, and the shootout result moved alongside each side's score rather
+  than onto a line of its own, which also says which of the two won it. Rows
+  stay uniform, since that is what lets a card's centre be a percentage and
+  keeps the connectors in pure CSS.
 - Read two things out of the 2026/1 notes that the sheet records nowhere else,
   because that tab is immutable and cannot be corrected at source. A seeding
   play-off filed under a numeric round becomes a `PLAY-IN` when a knockout row

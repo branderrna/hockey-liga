@@ -52,8 +52,6 @@ export function KnockoutBracket({
 }
 
 function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | null }) {
-  const single = bracket.columns.length === 1;
-
   return (
     <figure className="knockout-chart">
       <figcaption className="label-eyebrow knockout-chart-title">{bracket.title}</figcaption>
@@ -67,11 +65,13 @@ function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | 
           className="knockout-bracket"
           style={{ "--knockout-rows": bracket.rows } as CSSProperties}
         >
-          {bracket.columns.map((column) => (
-            <div key={column.title} className="knockout-column">
-              {single ? null : (
-                <h3 className="label-eyebrow knockout-column-head">{column.title}</h3>
-              )}
+          {bracket.columns.map((column, index) => (
+            // The heading box is always present, empty columns included, so
+            // every column's first row starts at the same height.
+            <div key={`${index}-${column.title}`} className="knockout-column">
+              <div className="knockout-column-head">
+                {column.title ? <h3 className="label-eyebrow">{column.title}</h3> : null}
+              </div>
               <div className="knockout-column-body">
                 {column.slots.map((slot) => (
                   <BracketSlotCard key={slot.match.id} slot={slot} teamId={teamId} />
@@ -117,10 +117,6 @@ function routeNote(slot: BracketSlot): string | null {
 function BracketMatch({ slot, teamId }: { slot: BracketSlot; teamId: string | null }) {
   const match = slot.match;
   const winner = winnerForDisplay(match);
-  const shootout =
-    match.shootoutHomeGoals != null && match.shootoutAwayGoals != null
-      ? `(${match.shootoutHomeGoals}–${match.shootoutAwayGoals})`
-      : null;
   const note = routeNote(slot);
   const emphasis = slot.attached
     ? "knockout-match-attached"
@@ -147,17 +143,24 @@ function BracketMatch({ slot, teamId }: { slot: BracketSlot; teamId: string | nu
         </span>
         <BracketScore match={match} side="away" />
       </div>
-      {shootout ? <p className="knockout-shootout">{shootout}</p> : null}
       {note ? <p className="knockout-match-note">{note}</p> : null}
     </article>
   );
 }
 
+/**
+ * The shootout result sits beside each side's score rather than on a line of
+ * its own. It costs the card no height, and it says which of the two won the
+ * shootout instead of leaving the reader to pair up a bracketed scoreline.
+ */
 function BracketScore({ match, side }: { match: Match; side: "home" | "away" }) {
   if (!isPlayed(match)) return <span className="meta-mono">{match.postponed ? "PP" : "—"}</span>;
+  const shootout = side === "home" ? match.shootoutHomeGoals : match.shootoutAwayGoals;
+  const paired = match.shootoutHomeGoals != null && match.shootoutAwayGoals != null;
   return (
-    <span className="font-mono tabular-nums">
+    <span className="shrink-0 font-mono tabular-nums">
       {side === "home" ? match.homeGoals : match.awayGoals}
+      {paired ? <span className="knockout-shootout">({shootout})</span> : null}
     </span>
   );
 }

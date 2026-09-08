@@ -409,6 +409,7 @@ export type BracketSlot = {
   attached: boolean;
 };
 
+/** A stage of one chart. Empty where that chart has no game at this depth. */
 type BracketColumn = { title: string; slots: BracketSlot[] };
 
 export type Bracket = {
@@ -418,7 +419,6 @@ export type Bracket = {
   columns: BracketColumn[];
 };
 
-const STAGE_ORDER: KnockoutStage[] = ["play-in", "quarter-final", "semi-final", "final", "placing"];
 const STAGE_TITLE: Record<KnockoutStage, string> = {
   "play-in": "Play-in",
   "quarter-final": "Quarter-finals",
@@ -537,16 +537,20 @@ export function bracketsOf(dataset: CompetitionDataset, divisionId: DivisionId):
       childrenOf(match).reduce((sum, child) => sum + height(child), 0),
     );
 
-  const charts = [...groups.entries()].map(([key, groupRoots]) => {
-    const columns = new Map<KnockoutStage, BracketSlot[]>();
-    const push = (stage: KnockoutStage, slot: BracketSlot) =>
-      columns.set(stage, [...(columns.get(stage) ?? []), slot]);
+  type Placed = { stage: KnockoutStage; slot: BracketSlot };
 
-    const place = (match: Match, top: number): BracketSlot => {
+  const charts = [...groups.entries()].map(([key, groupRoots]) => {
+    // Keyed by rounds from this chart's decider, not by stage name, so every
+    // chart can be laid out right to left against the same column hierarchy.
+    const byDepth = new Map<number, Placed[]>();
+    const push = (depth: number, placed: Placed) =>
+      byDepth.set(depth, [...(byDepth.get(depth) ?? []), placed]);
+
+    const place = (match: Match, top: number, depth: number): BracketSlot => {
       const span = height(match);
       let cursor = top;
       const children = childrenOf(match).map((child) => {
-        const slot = place(child, cursor);
+        const slot = place(child, cursor, depth + 1);
         cursor += slot.span;
         return slot;
       });
@@ -562,38 +566,64 @@ export function bracketsOf(dataset: CompetitionDataset, divisionId: DivisionId):
         advances: successor.has(match.id),
         attached: false,
       };
-      push(knockoutStage(match.round) ?? "placing", slot);
+      push(depth, { stage: knockoutStage(match.round) ?? "placing", slot });
       return slot;
     };
 
     let rows = 0;
-    for (const root of groupRoots) rows += place(root, rows).span;
+    for (const root of groupRoots) rows += place(root, rows, 0).span;
 
+    // A host is always a root, so its decider shares the last column.
     const attached = roots.filter((root) => groupRoots.includes(hostOf.get(root.id) as Match));
     for (const match of attached) {
       const host = hostOf.get(match.id)!;
-      push(knockoutStage(host.round) ?? "placing", {
-        match,
-        row: rows++,
-        span: 1,
-        feedsIn: 0,
-        join: null,
-        advances: false,
-        attached: true,
+      push(0, {
+        stage: knockoutStage(host.round) ?? "placing",
+        slot: {
+          match,
+          row: rows++,
+          span: 1,
+          feedsIn: 0,
+          join: null,
+          advances: false,
+          attached: true,
+        },
       });
     }
 
-    const bracket: Bracket = {
+    return {
       key,
       title: key === "main" ? "Championship" : (placingRange([...groupRoots, ...attached]) ?? key),
       rows,
-      columns: STAGE_ORDER.filter((stage) => columns.has(stage)).map((stage) => ({
-        title: STAGE_TITLE[stage],
-        slots: columns.get(stage)!,
-      })),
+      byDepth,
+      order: key === "main" ? -1 : knockoutOrder(groupRoots[0]?.round),
     };
-    return { bracket, order: key === "main" ? -1 : knockoutOrder(groupRoots[0]?.round) };
   });
 
-  return charts.sort((a, b) => a.order - b.order).map((chart) => chart.bracket);
+  /*
+   * One column hierarchy across every chart, aligned on the deciders rather
+   * than on stage names. Each chart is laid out right to left from its own
+   * final, so the semi-finals of a 5th-8th bracket sit under the semi-finals
+   * of the championship, and a chart that starts later simply leaves its
+   * leading columns empty rather than sliding left and reading as an earlier
+   * round. Titles stay per chart, because that column is a final in one and a
+   * placing game in another.
+   */
+  const depth = Math.max(0, ...charts.flatMap((chart) => [...chart.byDepth.keys()]));
+
+  return charts
+    .sort((a, b) => a.order - b.order)
+    .map((chart) => ({
+      key: chart.key,
+      title: chart.title,
+      rows: chart.rows,
+      columns: Array.from({ length: depth + 1 }, (_, index) => {
+        const placed = chart.byDepth.get(depth - index) ?? [];
+        const named = placed.find((entry) => !entry.slot.attached) ?? placed[0];
+        return {
+          title: named ? STAGE_TITLE[named.stage] : "",
+          slots: placed.map((entry) => entry.slot),
+        };
+      }),
+    }));
 }

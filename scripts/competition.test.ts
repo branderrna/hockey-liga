@@ -162,7 +162,7 @@ test("a knockout draw becomes one tree per competition, not a pile of cards", ()
   assert.equal(consolation?.title, "5th–8th place");
   assert.deepEqual(
     consolation?.columns.map((column) => column.title),
-    ["Semi-finals", "Placing"],
+    ["", "Semi-finals", "Placing"],
   );
 });
 
@@ -226,4 +226,20 @@ test("a round whose halves never meet is read as two pools, seeded off the round
   );
   // Without a round to seed from there is one table, as before.
   assert.equal(pooledStandingsFor(pooledDataset, "social").length, 1);
+});
+
+test("every chart in a division shares one column hierarchy, aligned on its decider", () => {
+  const charts = bracketsOf(drawDataset, "social");
+  const widths = new Set(charts.map((chart) => chart.columns.length));
+  assert.equal(widths.size, 1, "charts must be the same number of columns wide");
+
+  // The 5th-8th semi-finals sit under the championship semi-finals, and its
+  // decider under the final, rather than sliding left into the first round.
+  const columnOf = (chart: (typeof charts)[number], round: string) =>
+    chart.columns.findIndex((column) => column.slots.some((slot) => slot.match.round === round));
+  const [championship, consolation] = charts;
+  assert.equal(columnOf(consolation!, "SF3"), columnOf(championship!, "SF1"));
+  assert.equal(columnOf(consolation!, "5TH/6TH"), columnOf(championship!, "FINAL"));
+  // Columns a chart does not reach are empty and unnamed, not missing.
+  assert.deepEqual(consolation?.columns[0], { title: "", slots: [] });
 });

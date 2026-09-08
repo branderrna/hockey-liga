@@ -209,11 +209,11 @@
  * Cards stay live text, so the chart survives being scrolled on a phone.
  */
 .knockout-chart {
-  --knockout-gap: 2.5rem;
-  --knockout-card: 12rem;
-  --knockout-row: 8.75rem;
+  --knockout-gap: 2.25rem;
+  --knockout-card: 11rem;
+  --knockout-row: 6.75rem;
   margin: 0;
-  margin-top: 2rem;
+  margin-top: 1.75rem;
 }
 
 .knockout-chart-title {
@@ -229,18 +229,22 @@
 
 .knockout-bracket {
   display: flex;
-  min-width: max-content;
   gap: var(--knockout-gap);
 }
 
+/* Columns share the container's spare width instead of leaving it blank on
+   the right. The gutter stays fixed, because the connector rules are drawn
+   half a gutter out of one card and half a gutter into the next. */
 .knockout-column {
   display: flex;
-  width: var(--knockout-card);
+  min-width: var(--knockout-card);
+  flex: 1 1 var(--knockout-card);
   flex-direction: column;
 }
 
 .knockout-column-head {
-  margin-bottom: 0.75rem;
+  min-height: 1.1rem;
+  margin-bottom: 0.6rem;
 }
 
 .knockout-column-body {
@@ -272,8 +276,11 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-card);
-  padding: 0.65rem 0.7rem;
-  font-size: 0.75rem;
+  padding: 0.5rem 0.6rem;
+  /* Set small so a club's full name stays on one line at this column width.
+     Every card is then the same height, which is what lets the rows stay
+     uniform and the connectors stay pure CSS. */
+  font-size: 0.7rem;
   line-height: 1.25;
 }
 
@@ -310,7 +317,7 @@
 
 .knockout-match-round,
 .knockout-compact-round {
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.3rem;
   color: var(--color-muted-foreground);
   font-family: var(--font-mono);
   font-size: 0.625rem;
@@ -323,8 +330,8 @@
   min-width: 0;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.28rem 0;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
 }
 
 .knockout-team + .knockout-team {
@@ -347,21 +354,20 @@
   color: var(--color-primary-foreground);
 }
 
+/* Shown against each side's score, so it adds no line to the card. */
 .knockout-shootout {
-  margin-top: 0.4rem;
+  margin-left: 0.2rem;
   color: var(--color-ot);
-  font-family: var(--font-mono);
   font-size: 0.625rem;
-  text-align: right;
 }
 
 /* The seeding the sheet records, kept for cards nothing is drawn into. */
 .knockout-match-note {
   display: -webkit-box;
   overflow: hidden;
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   color: var(--color-muted-foreground);
   font-size: 0.625rem;
   line-height: 1.35;
@@ -382,9 +388,9 @@
 
 @media (max-width: 639px) {
   .knockout-chart {
-    --knockout-gap: 1.75rem;
-    --knockout-card: 10.5rem;
-    --knockout-row: 9.75rem;
+    --knockout-gap: 1.5rem;
+    --knockout-card: 9.5rem;
+    --knockout-row: 9.5rem;
   }
 
   .knockout-match-note {

@@ -26,20 +26,24 @@ const expectedPools = {
  * The shape each bracket chart has to keep: a championship tree that narrows
  * 4-2-1, and the losers' brackets beside it. A stage count that moves means
  * the source rows changed, and the connectors would be drawn from a guess.
+ *
+ * Every chart in a division carries the same columns, so the leading zeroes
+ * are load-bearing: they are what puts the semi-finals of a 5th-8th bracket
+ * under the semi-finals of the championship instead of under its first round.
  */
 const expectedBrackets: Partial<Record<ArchiveDivisionId, [string, number[]][]>> = {
   social: [
     ["Championship", [3, 4, 2, 2]],
-    ["5th–8th place", [2, 2]],
-    ["9th–11th place", [3]],
+    ["5th–8th place", [0, 0, 2, 2]],
+    ["9th–11th place", [0, 0, 0, 3]],
   ],
   "u14-boys": [
     ["Championship", [4, 2, 2]],
-    ["5th–8th place", [2, 2]],
+    ["5th–8th place", [0, 2, 2]],
   ],
   "u14-girls": [
     ["Championship", [2, 2, 2]],
-    ["5th–6th place", [1]],
+    ["5th–6th place", [0, 0, 1]],
   ],
 };
 
