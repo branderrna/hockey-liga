@@ -149,6 +149,13 @@ export function parseRound(value: string): string | undefined {
 
 /** A play-in row's note names the two seeds it decides between, e.g. "6th vs 7th". */
 const SEED_PAIR_NOTE = /^(\d+)(?:ST|ND|RD|TH)?\s+VS?\.?\s+(\d+)(?:ST|ND|RD|TH)?$/i;
+
+/**
+ * A note is one or more clauses separated by ". ", with the seed pairing first
+ * (see docs/notes-grammar.md). The pairing has to survive an operational clause
+ * being appended to it — "6th vs 8th. Time changed" is still the 6th-vs-8th game.
+ */
+const firstClause = (note: string) => note.split(/\.(?:\s|$)/, 1)[0]!.trim();
 /** A knockout row's note names the play-in feeding it, e.g. "Winner of 6th/7th play-in". */
 const PLAY_IN_REFERENCE = /(\d+)(?:ST|ND|RD|TH)?\s*\/\s*(\d+)(?:ST|ND|RD|TH)?\s+PLAY[\s-]*IN/gi;
 
@@ -175,7 +182,7 @@ function resolvePlayInRounds(matches: Match[]): void {
   for (const match of matches) {
     const pairs = referenced.get(match.divisionId);
     if (!pairs || !match.note || !match.round || !NUMERIC_ROUND.test(match.round)) continue;
-    const seeds = match.note.match(SEED_PAIR_NOTE);
+    const seeds = firstClause(match.note).match(SEED_PAIR_NOTE);
     if (seeds && pairs.has(seedPairKey(seeds[1]!, seeds[2]!))) match.round = PLAY_IN_ROUND;
   }
 }
