@@ -103,7 +103,7 @@ deliver: origin
 attach_to_session: true
 ```
 
-`0 19 * * *` runs daily at 19:00 UTC, which is 03:00 in Singapore the following day. `attach_to_session: true` makes the delivery continuable: it does not keep an agent process alive or consume tokens while waiting, but it associates a later Telegram reply with the audit brief. Editing this file does not update an existing cron job; copy the prompt into the job again when the prompt changes.
+`0 19 * * *` runs daily at 19:00 UTC, which is 03:00 in Singapore the following day. `attach_to_session: true` makes the delivery continuable: it does not keep an agent process alive or consume tokens while waiting, but it associates a later Telegram reply with the audit brief. This file-backed job reads the prompt of record at each invocation, so edits are picked up automatically. If a job embeds a copy instead, update the stored prompt when this file changes.
 
 The scheduled job needs:
 
