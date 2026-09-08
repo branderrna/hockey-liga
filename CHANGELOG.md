@@ -11,6 +11,29 @@ were wrong. The visitor-facing release notes shown in the site's footer live in
 
 Versions before 0.6.0 were assigned retroactively; see that document for how.
 
+## 0.9.0 — 2026-09-09
+
+**The live season is named by the sheet**
+
+- The season label was the literal `"2026"` in `liga.$slug.tsx` and `SEASON.name`,
+  so the site called the current season 2026 while the completed one beside it was
+  2026/1 — two halves of a year presented as if one were the whole thing.
+- `refresh-fixtures.ts` now reads the `HELPER` tab first: `B1` is the live season's
+  name and `C1` is that tab's gid. It fetches by gid and writes the name into
+  `matches.generated.ts` as `seasonLabel`, which `SEASON.label` re-exports.
+- Fetching by gid rather than by tab name is deliberate. A tab keeps its gid
+  through a rename but a duplicated tab silently gets a new one, and the only
+  credential-free way to resolve a name to a gid is the gviz endpoint, which
+  returns this sheet with several header cells blanked.
+- `HELPER`'s own gid is the one that stays in the code. That tab is never renamed
+  or recreated, so it outlives every season.
+- `sheet-refresh-trigger.gs` reads the same cell instead of a `WATCHED_SHEET_NAME`
+  constant. If `HELPER` is missing or blank it watches nothing rather than
+  everything: a refresh that stops firing is covered by the daily cron, one that
+  fires on every unrelated edit is not.
+- A season rollover is now two cells in `HELPER`. The completed-season path is
+  unchanged and still points at its own tab — `HELPER` describes only the live one.
+
 ## 0.8.1 — 2026-09-09
 
 **Completed ligas**

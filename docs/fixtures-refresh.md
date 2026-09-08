@@ -12,7 +12,7 @@ workflow, so a sheet edit gets the same validation as a code change.
 ## How it fits together
 
 ```
-Google Sheet ("CURRENT" tab)
+Google Sheet (live season tab, named by HELPER)
         │  an edit dispatches via scripts/sheet-refresh-trigger.gs (~10 min max)
         │  plus a daily 03:00 SGT cron, or a manual run from the Actions tab
         ▼
@@ -37,31 +37,47 @@ sheet-driven. The refresh script never touches anything else.
 
 ## The Google Sheet
 
-Source: the **"CURRENT"** tab of the league's Google Sheet (link shared with
-"Anyone with the link → Viewer", so the script can read it without any API key or
-Google credentials — it just fetches the sheet's public CSV export).
+The sheet is shared "Anyone with the link → Viewer", so everything below reads it
+through the public CSV export — no API key, no Google credentials.
 
-### Renaming or replacing the tab
+### The HELPER tab points at the live season
 
-The two scripts identify the source differently:
+Neither script names a season. Both read the **`HELPER`** tab, row 1:
 
-- `scripts/refresh-fixtures.ts` fetches the fixed tab ID (`GID = "9556364"`),
-  not its displayed name. Renaming that same tab preserves the CSV source.
-- `scripts/sheet-refresh-trigger.gs` watches the displayed name through
-  `WATCHED_SHEET_NAME`. If the tab is renamed, update and save the copy in the
-  sheet's Apps Script editor as well as this repository's copy. Existing
-  installable triggers do not need reinstalling for a name-only change.
+| Cell | Holds                                                   | Example           |
+| ---- | ------------------------------------------------------- | ----------------- |
+| A1   | a label, ignored by both scripts                        | `CURRENT SEASON:` |
+| B1   | the live season's tab name, and the site's season label | `2026/2`          |
+| C1   | that tab's gid                                          | `9556364`         |
 
-Creating a **new** `CURRENT` tab gives it a different tab ID. The edit trigger
-would watch the new tab, but the refresh script would still fetch the old one
-until its `GID` is updated. This is not an automatic season rollover: the site
-currently has one season configuration, one team list and one generated fixture
-file. Its season dates in `src/data/league.ts` control date parsing and validation.
-Supporting current and archived seasons together requires the season-aware data
-handling described in [Past seasons](../BACKLOG.md#past-seasons), rather than
-replacing the existing generated data with another season's fixtures.
+- `scripts/refresh-fixtures.ts` reads B1 and C1, fetches fixtures by the **gid**,
+  and writes B1 into `matches.generated.ts` as `seasonLabel`. `SEASON.label` in
+  `src/data/league.ts` re-exports it, so the label on the site follows the sheet.
+- `scripts/sheet-refresh-trigger.gs` reads B1 to decide which tab's edits are
+  worth a refresh. If `HELPER` is missing or B1 is blank it watches **nothing**
+  rather than everything — a refresh that stops firing is covered by the daily
+  cron, one that fires on every unrelated edit is not.
 
-Expected columns (header row, any order, matched by name — a stray trailing space
+`HELPER`'s own gid (`932175786`) is the one identifier still in the code. That tab
+is never renamed or recreated, so it outlives every season.
+
+**Why fetch by gid and not by name.** A tab keeps its gid through a rename, but a
+**duplicated** tab silently gets a new one — the case that would otherwise leave
+the trigger watching one tab while the script fetched another. Resolving a name to
+a gid without credentials means the `gviz` endpoint, which returns this sheet with
+several header cells blanked, so it is not usable for the fixture fetch.
+
+### Rolling over to a new season
+
+Create the tab, then set `HELPER!B1` to its name and `C1` to its gid (visible in
+the URL as `#gid=` when the tab is open). No code change and no redeploy.
+
+Two things are still hand-kept in `src/data/league.ts`: the season's `start` and
+`end` dates, which stamp the sheet's year-less dates and bound validation, and the
+team list. `HELPER` does not describe completed seasons — those keep their own tab
+reference in `src/data/archive-loader.ts`.
+
+Expected columns on a season tab (header row, any order, matched by name — a stray trailing space
 in a header like `"Score "` is tolerated):
 
 | Column         | Meaning                                           |
@@ -95,7 +111,7 @@ in a header like `"Score "` is tolerated):
 - `QF1`, `SF1`, and `FINAL` identify knockout matches. Placing values such as
   `3RD/4TH` and `5TH/6TH` are shown as readable placement labels.
 - The column is optional. Older/current rows without it continue to parse as one
-  standings set, so the existing CURRENT tab remains valid.
+  standings set, so the existing season tab remains valid.
 - `PLAY-IN` marks a seeding play-off. The 2026/1 tab does not use it: those rows
   carry the numeric round they were played in, and only the notes say what they
   were. The parser recovers them, and writing `PLAY-IN` in the column instead
@@ -145,7 +161,7 @@ that adds a team fails the check.
 
 ### Why this tab needs its own safety net
 
-Every other route into the site passes a gate. A `CURRENT` edit runs the refresh
+Every other route into the site passes a gate. A live-tab edit runs the refresh
 script, `npm test`, and the whole of `checks.yml` before a Worker is published,
 so a malformed row fails the build and the last good data stays up. The `2026/1`
 tab has none of that, because none of it happens: the tab is read on request,
@@ -256,7 +272,7 @@ update until this is fixed and the workflow re-runs).
 
 [`scripts/sheet-refresh-trigger.gs`](../scripts/sheet-refresh-trigger.gs) is Google
 Apps Script that lives in the sheet, not in this repo's build. It watches the
-"CURRENT" tab and dispatches `refresh-fixtures.yml` shortly after an edit, so a
+tab named in `HELPER!B1` and dispatches `refresh-fixtures.yml` shortly after an edit, so a
 score entered in the sheet reaches the live site in minutes instead of waiting for
 the next daily run.
 
@@ -337,8 +353,10 @@ special "TBD" styling for them yet. Worth a decision before those rounds arrive.
 ## Troubleshooting
 
 - **Script errors with "Could not find header row"**: the sheet's column headers
-  changed. Check the "CURRENT" tab's header row still contains `Home`, `Score`,
+  changed. Check the live season tab's header row still contains `Home`, `Score`,
   and `Away` (extra whitespace is fine, renamed/removed columns are not).
+- **Script errors with "HELPER!B1 is empty" or "HELPER!C1 must be..."**: the
+  `HELPER` tab is missing, renamed, or its row 1 is not `label | name | gid`.
 - **Script errors fetching the sheet**: the sheet's sharing setting changed. It
   needs to stay set to "Anyone with the link → Viewer" for the public CSV export
   to work without credentials.

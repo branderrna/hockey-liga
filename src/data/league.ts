@@ -1,4 +1,6 @@
 import type { ActiveLiga, DivisionId, Liga, League, Match, Team } from "./types";
+import * as generated from "./matches.generated.ts";
+
 export type { ActiveLiga, DivisionId, Match, Team };
 
 const SEASON_START = "2026-08-02";
@@ -6,15 +8,30 @@ const SEASON_END = "2026-11-29";
 const SEASON_YEAR = SEASON_START.slice(0, 4);
 
 /*
+ * Read off the namespace with a fallback rather than as a named import, because
+ * scripts/refresh-fixtures.ts imports this module in order to WRITE that file.
+ * A hard import would wedge the generator the moment the export it produces is
+ * missing — a fresh checkout before the first run, or a reverted data commit —
+ * with no way to regenerate it. Falling back to the year keeps the site sensible
+ * until the next refresh fills the real label in.
+ */
+const seasonLabel = (generated as { seasonLabel?: string }).seasonLabel ?? SEASON_YEAR;
+
+/*
  * The season's bounds. `start` and `end` are load-bearing, not decoration:
  * the sheet writes dates without a year, so the refresh script stamps
  * `start`'s year onto them, and the validator rejects fixtures outside the
- * window. `year` and `name` are derived from them so no view hardcodes a
- * season — moving to the next one is a single edit here.
+ * window. `year` is derived from them so no view hardcodes a season.
+ *
+ * `label` is the season's own name ("2026/2"), which is not derivable from
+ * the dates: it comes from HELPER!B1 in the sheet, through the generated
+ * fixtures file, so a rollover changes it there rather than here. `year`
+ * stays the calendar year because that is what stamps the year-less dates.
  */
 export const SEASON = {
   year: SEASON_YEAR,
-  name: `Hockey Liga ${SEASON_YEAR}`,
+  label: seasonLabel,
+  name: `Hockey Liga ${seasonLabel}`,
   start: SEASON_START,
   end: SEASON_END,
 };
@@ -369,11 +386,10 @@ export const teams: Team[] = [
   },
 ];
 
-import { matches } from "./matches.generated.ts";
-export { matches };
+export const { matches } = generated;
 
 /** When the fixtures last changed. Re-exported so views read data from here. */
-export { fixturesUpdatedAt } from "./matches.generated.ts";
+export const { fixturesUpdatedAt } = generated;
 
 export const teamsOf = (divisionId: DivisionId) => teams.filter((t) => t.divisionId === divisionId);
 

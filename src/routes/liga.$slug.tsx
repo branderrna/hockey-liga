@@ -6,7 +6,7 @@ import { getArchivedDataset } from "@/data/archive-loader";
 import { ARCHIVE_SEASON, archivedLigaBySlug } from "@/data/archive";
 import { teamsOf as datasetTeamsOf, type CompetitionDataset } from "@/data/competition";
 import { useMyTeam } from "@/lib/my-team";
-import { ligaBySlug, matches, teams, teamsOf } from "@/data/league";
+import { SEASON, ligaBySlug, matches, teams, teamsOf } from "@/data/league";
 
 const OPTIONAL_VIEWS: CompetitionView[] = ["table", "my-team"];
 
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/liga/$slug")({
   loader: ({ params }) => (archivedLigaBySlug(params.slug) ? getArchivedDataset() : null),
   head: ({ params }) => {
     const liga = ligaBySlug(params.slug) ?? archivedLigaBySlug(params.slug);
-    const seasonLabel = archivedLigaBySlug(params.slug) ? ARCHIVE_SEASON.label : "2026";
+    const seasonLabel = archivedLigaBySlug(params.slug) ? ARCHIVE_SEASON.label : SEASON.label;
     const title = liga ? `${liga.name} — Hockey Liga ${seasonLabel}` : `Hockey Liga ${seasonLabel}`;
     const description = liga
       ? `Schedule, scores and league table for the ${liga.name} in the ${seasonLabel} Hockey Liga season.`
@@ -96,7 +96,7 @@ function LigaPage() {
 
   return (
     <CompetitionPage
-      seasonLabel="Season 2026"
+      seasonLabel={`Season ${SEASON.label}`}
       liga={currentLiga}
       dataset={{ teams, matches }}
       teamId={myTeam}

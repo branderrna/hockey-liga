@@ -22,8 +22,27 @@ const GITHUB_REPO = "hockey-liga";
 const WORKFLOW_FILE = "refresh-fixtures.yml";
 const WORKFLOW_REF = "main";
 
-/** Only edits on this tab are worth a refresh — it is the tab the script reads. */
-const WATCHED_SHEET_NAME = "CURRENT";
+/**
+ * Where the live season's tab name is recorded: HELPER!B1. Reading it per edit
+ * rather than hardcoding a season means a rollover is a HELPER edit and nothing
+ * else — the same cell scripts/refresh-fixtures.ts reads.
+ */
+const HELPER_SHEET_NAME = "HELPER";
+const HELPER_SEASON_CELL = "B1";
+
+/**
+ * The tab whose edits are worth a refresh: the one HELPER names, because it is
+ * the one the refresh script reads.
+ *
+ * Returns "" if HELPER is missing or its cell is blank, which makes watchedSheetName()
+ * match nothing rather than every tab. A refresh that stops firing is recoverable
+ * (the daily cron still runs); one that fires on every unrelated edit is not.
+ */
+function watchedSheetName() {
+  const helper = SpreadsheetApp.getActive().getSheetByName(HELPER_SHEET_NAME);
+  if (!helper) return "";
+  return String(helper.getRange(HELPER_SEASON_CELL).getValue() || "").trim();
+}
 
 /** Script Property names. The token is never committed to the repository. */
 const TOKEN_PROPERTY = "GITHUB_TOKEN";
@@ -47,7 +66,8 @@ const FLUSH_INTERVAL_MINUTES = 10;
  */
 function onSheetEdit(e) {
   if (!e || !e.range) return;
-  if (e.range.getSheet().getName() !== WATCHED_SHEET_NAME) return;
+  const watched = watchedSheetName();
+  if (!watched || e.range.getSheet().getName() !== watched) return;
   PropertiesService.getScriptProperties().setProperty(PENDING_PROPERTY, "1");
 }
 
