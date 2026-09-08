@@ -55,27 +55,33 @@ function columnAt(scroller: HTMLDivElement, index: number): HTMLElement | undefi
   return scroller.querySelectorAll<HTMLElement>(".knockout-column")[index];
 }
 
-/** Brings a stage to the left edge of its chart, however wide the columns are. */
+/**
+ * Where a column comes to rest: the chart's left edge, plus the inset the
+ * stylesheet reserves for its fade. Without it the column sits under the
+ * gradient and its cards read as cut off down one side.
+ */
+function stageAnchor(scroller: HTMLDivElement): number {
+  const inset = parseFloat(getComputedStyle(scroller).scrollPaddingLeft);
+  return scroller.getBoundingClientRect().left + (Number.isFinite(inset) ? inset : 0);
+}
+
+/** Brings a column to the left of its chart, however wide the columns are. */
 function scrollToColumn(scroller: HTMLDivElement, index: number, behavior: ScrollBehavior) {
   const column = columnAt(scroller, index);
   if (!column) return;
-  const delta = column.getBoundingClientRect().left - scroller.getBoundingClientRect().left;
+  const delta = column.getBoundingClientRect().left - stageAnchor(scroller);
   scroller.scrollTo({ left: scroller.scrollLeft + delta, behavior });
 }
 
 function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | null }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const opened = useRef(false);
-  const [scrollable, setScrollable] = useState(false);
   const [edges, setEdges] = useState({ start: false, end: false });
-  const [nearest, setNearest] = useState(0);
 
-  // Only stages this chart actually reaches are worth offering as a jump.
-  const stages = bracket.columns
-    .map((column, index) => ({ title: column.title, index, filled: column.slots.length > 0 }))
-    .filter((stage) => stage.filled && stage.title);
-  const first = stages[0]?.index ?? 0;
-  const active = [...stages].reverse().find((stage) => stage.index <= nearest)?.index ?? first;
+  const first = Math.max(
+    0,
+    bracket.columns.findIndex((column) => column.slots.length > 0),
+  );
 
   useLayoutEffect(() => {
     const scroller = scrollRef.current;
@@ -83,31 +89,10 @@ function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | 
 
     const measure = () => {
       const overflow = scroller.scrollWidth - scroller.clientWidth;
-      const left = scroller.getBoundingClientRect().left;
-      let closest = 0;
-      let best = Infinity;
-      let last = 0;
-      scroller.querySelectorAll<HTMLElement>(".knockout-column").forEach((column, index) => {
-        // A column collapsed on a narrow screen has no position to be near.
-        if (column.clientWidth === 0) return;
-        last = index;
-        const distance = Math.abs(column.getBoundingClientRect().left - left);
-        if (distance < best) {
-          best = distance;
-          closest = index;
-        }
-      });
-      // Scrolled fully right, the last column still cannot reach the left edge,
-      // so by distance it never wins and its stage looked unselectable.
-      if (overflow > 0 && scroller.scrollLeft >= overflow - 1) closest = last;
-
-      // Compared before storing, so scrolling only re-renders when something
-      // a reader can see has actually changed.
-      const overflows = overflow > 1;
+      // Compared before storing, so scrolling only re-renders when a fade
+      // a reader can see has actually turned on or off.
       const start = scroller.scrollLeft > 1;
       const end = scroller.scrollLeft < overflow - 1;
-      setScrollable((was) => (was === overflows ? was : overflows));
-      setNearest((was) => (was === closest ? was : closest));
       setEdges((was) => (was.start === start && was.end === end ? was : { start, end }));
 
       // A chart that starts at a later stage opens on it. Its leading columns
@@ -131,31 +116,6 @@ function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | 
   return (
     <figure className="knockout-chart">
       <figcaption className="label-eyebrow knockout-chart-title">{bracket.title}</figcaption>
-
-      {/* Offered only when the chart does not fit, so a phone can jump between
-          stages instead of hunting for them by dragging. */}
-      {scrollable && stages.length > 1 ? (
-        <div className="knockout-stages">
-          {stages.map((stage) => (
-            <button
-              key={stage.index}
-              type="button"
-              aria-pressed={stage.index === active}
-              ref={
-                stage.index === active
-                  ? (button) => button?.scrollIntoView({ block: "nearest", inline: "nearest" })
-                  : null
-              }
-              onClick={() => {
-                const scroller = scrollRef.current;
-                if (scroller) scrollToColumn(scroller, stage.index, "smooth");
-              }}
-            >
-              {stage.title}
-            </button>
-          ))}
-        </div>
-      ) : null}
 
       <div
         className="knockout-viewport"

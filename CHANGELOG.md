@@ -37,10 +37,6 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   column left blank, which on a phone showing the left of a chart was a screen
   of empty space before the next one. It settles the bracket but sits on no
   path through it, so it was never part of the tree.
-- Fixed the last stage never registering as the active one. The chart scrolls a
-  stage to its left edge, which the final column can never reach, so by
-  distance it never won and its button looked dead. At the end of the scroll
-  the last stage is now the active one.
 - Fixed a chart on a phone opening on nothing. The shared column hierarchy
   means a placing bracket's leading columns are empty by design, which on a
   narrow screen was a screenful of blank space above the title. Charts now open
@@ -48,11 +44,13 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   entirely: charts scroll independently there, so lining their columns up
   across charts buys nothing that a chart starting at its own first game does
   not buy more cheaply. The desktop alignment is untouched.
-- A chart that does not fit gets a row of stage buttons that scroll it, the way
-  a bracket on a phone usually works. Dragging still works and moves the
-  underline with it. The scrollbar is hidden in favour of edge fades, which say
-  the same thing without a grey bar under the cards; the buttons only appear
-  when there is something to scroll to.
+- A chart that does not fit is scrolled by hand, with the scrollbar hidden in
+  favour of a fade at whichever edge has more content. Stage buttons that
+  jumped the chart were tried and dropped: they duplicated the column headings
+  already on screen and were their own source of bugs. The fades carry it.
+- A chart that opens on a later stage lands it clear of the fade rather than
+  under it, so the first column never reads as clipped down one side. The inset
+  is declared once in CSS as the scroller's scroll-padding and read back in JS.
 - Moved the bracket into the phase switcher beside the numbered rounds, where
   it reads as the phase that followed them rather than as an appendix to the
   last round's table. Selecting it does not disturb which round the tables are
