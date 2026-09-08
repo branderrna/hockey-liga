@@ -3,8 +3,7 @@ const QUARTER_FINAL = /^QF\s*(\d+)$/i;
 const PLACING = /^(\d+)(?:ST|ND|RD|TH)?\s*([/-])\s*(\d+)(?:ST|ND|RD|TH)?$/i;
 const ROUND = /^(\d+)(?:\.0+)?$/;
 
-function ordinal(value: string): string {
-  const number = Number(value);
+export function ordinal(number: number): string {
   const suffix =
     number % 100 >= 11 && number % 100 <= 13
       ? "th"
@@ -33,11 +32,12 @@ export function formatFixtureRound(value: string): string {
   if (quarterFinal) return `Quarter-final ${quarterFinal[1]}`;
 
   if (/^FINAL$/i.test(round)) return "Final";
+  if (/^PLAY-IN$/i.test(round)) return "Play-in";
 
   const placing = round.match(PLACING);
   if (placing) {
     const separator = placing[2] === "/" ? "/" : "–";
-    return `${ordinal(placing[1]!)}${separator}${ordinal(placing[3]!)} place`;
+    return `${ordinal(Number(placing[1]))}${separator}${ordinal(Number(placing[3]))} place`;
   }
 
   const regularRound = round.match(ROUND);

@@ -1,14 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { parseArchiveCsv } from "./archive-parser.ts";
-import type { CompetitionDataset } from "./competition.ts";
+import type { ArchiveParse } from "./archive-parser.ts";
 
 const SHEET_ID = "1xD2Yc5dJAlNe82Zps3b3bpT23XGXDl5hlOkGDum3vDA";
 const ARCHIVE_GID = "896089478"; // immutable "2026/1" tab
 const ARCHIVE_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${ARCHIVE_GID}`;
 
-let cachedDataset: Promise<CompetitionDataset> | undefined;
+let cachedDataset: Promise<ArchiveParse> | undefined;
 
-async function fetchArchiveDataset(): Promise<CompetitionDataset> {
+async function fetchArchiveDataset(): Promise<ArchiveParse> {
   const response = await fetch(ARCHIVE_CSV_URL, {
     headers: { accept: "text/csv" },
   });

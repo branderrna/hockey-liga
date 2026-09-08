@@ -6,6 +6,15 @@ export type FixtureParserConfig = {
   seasonYear: string;
   categoryToDivision: Record<string, DivisionId>;
   resolveTeamId?: (divisionId: DivisionId, name: string) => string | null;
+  /**
+   * What to do with a row whose Notes contradict its Score, the one source
+   * conflict that cannot be read either way. The live refresh fails, so the
+   * contradiction cannot reach the site unnoticed and the last good data
+   * stands. The archive is read straight from the Sheet with no build in the
+   * way, so nothing is there to fail: it skips the row and says so on the
+   * page instead of taking five completed ligas down over one cell.
+   */
+  rowConflicts?: "fail" | "skip";
 };
 
 export type ParsedFixtures = {
@@ -108,7 +117,7 @@ export function parseDate(dayDate: string, seasonYear: string): string | null {
   return isCalendarDate(value) ? value : null;
 }
 
-export function parseTime(value: string): string {
+function parseTime(value: string): string {
   const digits = value.trim().replace(/\D/g, "").padStart(4, "0");
   return `${digits.slice(0, 2)}:${digits.slice(2, 4)}`;
 }
@@ -119,11 +128,15 @@ export function parseScoreline(value: string): Scoreline | null {
   return { home: Number(match[1]), away: Number(match[2]) };
 }
 
+const PLAY_IN_ROUND = "PLAY-IN";
+const NUMERIC_ROUND = /^\d+$/;
+
 export function parseRound(value: string): string | undefined {
   const compact = value.trim().replace(/\s+/g, " ");
   if (!compact) return undefined;
 
   if (/^\d+(?:\.0+)?$/.test(compact)) return String(Number(compact));
+  if (/^PLAY[\s-]*IN$/i.test(compact)) return PLAY_IN_ROUND;
 
   const knockout = compact.match(/^(QF|SF)\s*(\d+)$/i);
   if (knockout) return `${knockout[1]!.toUpperCase()}${knockout[2]!}`;
@@ -134,6 +147,39 @@ export function parseRound(value: string): string | undefined {
     .replace(/\s*-\s*/g, "-");
 }
 
+/** A play-in row's note names the two seeds it decides between, e.g. "6th vs 7th". */
+const SEED_PAIR_NOTE = /^(\d+)(?:ST|ND|RD|TH)?\s+VS?\.?\s+(\d+)(?:ST|ND|RD|TH)?$/i;
+/** A knockout row's note names the play-in feeding it, e.g. "Winner of 6th/7th play-in". */
+const PLAY_IN_REFERENCE = /(\d+)(?:ST|ND|RD|TH)?\s*\/\s*(\d+)(?:ST|ND|RD|TH)?\s+PLAY[\s-]*IN/gi;
+
+const seedPairKey = (first: string, second: string) =>
+  [Number(first), Number(second)].sort((a, b) => a - b).join("/");
+
+/**
+ * The sheet files a play-in under the numeric round it was played in, with
+ * only its note ("6th vs 7th") and the later knockout notes ("3rd vs Winner
+ * of 6th/7th play-in") saying what it was. Rows referenced that way become
+ * PLAY-IN rounds, so they stay out of the round's table and join the bracket.
+ */
+function resolvePlayInRounds(matches: Match[]): void {
+  const referenced = new Map<DivisionId, Set<string>>();
+  for (const match of matches) {
+    if (!match.note || !match.round || NUMERIC_ROUND.test(match.round)) continue;
+    for (const reference of match.note.matchAll(PLAY_IN_REFERENCE)) {
+      const pairs = referenced.get(match.divisionId) ?? new Set<string>();
+      pairs.add(seedPairKey(reference[1]!, reference[2]!));
+      referenced.set(match.divisionId, pairs);
+    }
+  }
+
+  for (const match of matches) {
+    const pairs = referenced.get(match.divisionId);
+    if (!pairs || !match.note || !match.round || !NUMERIC_ROUND.test(match.round)) continue;
+    const seeds = match.note.match(SEED_PAIR_NOTE);
+    if (seeds && pairs.has(seedPairKey(seeds[1]!, seeds[2]!))) match.round = PLAY_IN_ROUND;
+  }
+}
+
 function slugify(value: string): string {
   return value
     .trim()
@@ -142,7 +188,7 @@ function slugify(value: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-export function makeFixtureId(
+function makeFixtureId(
   date: string,
   time: string,
   venue: string,
@@ -226,7 +272,10 @@ export function parseFixtureRows(rows: string[][], config: FixtureParserConfig):
     const note = valueAt(row, idx.notes);
     const postponed = /PP/i.test(scoreRaw) || ppRaw === "PP";
     if (note && /\bpostpon(?:ed|ement)\b/i.test(note) && !postponed) {
-      throw new Error(`row ${sheetRow}: Notes mark this fixture postponed but Score/PP does not`);
+      const conflict = `row ${sheetRow}: Notes mark this fixture postponed but Score/PP does not`;
+      if (config.rowConflicts !== "skip") throw new Error(conflict);
+      skippedRows.push(conflict);
+      continue;
     }
     const score = postponed ? null : parseScoreline(scoreRaw);
     if (scoreRaw && !postponed && !score) {
@@ -274,5 +323,6 @@ export function parseFixtureRows(rows: string[][], config: FixtureParserConfig):
     matches.push(match);
   }
 
+  resolvePlayInRounds(matches);
   return { matches, unresolvedTeams, skippedRows };
 }

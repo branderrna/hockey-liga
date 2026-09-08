@@ -201,8 +201,26 @@
   }
 }
 
-/* CSS bracket: cards remain live text and the connector rules stay legible
-   when the chart is horizontally scrolled on a phone. */
+/*
+ * CSS bracket. Every column shares one row grid, so a card's centre lands at
+ * the same height in every column and the connectors can be drawn as three
+ * plain rules: a stub out of the winner's card, a vertical in the gutter
+ * joining the two games that feed the next one, and a stub into that card.
+ * Cards stay live text, so the chart survives being scrolled on a phone.
+ */
+.knockout-chart {
+  --knockout-gap: 2.5rem;
+  --knockout-card: 12rem;
+  --knockout-row: 8.75rem;
+  margin: 0;
+  margin-top: 2rem;
+}
+
+.knockout-chart-title {
+  margin-bottom: 0.85rem;
+  color: var(--color-foreground);
+}
+
 .knockout-scroll {
   overflow-x: auto;
   padding-bottom: 0.75rem;
@@ -212,32 +230,41 @@
 .knockout-bracket {
   display: flex;
   min-width: max-content;
-  align-items: stretch;
-  gap: 2.25rem;
+  gap: var(--knockout-gap);
 }
 
-.knockout-stage,
-.knockout-center-column {
-  position: relative;
+.knockout-column {
   display: flex;
-  width: 12rem;
-  min-height: 31rem;
+  width: var(--knockout-card);
   flex-direction: column;
 }
 
-.knockout-stage-list {
-  position: relative;
-  display: flex;
+.knockout-column-head {
+  margin-bottom: 0.75rem;
+}
+
+.knockout-column-body {
+  display: grid;
   flex: 1;
-  flex-direction: column;
-  justify-content: space-around;
-  gap: 1rem;
+  grid-template-rows: repeat(var(--knockout-rows), var(--knockout-row));
 }
 
-.knockout-center-column {
-  justify-content: center;
-  gap: 2.25rem;
-  padding-top: 1.6rem;
+.knockout-slot {
+  position: relative;
+  display: grid;
+  align-content: center;
+  /* Symmetric, so the card stays centred on the row its connectors point at. */
+  padding: 0.45rem 0;
+}
+
+/* The vertical joining the two games that feed this card, in the gutter. */
+.knockout-slot[data-join]::before {
+  position: absolute;
+  top: var(--knockout-join-from);
+  left: calc(var(--knockout-gap) / -2);
+  height: calc(var(--knockout-join-to) - var(--knockout-join-from));
+  border-left: 1px solid var(--color-border);
+  content: "";
 }
 
 .knockout-match {
@@ -250,23 +277,23 @@
   line-height: 1.25;
 }
 
-.knockout-stage + .knockout-stage .knockout-match::before,
-.knockout-stage + .knockout-center-column .knockout-match::before {
+/* Half-gutter stubs: out of a card whose winner goes on, into the card it
+   goes on to. Together they cross the gap and meet the vertical. */
+.knockout-match[data-advances]::after,
+.knockout-match[data-fed]::before {
   position: absolute;
   top: 50%;
-  left: -2.25rem;
-  width: 2.25rem;
+  width: calc(var(--knockout-gap) / 2);
   border-top: 1px solid var(--color-border);
   content: "";
 }
 
-.knockout-stage:not(:last-child) .knockout-match::after {
-  position: absolute;
-  top: 50%;
-  right: -2.25rem;
-  width: 2.25rem;
-  border-top: 1px solid var(--color-border);
-  content: "";
+.knockout-match[data-advances]::after {
+  right: calc(var(--knockout-gap) / -2);
+}
+
+.knockout-match[data-fed]::before {
+  left: calc(var(--knockout-gap) / -2);
 }
 
 .knockout-match-final {
@@ -274,7 +301,10 @@
   box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-primary) 12%, transparent);
 }
 
-.knockout-match-third {
+/* A play-off between two beaten sides: part of the bracket above it, but not
+   on any path through it, so it is set back rather than wired in. */
+.knockout-match-attached {
+  border-style: dashed;
   background: var(--color-secondary);
 }
 
@@ -325,6 +355,18 @@
   text-align: right;
 }
 
+/* The seeding the sheet records, kept for cards nothing is drawn into. */
+.knockout-match-note {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 0.4rem;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--color-muted-foreground);
+  font-size: 0.625rem;
+  line-height: 1.35;
+}
+
 .knockout-compact-match {
   display: grid;
   grid-template-columns: 6.5rem minmax(0, 1fr) auto auto auto;
@@ -339,29 +381,14 @@
 }
 
 @media (max-width: 639px) {
-  .knockout-bracket {
-    gap: 2.25rem;
+  .knockout-chart {
+    --knockout-gap: 1.75rem;
+    --knockout-card: 10.5rem;
+    --knockout-row: 9.75rem;
   }
 
-  .knockout-stage,
-  .knockout-center-column {
-    width: 12rem;
-    min-height: 27rem;
-  }
-
-  .knockout-stage + .knockout-stage .knockout-match::before,
-  .knockout-stage + .knockout-center-column .knockout-match::before,
-  .knockout-stage:not(:last-child) .knockout-match::after {
-    width: 2.25rem;
-  }
-
-  .knockout-stage + .knockout-stage .knockout-match::before,
-  .knockout-stage + .knockout-center-column .knockout-match::before {
-    left: -2.25rem;
-  }
-
-  .knockout-stage:not(:last-child) .knockout-match::after {
-    right: -2.25rem;
+  .knockout-match-note {
+    -webkit-line-clamp: 3;
   }
 
   .knockout-compact-match {

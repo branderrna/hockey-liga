@@ -26,7 +26,11 @@ const CURRENT: Release = {
   date: "2026-09-08",
   notes: [
     "Added the complete 2026/1 results archive with round-by-round tables and knockout brackets.",
+    "Knockout brackets are drawn as they were played: four quarter-finals into two semi-finals into the final, with lines that follow the winner.",
+    "Play-off brackets for the lower places are shown as separate charts, so each one reads on its own.",
+    "A round played in two pools now has a table for each, showing which half of the league it was.",
     "Round labels and shootout scores now appear in schedules and team views.",
+    "If a row of a completed season cannot be read from the league sheet, the page now says so and shows the rest, instead of failing to load.",
   ],
 };
 

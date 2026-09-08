@@ -23,6 +23,59 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   full-time scoreline.
 - Added round switching to multi-round tables and a compact knockout run to My
   Team. The live 2026/2 refresh remains compatible with the older sheet shape.
+- The knockout chart is now built from the draw rather than from stage columns.
+  `bracketsOf` follows each winner to the game it went on to, which yields a tree
+  per competition: the championship narrowing four to two to one, the 5th-8th
+  bracket beside it, and a third-place play-off hung off the final it belongs to
+  rather than wired into it. Cards are laid on one shared row grid across all
+  columns, so a card's centre is exactly the midpoint of the two that feed it and
+  the connectors are three plain rules instead of guesses. The old chart sorted
+  cards into stage columns and drew a line from every card to every neighbour,
+  which is why the lines did not mean anything.
+- Read two things out of the 2026/1 notes that the sheet records nowhere else,
+  because that tab is immutable and cannot be corrected at source. A seeding
+  play-off filed under a numeric round becomes a `PLAY-IN` when a knockout row
+  names it (`Winner of 6th/7th play-in`), which takes it out of that round's
+  table and puts it in the bracket. And a round whose halves never play each
+  other is read as pools by connectivity, so Super Round 2 shows as Top 5 and
+  Bottom 5 seeded off Round 1 instead of one table of half-played records.
+- Gave the completed-season tab the safety net it never had. It is the one
+  source that reaches the site with no gate at all: read on request, with no
+  refresh script, no test run and no deploy in between, so a mistyped score in
+  the Sheet was live immediately and took all five completed ligas down at once,
+  since they share one parse. Now `parseArchiveCsv` drops a row it cannot read
+  and returns it in `issues`, and the liga page shows the count with the rows
+  behind a summary. A header that no longer names Home, Score and Away still
+  throws, because that is not one bad row.
+- Added `validate-archive.yml`, which runs the archive validator weekly at 03:00
+  Singapore time on Monday. The two halves are deliberate: failing soft keeps
+  the site up, which is precisely what stops anyone noticing, so the scheduled
+  run is what turns a silent break into a red run and a failure email. The
+  validator now asserts `issues` is empty, so it fails on the same rows the site
+  quietly drops. Weekly rather than daily because a finished season should not
+  be changing; the point is a ceiling on how long a break can hide.
+- The per-row conflict the parser refuses to guess at, a note saying postponed
+  where the Score does not, is now a `rowConflicts` policy. The live refresh
+  still fails on it, so a contradiction cannot reach the site unnoticed and the
+  last good data stands. The archive skips the row, because it has no build to
+  fail.
+- Removed the half of `league.ts` that `competition.ts` superseded. Moving the
+  views onto dataset-taking functions left the facade with its own unreachable
+  copies of `weekendsOf`, `latestWeekendKey`, `isReplayed` and their date
+  helpers, plus exports nothing imported. `league.ts` is now only the
+  current-season data and the catalogue. The reasoning that lived in those
+  comments — the sheet's misspellings of "shifted from", why the schedule
+  follows the calendar rather than waiting for scores, and why Singapore time is
+  computed by offset — moved to the surviving implementations rather than being
+  deleted with the code. This clears the `knip` step, which was failing on this
+  branch before any of the bracket work and gates the deploy job.
+- Super's Round 2 named Tornados Hockey Club `TORNADOS` in four rows, splitting
+  the club into two teams with half a season each and hiding the pool split. It
+  was first reconciled by an alias in the archive parser, then corrected in the
+  sheet and the alias removed: a name fixed at source is fixed for every reader,
+  where a mapping in code is invisible from the sheet. The team-count assertion
+  in `validate-archive-fixtures` is what catches a split club, and both notes
+  recoveries above are contract-tested against the live sheet the same way.
 
 ## 0.7.1 — 2026-09-07
 

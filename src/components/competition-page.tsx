@@ -9,10 +9,11 @@ import {
   latestWeekendKey,
   matchesOf,
   numericRoundsOf,
-  standingsFor,
+  pooledStandingsFor,
   teamsOf,
   weekendsOf,
   type CompetitionDataset,
+  type PoolStandings,
 } from "@/data/competition";
 import { formatFixtureRound } from "@/data/round";
 import type { DivisionId, Liga, Match, Standing, Weekend } from "@/data/types";
@@ -39,6 +40,7 @@ export function CompetitionPage({
   view = "schedule",
   onViewChange,
   teamPicker,
+  sourceIssues,
 }: {
   seasonLabel: string;
   liga: CompetitionDescriptor;
@@ -47,6 +49,8 @@ export function CompetitionPage({
   view?: CompetitionView;
   onViewChange?: (view: CompetitionView) => void;
   teamPicker?: ReactNode;
+  /** Rows the source could not be read from, when the season is read live. */
+  sourceIssues?: string[];
 }) {
   const [localView, setLocalView] = useState<CompetitionView>(view);
   const divisionId = liga.divisionId;
@@ -102,6 +106,7 @@ export function CompetitionPage({
       </div>
 
       <main className="mx-auto max-w-5xl px-5 py-8 sm:px-8 lg:py-10">
+        <SourceIssues issues={sourceIssues ?? []} />
         {activeView === "table" ? (
           <TableView dataset={dataset} divisionId={divisionId} teamId={selectedTeamId} />
         ) : activeView === "my-team" && selectedTeamId ? (
@@ -121,6 +126,29 @@ export function CompetitionPage({
         )}
       </main>
     </AppShell>
+  );
+}
+
+/**
+ * What the season is missing, when it is read straight from the Sheet and a
+ * row could not be read. A visitor needs the count, so a gap in the fixtures
+ * is not mistaken for a game that never happened; whoever keeps the sheet
+ * needs the rows, so it names them behind a summary rather than in the page.
+ */
+function SourceIssues({ issues }: { issues: string[] }) {
+  if (issues.length === 0) return null;
+  return (
+    <details className="mb-8 rounded-md border border-ot/40 bg-ot/5 px-4 py-3">
+      <summary className="cursor-pointer text-sm">
+        {issues.length === 1 ? "1 row" : `${issues.length} rows`} in the source could not be read,
+        and {issues.length === 1 ? "is" : "are"} not shown here.
+      </summary>
+      <ul className="meta-mono mt-3 space-y-1 leading-relaxed">
+        {issues.map((issue) => (
+          <li key={issue}>{issue}</li>
+        ))}
+      </ul>
+    </details>
   );
 }
 
@@ -574,6 +602,20 @@ function useSelectedRound(rounds: string[]): [string, (round: string) => void] {
   return [selectedRound, setSelectedRound];
 }
 
+const rankEntries = (group: PoolStandings): StandingEntry[] =>
+  group.rows.map((row, index) => ({ rank: index + 1, row }));
+
+/** A round played in separate pools gets one table per pool, each ranked 1..n. */
+function PoolHeading({ group }: { group: PoolStandings }) {
+  if (!group.pool) return null;
+  return (
+    <div className="mt-8 flex items-baseline justify-between gap-4 first:mt-0">
+      <h3 className="label-eyebrow text-foreground">{group.pool.label}</h3>
+      {group.pool.detail ? <p className="meta-mono">{group.pool.detail}</p> : null}
+    </div>
+  );
+}
+
 function TableView({
   dataset,
   divisionId,
@@ -586,17 +628,19 @@ function TableView({
   const rounds = numericRoundsOf(dataset, divisionId);
   const [selectedRound, setSelectedRound] = useSelectedRound(rounds);
   const tableRound = rounds.length > 0 ? selectedRound : undefined;
-  const entries = standingsFor(dataset, divisionId, tableRound).map((row, index) => ({
-    rank: index + 1,
-    row,
-  }));
+  const groups = pooledStandingsFor(dataset, divisionId, tableRound);
 
   return (
     <div className="animate-rise">
       <RoundSwitcher rounds={rounds} activeRound={selectedRound} onChange={setSelectedRound} />
-      <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-        <StandingsTable entries={entries} teamId={teamId} />
-      </div>
+      {groups.map((group) => (
+        <div key={group.pool?.key ?? "all"}>
+          <PoolHeading group={group} />
+          <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+            <StandingsTable entries={rankEntries(group)} teamId={teamId} />
+          </div>
+        </div>
+      ))}
       <StandingsKey />
       <KnockoutBracket dataset={dataset} divisionId={divisionId} teamId={teamId} />
     </div>
@@ -617,10 +661,12 @@ function MyTeamView({
   const rounds = numericRoundsOf(dataset, divisionId);
   const [selectedRound, setSelectedRound] = useSelectedRound(rounds);
   const tableRound = rounds.length > 0 ? selectedRound : undefined;
-  const table = standingsFor(dataset, divisionId, tableRound).map((row, index) => ({
-    rank: index + 1,
-    row,
-  }));
+  const groups = pooledStandingsFor(dataset, divisionId, tableRound);
+  // In a pooled round the neighbours worth showing are the team's own pool.
+  const group =
+    groups.find((entry) => entry.rows.some((row) => row.team.id === teamId)) ?? groups[0];
+  if (!group) return null;
+  const table = rankEntries(group);
   const index = table.findIndex((entry) => entry.row.team.id === teamId);
   if (index === -1) return null;
 
@@ -636,7 +682,9 @@ function MyTeamView({
   return (
     <div className="animate-rise">
       <section>
-        <h2 className="label-eyebrow border-b border-border pb-2">Standings</h2>
+        <h2 className="label-eyebrow border-b border-border pb-2">
+          Standings{group.pool ? ` · ${group.pool.label}` : ""}
+        </h2>
         <RoundSwitcher rounds={rounds} activeRound={selectedRound} onChange={setSelectedRound} />
         <div className="relative mt-1">
           <StandingsTable entries={excerpt} teamId={teamId} compact />

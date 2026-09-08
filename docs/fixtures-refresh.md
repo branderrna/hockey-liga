@@ -93,6 +93,30 @@ in a header like `"Score "` is tolerated):
   `3RD/4TH` and `5TH/6TH` are shown as readable placement labels.
 - The column is optional. Older/current rows without it continue to parse as one
   standings set, so the existing 2026/2 tab remains valid.
+- `PLAY-IN` marks a seeding play-off. The 2026/1 tab does not use it: those rows
+  carry the numeric round they were played in, and only the notes say what they
+  were. The parser recovers them, and writing `PLAY-IN` in the column instead
+  makes a new sheet say it outright — see "Play-ins the sheet only implies".
+
+**Two shapes the parser reads out of the Notes column.** Both are recovered from
+notes because the 2026/1 tab records them nowhere else. A newer tab should say
+these things in the Round column instead, and both recoveries are contract-tested
+by `npm run validate-archive-fixtures`.
+
+_Play-ins the sheet only implies._ A play-off for a knockout place is filed under
+the numeric round it was played in, with a note naming the two seeds
+(`6th vs 7th`). The knockout row it feeds names it back
+(`3rd vs Winner of 6th/7th play-in`). A numeric row referenced that way becomes a
+`PLAY-IN`, which keeps it out of that round's league table and puts it in the
+bracket, where it belongs. A note alone changes nothing: without the knockout row
+pointing back at it, an ordinary `1st vs 3rd` note stays an ordinary fixture.
+
+_Pools inside one round._ A round played as two groups — a top half and a bottom
+half — has no marker at all. Teams that never meet inside the round are read as
+separate pools, and each pool gets its own table ranked from 1. This is
+connectivity, not a guess at intent: one connected group is an ordinary round,
+and groups smaller than three teams are treated as a sparse round rather than
+pools. 2026/1 Super Round 2 is the case that exists.
 
 **Shootout Score convention:**
 
@@ -106,14 +130,53 @@ immutable after the one-time import/backfill: the site reads that tab server-sid
 when a completed liga is opened, and no generated archive fixture file is stored
 in the repository or shipped as a frontend module.
 
-Validate the source without writing anything with:
+"Immutable" means results are not restated, not that typos have to stand. Super
+called Tornados Hockey Club `TORNADOS` in four Round 2 rows, which split the club
+into two teams with half a season each and hid the shape of the Round 2 pools;
+that was corrected in the sheet rather than aliased in code. Prefer that order.
+A name fixed at source stays fixed for every reader of the tab, while a mapping
+in the parser is invisible from the sheet and has to be carried forever. The team
+count in `validate-archive-fixtures.ts` is what catches a split club: a rename
+that adds a team fails the check.
+
+### Why this tab needs its own safety net
+
+Every other route into the site passes a gate. A `2026/2` edit runs the refresh
+script, `npm test`, and the whole of `checks.yml` before a Worker is published,
+so a malformed row fails the build and the last good data stays up. The `2026/1`
+tab has none of that, because none of it happens: the tab is read on request,
+with no script, no test, no commit and no deploy in between. An edit is live as
+soon as a server instance next reads it.
+
+Two things cover that gap, deliberately split:
+
+- **The site survives a bad row.** `parseArchiveCsv` drops a row it cannot read
+  and returns it in `issues` instead of throwing, and the completed liga page
+  shows the count with the rows behind a summary. Without this, one mistyped
+  score took all five completed ligas down together, since they share one parse.
+  A header row that no longer names `Home`, `Score` and `Away` still throws:
+  that is not one bad row, it means the tab has stopped being a fixture list.
+- **You get told.** `.github/workflows/validate-archive.yml` runs the validator
+  weekly, 03:00 Singapore time on Monday, and on demand. A failure is a red run
+  and GitHub's own failure email. Weekly, not daily, because a finished season
+  should not be changing; the point is a ceiling on how long a silent break can
+  last, not fast detection.
+
+Surviving and reporting are separate jobs. The site staying up is exactly what
+stops anyone noticing, so the scheduled check is what makes the fail-soft safe
+rather than a way to hide a broken sheet.
+
+Validate the source yourself, without writing anything, with:
 
 ```sh
 npm run validate-archive-fixtures
 ```
 
-That check confirms the expected match, team, knockout and shootout invariants
-against the Sheet currently published at the configured archive tab.
+That check confirms every row still reads, plus the expected match, team,
+knockout, play-in and shootout invariants against the Sheet currently published
+at the configured archive tab, along with the pool split and the shape of every
+bracket chart. Run it after editing that tab; it is the same command the weekly
+workflow runs.
 
 Team names are matched (case-insensitive) against the existing roster in
 `league.ts` to link a fixture to a team page/colours. A name that doesn't match

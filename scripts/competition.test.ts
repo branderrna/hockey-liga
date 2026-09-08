@@ -2,10 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  bracketsOf,
   collapseKnockoutMatches,
   isKnockoutRound,
   knockoutStage,
   numericRoundsOf,
+  poolsOf,
+  pooledStandingsFor,
   standingsFor,
   winnerId,
 } from "../src/data/competition.ts";
@@ -94,4 +97,133 @@ test("bracket collapse prefers the played replay over a postponed attempt", () =
   const collapsed = collapseKnockoutMatches(attempts);
   assert.equal(collapsed.length, 1);
   assert.equal(collapsed[0]?.id, "qf-played");
+});
+
+/* An eight-team draw: four quarter-finals into two semi-finals into a final,
+   with the beaten sides playing off for 5th to 8th alongside it. */
+const seeds = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"];
+const tie = (
+  id: string,
+  no: number,
+  round: string,
+  home: string,
+  away: string,
+  homeGoals: number,
+  awayGoals: number,
+) =>
+  match({
+    id,
+    no,
+    round,
+    homeId: home,
+    awayId: away,
+    homeName: home,
+    awayName: away,
+    homeGoals,
+    awayGoals,
+  });
+
+const drawDataset: CompetitionDataset = {
+  teams: seeds.map((id) => team(id)),
+  matches: [
+    tie("qf1", 1, "QF1", "s1", "s8", 3, 0),
+    tie("qf2", 2, "QF2", "s2", "s7", 2, 1),
+    tie("qf3", 3, "QF3", "s3", "s6", 4, 1),
+    tie("qf4", 4, "QF4", "s4", "s5", 1, 0),
+    tie("sf1", 5, "SF1", "s1", "s4", 2, 1),
+    tie("sf2", 6, "SF2", "s2", "s3", 0, 1),
+    tie("sf3", 7, "SF3", "s8", "s5", 1, 2),
+    tie("sf4", 8, "SF4", "s7", "s6", 3, 2),
+    tie("final", 9, "FINAL", "s1", "s3", 2, 0),
+    tie("third", 10, "3RD/4TH", "s4", "s2", 1, 2),
+    tie("fifth", 11, "5TH/6TH", "s5", "s7", 0, 1),
+    tie("seventh", 12, "7TH/8TH", "s8", "s6", 2, 3),
+  ],
+};
+
+test("a knockout draw becomes one tree per competition, not a pile of cards", () => {
+  const [championship, consolation] = bracketsOf(drawDataset, "social");
+  assert.equal(bracketsOf(drawDataset, "social").length, 2);
+
+  assert.equal(championship?.title, "Championship");
+  assert.deepEqual(
+    championship?.columns.map((column) => [column.title, column.slots.length]),
+    [
+      ["Quarter-finals", 4],
+      ["Semi-finals", 2],
+      ["Final", 2],
+    ],
+  );
+  // The third-place play-off hangs off the final rather than growing the tree.
+  const final = championship?.columns.at(-1)?.slots ?? [];
+  assert.equal(final[0]?.match.round, "FINAL");
+  assert.equal(final[1]?.attached, true);
+
+  assert.equal(consolation?.title, "5th–8th place");
+  assert.deepEqual(
+    consolation?.columns.map((column) => column.title),
+    ["Semi-finals", "Placing"],
+  );
+});
+
+test("every card sits centred between the two games that feed it", () => {
+  const [championship] = bracketsOf(drawDataset, "social");
+  const centre = (slot: { row: number; span: number }) => slot.row + slot.span / 2;
+  const columns = championship?.columns ?? [];
+  const quarters = columns[0]?.slots ?? [];
+  const semis = columns[1]?.slots ?? [];
+  const final = columns[2]?.slots[0];
+
+  // Winners' paths meet: QF1/QF4 feed SF1, QF2/QF3 feed SF2.
+  assert.deepEqual(
+    quarters.map((slot) => slot.match.round),
+    ["QF1", "QF4", "QF2", "QF3"],
+  );
+  assert.equal(centre(semis[0]!), (centre(quarters[0]!) + centre(quarters[1]!)) / 2);
+  assert.equal(centre(semis[1]!), (centre(quarters[2]!) + centre(quarters[3]!)) / 2);
+  assert.equal(centre(final!), (centre(semis[0]!) + centre(semis[1]!)) / 2);
+
+  assert.deepEqual(final?.join, { from: 25, to: 75 });
+  assert.equal(
+    quarters.every((slot) => slot.advances && slot.join === null),
+    true,
+  );
+  assert.equal(final?.advances, false);
+});
+
+/* A round the two halves of the table played separately. */
+const pooledDataset: CompetitionDataset = {
+  teams: ["a", "b", "c", "d", "e", "f"].map((id) => team(id, id.toUpperCase())),
+  matches: [
+    tie("r1-1", 1, "1", "a", "d", 3, 0),
+    tie("r1-2", 2, "1", "b", "e", 3, 0),
+    tie("r1-3", 3, "1", "c", "f", 3, 0),
+    tie("r1-4", 4, "1", "a", "b", 1, 0),
+    tie("r1-5", 5, "1", "d", "e", 1, 0),
+    tie("r2-1", 6, "2", "a", "b", 1, 0),
+    tie("r2-2", 7, "2", "b", "c", 1, 0),
+    tie("r2-3", 8, "2", "a", "c", 1, 0),
+    tie("r2-4", 9, "2", "d", "e", 1, 0),
+    tie("r2-5", 10, "2", "e", "f", 1, 0),
+    tie("r2-6", 11, "2", "d", "f", 1, 0),
+  ],
+};
+
+test("a round whose halves never meet is read as two pools, seeded off the round before", () => {
+  assert.deepEqual(poolsOf(pooledDataset, "social", "1"), []);
+
+  const groups = pooledStandingsFor(pooledDataset, "social", "2");
+  assert.deepEqual(
+    groups.map((group) => [group.pool?.label, group.pool?.detail, group.rows.length]),
+    [
+      ["Top 3", "1st–3rd after Round 1", 3],
+      ["Bottom 3", "4th–6th after Round 1", 3],
+    ],
+  );
+  assert.deepEqual(
+    groups[0]?.rows.map((row) => row.team.id),
+    ["a", "b", "c"],
+  );
+  // Without a round to seed from there is one table, as before.
+  assert.equal(pooledStandingsFor(pooledDataset, "social").length, 1);
 });

@@ -51,17 +51,18 @@ export const Route = createFileRoute("/liga/$slug")({
 function LigaPage() {
   const { slug } = Route.useParams();
   const search = Route.useSearch();
-  const archiveDataset = Route.useLoaderData();
+  const archiveParse = Route.useLoaderData();
   const navigate = Route.useNavigate();
   const { teamId: currentTeamId } = useMyTeam();
   const archiveLiga = archivedLigaBySlug(slug);
   const currentLiga = ligaBySlug(slug);
 
   if (archiveLiga) {
-    if (!archiveDataset) return <ArchiveLoadError />;
+    if (!archiveParse) return <ArchiveLoadError />;
     return (
       <ArchivedLigaPage
-        dataset={archiveDataset}
+        dataset={archiveParse.dataset}
+        issues={archiveParse.issues}
         teamId={search.team ?? null}
         {...(search.view ? { view: search.view } : {})}
         liga={archiveLiga}
@@ -109,6 +110,7 @@ function LigaPage() {
 
 function ArchivedLigaPage({
   dataset,
+  issues,
   teamId,
   view,
   liga,
@@ -116,6 +118,7 @@ function ArchivedLigaPage({
   onViewChange,
 }: {
   dataset: CompetitionDataset;
+  issues: string[];
   teamId: string | null;
   view?: CompetitionView;
   liga: NonNullable<ReturnType<typeof archivedLigaBySlug>>;
@@ -130,6 +133,7 @@ function ArchivedLigaPage({
       seasonLabel={ARCHIVE_SEASON.label}
       liga={liga}
       dataset={dataset}
+      sourceIssues={issues}
       teamId={selectedTeamId}
       {...(view ? { view } : {})}
       onViewChange={onViewChange}

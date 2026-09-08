@@ -1,5 +1,5 @@
-import type { ActiveLiga, DivisionId, Liga, League, Match, Team, Weekend } from "./types";
-export type { ActiveLiga, DivisionId, Liga, Match, Team, Weekend };
+import type { ActiveLiga, DivisionId, Liga, League, Match, Team } from "./types";
+export type { ActiveLiga, DivisionId, Match, Team };
 
 const SEASON_START = "2026-08-02";
 const SEASON_END = "2026-11-29";
@@ -382,20 +382,9 @@ export const matchesOf = (divisionId: DivisionId) =>
     .filter((m) => m.divisionId === divisionId)
     .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
 
-export const isPlayed = (m: Match) => m.homeGoals !== null && m.awayGoals !== null && !m.postponed;
+const isPlayed = (m: Match) => m.homeGoals !== null && m.awayGoals !== null && !m.postponed;
 
 export const playedOf = (divisionId: DivisionId) => matchesOf(divisionId).filter(isPlayed);
-
-/**
- * Fixtures moved to this date from an earlier, postponed one. The sheet's
- * wording varies ("shifted from", "shiftef from", "shiftefd from"), so match
- * the stem rather than the exact phrase — and do not catch "changed from".
- */
-export const isReplayed = (m: Match) => !!m.note && /shift\w*\s+from\b/i.test(m.note);
-
-const matchDates = (divisionId: DivisionId) => [
-  ...new Set(matchesOf(divisionId).map((m) => m.date)),
-];
 
 export type Standing = {
   team: Team;
@@ -497,67 +486,3 @@ const ligas: Liga[] = [
 
 export const activeLigas = ligas.filter((l): l is ActiveLiga => l.status === "active");
 export const ligaBySlug = (slug: string) => ligas.find((l) => l.slug === slug);
-
-const DAY_MS = 86_400_000;
-const dayOf = (iso: string) => Math.round(Date.parse(`${iso}T00:00:00Z`) / DAY_MS);
-
-function weekendLabel(dates: string[]) {
-  const fmt = (iso: string, opts: Intl.DateTimeFormatOptions) =>
-    new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", { timeZone: "UTC", ...opts });
-  const first = dates[0];
-  const last = dates[dates.length - 1];
-  if (!first || !last) return "";
-  if (first === last) return fmt(first, { day: "numeric", month: "short" });
-  const sameMonth = first.slice(0, 7) === last.slice(0, 7);
-  return sameMonth
-    ? `${fmt(first, { day: "numeric" })}–${fmt(last, { day: "numeric", month: "short" })}`
-    : `${fmt(first, { day: "numeric", month: "short" })} – ${fmt(last, { day: "numeric", month: "short" })}`;
-}
-
-/**
- * Groups a liga's fixtures into playing blocks: match days one calendar day
- * apart belong to the same block, which lumps each Sat/Sun weekend together.
- */
-export function weekendsOf(divisionId: DivisionId): Weekend[] {
-  const blocks: string[][] = [];
-  for (const date of matchDates(divisionId)) {
-    const current = blocks[blocks.length - 1];
-    const previous = current?.[current.length - 1];
-    if (current && previous && dayOf(date) - dayOf(previous) <= 1) current.push(date);
-    else blocks.push([date]);
-  }
-  const schedule = matchesOf(divisionId);
-  return blocks.map((dates) => ({
-    key: dates[0]!,
-    dates,
-    label: weekendLabel(dates),
-    matches: schedule.filter((m) => dates.includes(m.date)),
-  }));
-}
-
-/**
- * The league plays on Singapore time, which sits at UTC+8 all year with no
- * daylight saving, so shifting the epoch by eight hours gives today's calendar
- * day there. Anchoring to the league's own zone rather than the viewer's also
- * keeps the server render and the browser's hydration on the same day.
- */
-const SGT_OFFSET_MS = 8 * 60 * 60 * 1000;
-const leagueToday = () => new Date(Date.now() + SGT_OFFSET_MS).toISOString().slice(0, 10);
-
-/**
- * The weekend a visitor most likely wants: the one being played today, else the
- * most recent one to have started. Scores are typed up well after the final
- * whistle, so this follows the calendar instead of waiting for them — on a match
- * day the current weekend wins even while every result is still blank. Before
- * the liga's first fixture there is nothing behind us, so look ahead.
- */
-export function latestWeekendKey(divisionId: DivisionId): string | null {
-  const weekends = weekendsOf(divisionId);
-  const today = leagueToday();
-  for (let i = weekends.length - 1; i >= 0; i--) {
-    const weekend = weekends[i];
-    // Keys are the block's first ISO date, so they compare as strings.
-    if (weekend && weekend.key <= today) return weekend.key;
-  }
-  return weekends[0]?.key ?? null;
-}

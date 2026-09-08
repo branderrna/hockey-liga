@@ -1,8 +1,12 @@
+import type { CSSProperties } from "react";
 import { formatFixtureRound } from "@/data/round";
 import {
+  bracketsOf,
   isPlayed,
   knockoutMatchesOf,
   knockoutStage,
+  type Bracket,
+  type BracketSlot,
   type CompetitionDataset,
 } from "@/data/competition";
 import type { DivisionId, Match } from "@/data/types";
@@ -29,13 +33,8 @@ export function KnockoutBracket({
     return <CompactBracket matches={teamMatches} />;
   }
 
-  const quarterFinals = matches.filter((match) => knockoutStage(match.round) === "quarter-final");
-  const semiFinals = matches.filter((match) => knockoutStage(match.round) === "semi-final");
-  const final = matches.find((match) => knockoutStage(match.round) === "final");
-  const placing = matches.filter((match) => knockoutStage(match.round) === "placing");
-  const thirdPlace = placing.find((match) => /^3RD/i.test(match.round ?? ""));
-  const otherPlacing = placing.filter((match) => match !== thirdPlace);
-  const playIns = matches.filter((match) => knockoutStage(match.round) === "play-in");
+  const brackets = bracketsOf(dataset, divisionId);
+  if (brackets.length === 0) return null;
 
   return (
     <section className="mt-12" aria-labelledby="knockout-heading">
@@ -43,73 +42,98 @@ export function KnockoutBracket({
         <h2 id="knockout-heading" className="label-eyebrow">
           Knockout bracket
         </h2>
-        <p className="meta-mono hidden sm:block">Source rounds · replay rows collapsed</p>
+        <p className="meta-mono hidden sm:block">Lines follow the winner</p>
       </div>
-
-      <div className="knockout-scroll mt-6" role="region" aria-label="Knockout bracket">
-        <div className="knockout-bracket">
-          {playIns.length > 0 ? (
-            <BracketColumn title="Play-in" matches={playIns} teamId={teamId} />
-          ) : null}
-          {quarterFinals.length > 0 ? (
-            <BracketColumn title="Quarter-finals" matches={quarterFinals} teamId={teamId} />
-          ) : null}
-          {semiFinals.length > 0 ? (
-            <BracketColumn title="Semi-finals" matches={semiFinals} teamId={teamId} />
-          ) : null}
-          <div className="knockout-center-column">
-            {final ? <BracketMatch match={final} teamId={teamId} emphasis="final" /> : null}
-            {thirdPlace ? (
-              <BracketMatch match={thirdPlace} teamId={teamId} emphasis="third" />
-            ) : null}
-          </div>
-          {otherPlacing.length > 0 ? (
-            <BracketColumn title="Placing" matches={otherPlacing} teamId={teamId} />
-          ) : null}
-        </div>
-      </div>
+      {brackets.map((bracket) => (
+        <BracketChart key={bracket.key} bracket={bracket} teamId={teamId} />
+      ))}
     </section>
   );
 }
 
-function BracketColumn({
-  title,
-  matches,
-  teamId,
-}: {
-  title: string;
-  matches: Match[];
-  teamId: string | null;
-}) {
+function BracketChart({ bracket, teamId }: { bracket: Bracket; teamId: string | null }) {
+  const single = bracket.columns.length === 1;
+
   return (
-    <div className="knockout-stage" data-count={matches.length}>
-      <h3 className="label-eyebrow mb-3">{title}</h3>
-      <div className="knockout-stage-list">
-        {matches.map((match) => (
-          <BracketMatch key={match.id} match={match} teamId={teamId} />
-        ))}
+    <figure className="knockout-chart">
+      <figcaption className="label-eyebrow knockout-chart-title">{bracket.title}</figcaption>
+      <div
+        className="knockout-scroll"
+        role="region"
+        aria-label={`${bracket.title} bracket`}
+        tabIndex={0}
+      >
+        <div
+          className="knockout-bracket"
+          style={{ "--knockout-rows": bracket.rows } as CSSProperties}
+        >
+          {bracket.columns.map((column) => (
+            <div key={column.title} className="knockout-column">
+              {single ? null : (
+                <h3 className="label-eyebrow knockout-column-head">{column.title}</h3>
+              )}
+              <div className="knockout-column-body">
+                {column.slots.map((slot) => (
+                  <BracketSlotCard key={slot.match.id} slot={slot} teamId={teamId} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
+    </figure>
+  );
+}
+
+function BracketSlotCard({ slot, teamId }: { slot: BracketSlot; teamId: string | null }) {
+  const style: CSSProperties = { gridRow: `${slot.row + 1} / span ${slot.span}` };
+  if (slot.join) {
+    Object.assign(style, {
+      "--knockout-join-from": `${slot.join.from}%`,
+      "--knockout-join-to": `${slot.join.to}%`,
+    });
+  }
+
+  return (
+    <div
+      className="knockout-slot"
+      style={style}
+      {...(slot.join && slot.feedsIn > 1 ? { "data-join": "" } : {})}
+    >
+      <BracketMatch slot={slot} teamId={teamId} />
     </div>
   );
 }
 
-function BracketMatch({
-  match,
-  teamId,
-  emphasis,
-}: {
-  match: Match;
-  teamId: string | null;
-  emphasis?: "final" | "third";
-}) {
+/** Where a card's sides came from, when no line into the card says it. */
+const ROUTE_NOTE = /\bvs?\b|winner|loser/i;
+
+function routeNote(slot: BracketSlot): string | null {
+  if (slot.feedsIn > 1) return null;
+  const note = slot.match.note?.trim();
+  return note && ROUTE_NOTE.test(note) ? note : null;
+}
+
+function BracketMatch({ slot, teamId }: { slot: BracketSlot; teamId: string | null }) {
+  const match = slot.match;
   const winner = winnerForDisplay(match);
   const shootout =
     match.shootoutHomeGoals != null && match.shootoutAwayGoals != null
       ? `(${match.shootoutHomeGoals}–${match.shootoutAwayGoals})`
       : null;
+  const note = routeNote(slot);
+  const emphasis = slot.attached
+    ? "knockout-match-attached"
+    : knockoutStage(match.round) === "final"
+      ? "knockout-match-final"
+      : "";
 
   return (
-    <article className={`knockout-match ${emphasis ? `knockout-match-${emphasis}` : ""}`}>
+    <article
+      className={`knockout-match ${emphasis}`}
+      {...(slot.advances ? { "data-advances": "" } : {})}
+      {...(slot.join && slot.feedsIn > 0 ? { "data-fed": "" } : {})}
+    >
       <p className="knockout-match-round">{formatFixtureRound(match.round ?? "")}</p>
       <div className={`knockout-team ${winner === match.homeId ? "knockout-team-winner" : ""}`}>
         <span className={teamId && match.homeId === teamId ? "knockout-team-mine" : ""}>
@@ -124,6 +148,7 @@ function BracketMatch({
         <BracketScore match={match} side="away" />
       </div>
       {shootout ? <p className="knockout-shootout">{shootout}</p> : null}
+      {note ? <p className="knockout-match-note">{note}</p> : null}
     </article>
   );
 }

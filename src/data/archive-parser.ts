@@ -20,22 +20,40 @@ function teamIdFor(divisionId: DivisionId, name: string): string {
   return `${divisionId}--${slug}`;
 }
 
-/** Parse the immutable completed-season Sheet tab into the shared view model. */
-export function parseArchiveCsv(csv: string): CompetitionDataset {
+export type ArchiveParse = {
+  dataset: CompetitionDataset;
+  /** Rows the source could not be read from, in sheet order, for display. */
+  issues: string[];
+};
+
+/**
+ * Parse the completed-season Sheet tab into the shared view model.
+ *
+ * A row this cannot read is dropped and reported rather than thrown, because
+ * nothing stands between an edit to that tab and the live site: it is read on
+ * request, with no refresh script, no test run and no deploy in between. One
+ * mistyped score would otherwise take all five completed ligas down at once.
+ * The rows that survive are still trustworthy — a row is only ever skipped
+ * whole, never half-read — so the season renders minus what was unreadable,
+ * and the page says how much is missing.
+ *
+ * A header that no longer names Home, Score and Away still throws, from
+ * `parseFixtureRows`. That is not one bad row: it means the tab is not a
+ * fixture list any more, and rendering an empty season would be a worse lie
+ * than failing.
+ */
+export function parseArchiveCsv(csv: string): ArchiveParse {
   const parsed = parseFixtureRows(parseCsv(csv), {
     seasonYear: ARCHIVE_SEASON.year,
     categoryToDivision: CATEGORY_TO_DIVISION,
     resolveTeamId: teamIdFor,
+    rowConflicts: "skip",
   });
 
-  if (parsed.unresolvedTeams.size > 0) {
-    throw new Error(
-      `Archive source contains unresolved teams: ${[...parsed.unresolvedTeams].join(", ")}`,
-    );
-  }
-  if (parsed.skippedRows.length > 0) {
-    throw new Error(`Archive source contains invalid rows:\n${parsed.skippedRows.join("\n")}`);
-  }
+  const issues = [
+    ...parsed.skippedRows,
+    ...[...parsed.unresolvedTeams].map((team) => `unmatched team name: ${team}`),
+  ];
 
   const teams = new Map<string, Team>();
   for (const match of parsed.matches) {
@@ -57,13 +75,16 @@ export function parseArchiveCsv(csv: string): CompetitionDataset {
   }
 
   return {
-    teams: [...teams.values()],
-    matches: parsed.matches.sort(
-      (a, b) =>
-        a.date.localeCompare(b.date) ||
-        a.time.localeCompare(b.time) ||
-        a.no - b.no ||
-        a.id.localeCompare(b.id),
-    ),
+    dataset: {
+      teams: [...teams.values()],
+      matches: parsed.matches.sort(
+        (a, b) =>
+          a.date.localeCompare(b.date) ||
+          a.time.localeCompare(b.time) ||
+          a.no - b.no ||
+          a.id.localeCompare(b.id),
+      ),
+    },
+    issues,
   };
 }

@@ -24,3 +24,7 @@ test("leaves blank and unknown stage values alone", () => {
   assert.equal(formatFixtureRound(""), "");
   assert.equal(formatFixtureRound("FINAL"), "Final");
 });
+
+test("formats a play-in the sheet only marks in its notes", () => {
+  assert.equal(formatFixtureRound("PLAY-IN"), "Play-in");
+});

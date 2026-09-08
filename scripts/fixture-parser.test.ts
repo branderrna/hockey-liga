@@ -122,3 +122,26 @@ test("keeps the old live-sheet shape compatible", () => {
   assert.equal(parsed.matches[0]?.shootoutHomeGoals, undefined);
   assert.equal(parsed.matches[1]?.homeGoals, 3);
 });
+
+test("promotes a seeding play-off to a play-in when a knockout row points back at it", () => {
+  const rows = parseCsv(
+    [
+      "No.,Day & Date,Venue,Time,Category,Round,Home,Score,Away,Shootout Score,PP,Notes",
+      '1,"Saturday,_09 May",DELTA,1800,SOCIAL,2,OLDHAM,4 - 0,HYPERNOVAS,,,6th vs 7th',
+      '2,"Saturday,_09 May",DELTA,1900,SOCIAL,2,ROVERS,2 - 0,TORNADOS,,,8th vs 9th',
+      '3,"Saturday,_16 May",DELTA,1900,SOCIAL,QF3,BARKERITES,2 - 1,OLDHAM,,,3rd vs Winner of 6th/7th play-in',
+      '4,"Saturday,_16 May",DELTA,2000,SOCIAL,2,FLICKERS,1 - 0,VARSITY,,,league game',
+    ].join("\n"),
+  );
+
+  const parsed = parseFixtureRows(rows, {
+    seasonYear: "2026",
+    categoryToDivision: { SOCIAL: "social" },
+    resolveTeamId: (divisionId, name) => `${divisionId}--${name.toLowerCase()}`,
+  });
+
+  assert.deepEqual(
+    parsed.matches.map((match) => match.round),
+    ["PLAY-IN", "2", "QF3", "2"],
+  );
+});
