@@ -27,21 +27,21 @@ export function KnockoutBracket({
   if (matches.length === 0) return null;
 
   if (compact) {
+    if (!teamId) return null;
     const teamMatches = matches.filter(
       (match) => match.homeId === teamId || match.awayId === teamId,
     );
-    return <CompactBracket matches={teamMatches} />;
+    return <CompactBracket matches={teamMatches} teamId={teamId} />;
   }
 
   const brackets = bracketsOf(dataset, divisionId);
   if (brackets.length === 0) return null;
 
   return (
-    <section className="mt-12" aria-labelledby="knockout-heading">
-      <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-        <h2 id="knockout-heading" className="label-eyebrow">
-          Knockout bracket
-        </h2>
+    // The phase switcher above already names this, so the region carries its
+    // label for assistive tech rather than repeating it on screen.
+    <section aria-label="Knockout bracket">
+      <div className="flex items-baseline justify-end border-b border-border pb-2">
         <p className="meta-mono hidden sm:block">Lines follow the winner</p>
       </div>
       {brackets.map((bracket) => (
@@ -179,26 +179,60 @@ function winnerForDisplay(match: Match): string | null {
   return null;
 }
 
-function CompactBracket({ matches }: { matches: Match[] }) {
+/**
+ * The selected team's run through the knockout, read from their side: the
+ * opponent rather than both names, and their own score first. Naming the team
+ * on every row of their own page says nothing, and once the row reads "v
+ * someone" the scoreline has to be theirs first or it reports the wrong result
+ * whenever they played away.
+ */
+function CompactBracket({ matches, teamId }: { matches: Match[]; teamId: string }) {
   if (matches.length === 0) return null;
   return (
     <section className="mt-12" aria-labelledby="my-team-knockout-heading">
       <h2 id="my-team-knockout-heading" className="label-eyebrow border-b border-border pb-2">
         Knockout run
       </h2>
-      <ol className="mt-3 space-y-2">
+      {/* One grid for the whole run, so the opponents line up under each other
+          rather than each row sizing its own stage column. The roles are
+          explicit because `display: contents` on a list item drops list
+          semantics in older browsers. */}
+      <ol className="knockout-compact-run mt-3" role="list">
         {matches.map((match) => (
-          <li key={match.id} className="knockout-compact-match">
+          <li key={match.id} className="knockout-compact-match" role="listitem">
             <span className="knockout-compact-round">{formatFixtureRound(match.round ?? "")}</span>
-            <span className="min-w-0 flex-1 text-sm">
-              {match.homeName} <span className="text-muted-foreground">v</span> {match.awayName}
+            <span className="knockout-compact-opponent text-sm">
+              <span className="text-muted-foreground">v</span>{" "}
+              {match.homeId === teamId ? match.awayName : match.homeName}
             </span>
-            <BracketScore match={match} side="home" />
-            <span className="text-muted-foreground">–</span>
-            <BracketScore match={match} side="away" />
+            <CompactScore match={match} teamId={teamId} />
           </li>
         ))}
       </ol>
     </section>
+  );
+}
+
+function CompactScore({ match, teamId }: { match: Match; teamId: string }) {
+  if (!isPlayed(match)) return <span className="meta-mono">{match.postponed ? "PP" : "—"}</span>;
+  const home = match.homeId === teamId;
+  const paired = match.shootoutHomeGoals != null && match.shootoutAwayGoals != null;
+  const side = (ours: boolean) => {
+    const goals = home === ours ? match.homeGoals : match.awayGoals;
+    const shootout = home === ours ? match.shootoutHomeGoals : match.shootoutAwayGoals;
+    return (
+      <>
+        {goals}
+        {paired ? <span className="knockout-shootout">({shootout})</span> : null}
+      </>
+    );
+  };
+
+  return (
+    <span className="knockout-compact-score">
+      {side(true)}
+      <span className="px-1.5 text-muted-foreground">–</span>
+      {side(false)}
+    </span>
   );
 }

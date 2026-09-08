@@ -32,6 +32,18 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   the connectors are three plain rules instead of guesses. The old chart sorted
   cards into stage columns and drew a line from every card to every neighbour,
   which is why the lines did not mean anything.
+- Moved the bracket into the phase switcher beside the numbered rounds, where
+  it reads as the phase that followed them rather than as an appendix to the
+  last round's table. Selecting it does not disturb which round the tables are
+  for, so switching back lands where you left.
+- Seeding notes on a card wrap instead of truncating. A route cut off
+  mid-phrase says less than no route at all, and the rows have the headroom.
+- The My Team knockout run reads from the selected team's side: the opponent
+  rather than both names, and their own score first. Naming the team on every
+  row of their own page says nothing, and once a row reads "v someone" the
+  scoreline has to be theirs first or it reports the wrong result whenever they
+  played away. The grid moved onto the list so the opponents line up under each
+  other and the stage never wraps.
 - Laid the charts out against one column hierarchy per division, keyed by
   rounds from each chart's own decider rather than by stage name. The
   semi-finals of a 5th-8th bracket now sit under the semi-finals of the

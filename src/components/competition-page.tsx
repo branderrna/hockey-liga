@@ -558,6 +558,13 @@ function StandingsKey() {
   );
 }
 
+/**
+ * The knockout is the phase after the numbered rounds, so it is selected the
+ * same way they are rather than living underneath the last one, where it read
+ * as part of that round's table.
+ */
+const KNOCKOUT_PHASE = "knockout";
+
 function RoundSwitcher({
   rounds,
   activeRound,
@@ -568,9 +575,10 @@ function RoundSwitcher({
   onChange: (round: string) => void;
 }) {
   if (rounds.length < 2) return null;
+  const hasKnockout = rounds.includes(KNOCKOUT_PHASE);
   return (
     <div className="mb-5 flex items-center gap-3 overflow-x-auto">
-      <span className="label-eyebrow shrink-0">Table round</span>
+      <span className="label-eyebrow shrink-0">{hasKnockout ? "Phase" : "Table round"}</span>
       <div className="inline-flex rounded-md border border-border p-0.5">
         {rounds.map((round) => (
           <button
@@ -584,7 +592,7 @@ function RoundSwitcher({
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {formatFixtureRound(round)}
+            {round === KNOCKOUT_PHASE ? "Knockout" : formatFixtureRound(round)}
           </button>
         ))}
       </div>
@@ -626,23 +634,41 @@ function TableView({
   teamId: string | null;
 }) {
   const rounds = numericRoundsOf(dataset, divisionId);
+  // Selecting the knockout must not change which round the tables are for, so
+  // the phase is tracked separately from the round it falls back to.
   const [selectedRound, setSelectedRound] = useSelectedRound(rounds);
-  const tableRound = rounds.length > 0 ? selectedRound : undefined;
-  const groups = pooledStandingsFor(dataset, divisionId, tableRound);
+  const [phase, setPhase] = useState<string | null>(null);
+  const phases = hasKnockoutOf(dataset, divisionId) ? [...rounds, KNOCKOUT_PHASE] : rounds;
+  const activePhase = phase && phases.includes(phase) ? phase : selectedRound;
+  const groups = pooledStandingsFor(
+    dataset,
+    divisionId,
+    rounds.length > 0 ? selectedRound : undefined,
+  );
+
+  const select = (next: string) => {
+    setPhase(next);
+    if (next !== KNOCKOUT_PHASE) setSelectedRound(next);
+  };
 
   return (
     <div className="animate-rise">
-      <RoundSwitcher rounds={rounds} activeRound={selectedRound} onChange={setSelectedRound} />
-      {groups.map((group) => (
-        <div key={group.pool?.key ?? "all"}>
-          <PoolHeading group={group} />
-          <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-            <StandingsTable entries={rankEntries(group)} teamId={teamId} />
-          </div>
-        </div>
-      ))}
-      <StandingsKey />
-      <KnockoutBracket dataset={dataset} divisionId={divisionId} teamId={teamId} />
+      <RoundSwitcher rounds={phases} activeRound={activePhase} onChange={select} />
+      {activePhase === KNOCKOUT_PHASE ? (
+        <KnockoutBracket dataset={dataset} divisionId={divisionId} teamId={teamId} />
+      ) : (
+        <>
+          {groups.map((group) => (
+            <div key={group.pool?.key ?? "all"}>
+              <PoolHeading group={group} />
+              <div className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+                <StandingsTable entries={rankEntries(group)} teamId={teamId} />
+              </div>
+            </div>
+          ))}
+          <StandingsKey />
+        </>
+      )}
     </div>
   );
 }
