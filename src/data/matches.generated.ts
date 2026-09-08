@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-09-06T13:49:51.660Z";
+export const fixturesUpdatedAt = "2026-09-08T16:49:53.155Z";
 
 export const matches: Match[] = [
   {
@@ -979,10 +979,10 @@ export const matches: Match[] = [
     "awayId": "premier--tornados",
     "homeName": "ORA",
     "awayName": "TORNADOS",
-    "homeGoals": null,
-    "awayGoals": null,
-    "postponed": true,
-    "note": "Postponed due to haze"
+    "homeGoals": 5,
+    "awayGoals": 0,
+    "postponed": false,
+    "note": "Walkover"
   },
   {
     "id": "m-2026-09-05-1900-delta-oldham-singapore-polytechnic",
@@ -2230,7 +2230,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": "Timing changed, venue remains"
+    "note": "6th vs 8th. Timing changed, venue remains"
   },
   {
     "id": "m-2026-10-10-1700-ccab-scc-oldham",
@@ -2310,7 +2310,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Game shifted to 11th Oct, 3pm"
+    "note": "1st vs 3rd. Game shifted to 11th Oct, 3pm"
   },
   {
     "id": "m-2026-10-10-1900-delta-5th-4th",
@@ -2326,7 +2326,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "5th vs 4th"
   },
   {
     "id": "m-2026-10-11-1500-ccab-jansenites-crescent-fire-horse",
@@ -2358,7 +2358,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": "Game shifted from 10th Oct, 6pm"
+    "note": "1st vs 3rd. Game shifted from 10th Oct, 6pm"
   },
   {
     "id": "m-2026-10-11-1500-delta-lion-city-hockey-club-singapore-polytechnic",
@@ -2566,7 +2566,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": "Venue Changed, timinmg remains"
+    "note": "2nd vs 3rd. Venue Changed, timinmg remains"
   },
   {
     "id": "m-2026-10-17-1900-ccab-7th-9th",
@@ -2582,7 +2582,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "7th vs 9th"
   },
   {
     "id": "m-2026-10-17-1900-delta-1st-5th",
@@ -2598,7 +2598,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "1st vs 5th"
   },
   {
     "id": "m-2026-10-18-1500-ccab-scc-republic-polytechnic",
@@ -2838,7 +2838,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "6th vs 9th"
   },
   {
     "id": "m-2026-10-24-1900-delta-1st-4th",
@@ -2854,7 +2854,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "1st vs 4th"
   },
   {
     "id": "m-2026-10-24-2000-delta-2nd-5th",
@@ -2870,7 +2870,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "2nd vs 5th"
   },
   {
     "id": "m-2026-10-25-1500-ccab-ejc-tannibellies-scc",
@@ -3094,7 +3094,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "7th vs 8th"
   },
   {
     "id": "m-2026-10-31-1900-delta-2nd-4th",
@@ -3110,7 +3110,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "2nd vs 4th"
   },
   {
     "id": "m-2026-11-01-1500-ccab-singapore-polytechnic-lch-young-boys",
@@ -3222,7 +3222,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": "Timing changed, venue remains"
+    "note": "3rd vs 5th. Timing changed, venue remains"
   },
   {
     "id": "m-2026-11-14-1500-ccab-republic-polytechnic-ora",
@@ -3334,7 +3334,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "8th vs 9th"
   },
   {
     "id": "m-2026-11-14-1900-delta-3rd-4th",
@@ -3350,7 +3350,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "3rd vs 4th"
   },
   {
     "id": "m-2026-11-14-2000-delta-6th-7th",
@@ -3366,7 +3366,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "6th vs 7th"
   },
   {
     "id": "m-2026-11-15-1500-ccab-singapore-polytechnic-ora",
@@ -3478,7 +3478,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
-    "note": null
+    "note": "1st vs 2nd"
   },
   {
     "id": "m-2026-11-21-1500-ccab-oldham-lion-city-hockey-club",

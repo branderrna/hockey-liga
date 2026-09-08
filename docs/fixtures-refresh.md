@@ -12,7 +12,7 @@ workflow, so a sheet edit gets the same validation as a code change.
 ## How it fits together
 
 ```
-Google Sheet ("2026/2" tab)
+Google Sheet ("CURRENT" tab)
         │  an edit dispatches via scripts/sheet-refresh-trigger.gs (~10 min max)
         │  plus a daily 03:00 SGT cron, or a manual run from the Actions tab
         ▼
@@ -37,23 +37,26 @@ sheet-driven. The refresh script never touches anything else.
 
 ## The Google Sheet
 
-Source: the **"2026/2"** tab of the league's Google Sheet (link shared with
+Source: the **"CURRENT"** tab of the league's Google Sheet (link shared with
 "Anyone with the link → Viewer", so the script can read it without any API key or
 Google credentials — it just fetches the sheet's public CSV export).
 
 ### Renaming or replacing the tab
 
-The two scripts identify the source by the same stable sheet ID:
+The two scripts identify the source differently:
 
-- `scripts/refresh-fixtures.ts` fetches GID `9556364`, currently the `2026/2` tab.
-- `scripts/sheet-refresh-trigger.gs` filters edits by `WATCHED_SHEET_ID = 9556364`,
-  so edits to the archived `2026/1` tab cannot dispatch a live refresh. Renaming
-  the live tab does not affect either script.
+- `scripts/refresh-fixtures.ts` fetches the fixed tab ID (`GID = "9556364"`),
+  not its displayed name. Renaming that same tab preserves the CSV source.
+- `scripts/sheet-refresh-trigger.gs` watches the displayed name through
+  `WATCHED_SHEET_NAME`. If the tab is renamed, update and save the copy in the
+  sheet's Apps Script editor as well as this repository's copy. Existing
+  installable triggers do not need reinstalling for a name-only change.
 
-Creating a **new** `2026/2` tab gives it a different tab ID. Update both the
-refresh script's `GID` and the Apps Script `WATCHED_SHEET_ID`, then save the copy
-in the sheet's Apps Script editor. Existing installable triggers do not need
-reinstalling for this constant change.
+Creating a **new** `CURRENT` tab gives it a different tab ID. The edit trigger
+would watch the new tab, but the refresh script would still fetch the old one
+until its `GID` is updated. This is not an automatic season rollover: the site
+currently has one season configuration, one team list and one generated fixture
+file. Its season dates in `src/data/league.ts` control date parsing and validation.
 Supporting current and archived seasons together requires the season-aware data
 handling described in [Past seasons](../BACKLOG.md#past-seasons), rather than
 replacing the existing generated data with another season's fixtures.
@@ -92,7 +95,7 @@ in a header like `"Score "` is tolerated):
 - `QF1`, `SF1`, and `FINAL` identify knockout matches. Placing values such as
   `3RD/4TH` and `5TH/6TH` are shown as readable placement labels.
 - The column is optional. Older/current rows without it continue to parse as one
-  standings set, so the existing 2026/2 tab remains valid.
+  standings set, so the existing CURRENT tab remains valid.
 - `PLAY-IN` marks a seeding play-off. The 2026/1 tab does not use it: those rows
   carry the numeric round they were played in, and only the notes say what they
   were. The parser recovers them, and writing `PLAY-IN` in the column instead
@@ -111,12 +114,13 @@ the numeric round it was played in, with a note naming the two seeds
 bracket, where it belongs. A note alone changes nothing: without the knockout row
 pointing back at it, an ordinary `1st vs 3rd` note stays an ordinary fixture.
 
-_Pools inside one round._ A round played as two groups — a top half and a bottom
-half — has no marker at all. Teams that never meet inside the round are read as
-separate pools, and each pool gets its own table ranked from 1. This is
-connectivity, not a guess at intent: one connected group is an ordinary round,
-and groups smaller than three teams are treated as a sparse round rather than
-pools. 2026/1 Super Round 2 is the case that exists.
+_A round played in halves._ A later round continues the one before it: points and
+goals carry forward, and only the fixtures change, with the top half playing
+among themselves and the bottom half likewise. The sheet does not mark this and
+does not need to — the table stays one table either way, and a side from the
+bottom half can finish above one from the top, which is what 2026/1 Super Round 2
+did. A season that instead resets the table for its second round is a different
+shape; see [BACKLOG.md](../BACKLOG.md).
 
 **Shootout Score convention:**
 
@@ -141,7 +145,7 @@ that adds a team fails the check.
 
 ### Why this tab needs its own safety net
 
-Every other route into the site passes a gate. A `2026/2` edit runs the refresh
+Every other route into the site passes a gate. A `CURRENT` edit runs the refresh
 script, `npm test`, and the whole of `checks.yml` before a Worker is published,
 so a malformed row fails the build and the last good data stays up. The `2026/1`
 tab has none of that, because none of it happens: the tab is read on request,
@@ -252,7 +256,7 @@ update until this is fixed and the workflow re-runs).
 
 [`scripts/sheet-refresh-trigger.gs`](../scripts/sheet-refresh-trigger.gs) is Google
 Apps Script that lives in the sheet, not in this repo's build. It watches the
-"2026/2" tab and dispatches `refresh-fixtures.yml` shortly after an edit, so a
+"CURRENT" tab and dispatches `refresh-fixtures.yml` shortly after an edit, so a
 score entered in the sheet reaches the live site in minutes instead of waiting for
 the next daily run.
 
@@ -333,7 +337,7 @@ special "TBD" styling for them yet. Worth a decision before those rounds arrive.
 ## Troubleshooting
 
 - **Script errors with "Could not find header row"**: the sheet's column headers
-  changed. Check the "2026/2" tab's header row still contains `Home`, `Score`,
+  changed. Check the "CURRENT" tab's header row still contains `Home`, `Score`,
   and `Away` (extra whitespace is fine, renamed/removed columns are not).
 - **Script errors fetching the sheet**: the sheet's sharing setting changed. It
   needs to stay set to "Anyone with the link → Viewer" for the public CSV export

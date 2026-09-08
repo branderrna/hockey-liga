@@ -23,7 +23,7 @@ const WORKFLOW_FILE = "refresh-fixtures.yml";
 const WORKFLOW_REF = "main";
 
 /** Only edits on this tab are worth a refresh — it is the tab the script reads. */
-const WATCHED_SHEET_ID = 9556364; // "2026/2"
+const WATCHED_SHEET_NAME = "CURRENT";
 
 /** Script Property names. The token is never committed to the repository. */
 const TOKEN_PROPERTY = "GITHUB_TOKEN";
@@ -47,7 +47,7 @@ const FLUSH_INTERVAL_MINUTES = 10;
  */
 function onSheetEdit(e) {
   if (!e || !e.range) return;
-  if (e.range.getSheet().getSheetId() !== WATCHED_SHEET_ID) return;
+  if (e.range.getSheet().getName() !== WATCHED_SHEET_NAME) return;
   PropertiesService.getScriptProperties().setProperty(PENDING_PROPERTY, "1");
 }
 
