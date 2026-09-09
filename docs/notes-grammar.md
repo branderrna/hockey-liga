@@ -103,24 +103,6 @@ remaining minute, write `Suspended midway (<h>-<a>)` — never invent a number.
 `Time changed to <time>` and `Moved to <date>` (without a time) are legal short
 forms of their templates when the from-value or the time is genuinely unknown.
 
-## What this fixes
-
-Measured against the two tabs on 2026-09-09:
-
-|                            | Live tab | Completed tab |
-| -------------------------- | -------- | ------------- |
-| Notes                      | 61       | 91            |
-| Ordinal dates (`13th Oct`) | 33       | 0             |
-| am/pm times                | 26       | 0             |
-| 24-hour times              | 0        | 5             |
-| Contains `postpon`         | 10       | 2             |
-| Provenance-only notes      | 17       | 80            |
-| Multi-fact in one clause   | 31       | 2             |
-
-The completed tab is already close to this grammar — 80 of its 91 notes are
-provenance clauses that pass as written. The live tab carries nearly all the
-drift, including four typos (`shiftefd`, `shiftef`, `timinmg`, a doubled space).
-
 ## Applying this to a completed season
 
 A completed tab is the archive's source of truth and is read live by the site
