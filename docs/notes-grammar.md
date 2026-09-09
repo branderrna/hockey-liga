@@ -60,12 +60,33 @@ bare `<n>th` is the legal short form.
 | Score        | `<h>-<a>`, no spaces                                | `1-0`                | `1 - 0`, `1–0`                       |
 | Minutes      | elapsed, `<n> min`                                  | `9 min`, `24 min`    | `26 minutes left to play`, `24 mins` |
 | Team / venue | the code as it appears in its own column, uppercase | `ORA`, `CCAB`        | `Ora`, `Delta`                       |
-| Round        | uppercase, no space                                 | `R1`, `QF1`, `FINAL` | `qf1`, `QF 1`, `R 1`                 |
+| Round code   | uppercase, no space — **as written in a note**      | `R1`, `QF1`, `FINAL` | `qf1`, `QF 1`, `R 1`                 |
 
 Elapsed, never remaining. **Every hockey liga game is 50 minutes**, so a note
 recording time remaining converts by subtraction: `26 minutes left to play`
 becomes `Suspended at 24 min`. If the note gives neither an elapsed nor a
 remaining minute, write `Suspended midway (<h>-<a>)` — never invent a number.
+
+### A round code in a note is not a Round column value
+
+`R<n>` is note shorthand. The sheet's own Round column takes the bare number.
+The two do not interchange, and the mistake is silent:
+
+| Round column | Result                                                                     |
+| ------------ | -------------------------------------------------------------------------- |
+| `1`, `2`     | correct — prints `Round 1`, and a play-in filed here can be promoted       |
+| `QF1`, `SF1` | correct — prints `Quarter-final 1`, `Semi-final 1`                         |
+| `FINAL`      | correct — prints `Final`                                                   |
+| `R1`, `R2`   | **wrong** — prints a bare `R1`, and no play-in filed here is ever promoted |
+| `F`          | **wrong** — prints a bare `F`                                              |
+
+`R1` is the costly one. `resolvePlayInRounds` promotes a play-in only from a row
+whose round is bare digits, so a play-in filed under `R1` silently never reaches
+the bracket. In a note, `R1` is correct and carries no such risk — nothing reads
+it (see [hard rule 5](#hard-rules)).
+
+`PLAY-IN` is never typed into the column. The play-in row keeps the numeric round
+it was played in, and the parser rewrites it once a knockout note points back.
 
 ## Hard rules
 
