@@ -29,7 +29,7 @@ export const Route = createFileRoute("/liga/$slug")({
   loader: ({ params }) => (archivedLigaBySlug(params.slug) ? getArchivedDataset() : null),
   head: ({ params }) => {
     const liga = ligaBySlug(params.slug) ?? archivedLigaBySlug(params.slug);
-    const seasonLabel = archivedLigaBySlug(params.slug) ? ARCHIVE_SEASON.label : SEASON.label;
+    const seasonLabel = archivedLigaBySlug(params.slug) ? ARCHIVE_SEASON.year : SEASON.label;
     const title = liga ? `${liga.name} — Hockey Liga ${seasonLabel}` : `Hockey Liga ${seasonLabel}`;
     const description = liga
       ? `Schedule, scores and league table for the ${liga.name} in the ${seasonLabel} Hockey Liga season.`

@@ -15,7 +15,16 @@ const SEASON_YEAR = SEASON_START.slice(0, 4);
  * file is enough to do it — leaving no way to regenerate. Falling back to the
  * year keeps the site sensible until the next refresh fills the label in.
  */
-const seasonLabel = (generated as { seasonLabel?: string }).seasonLabel ?? SEASON_YEAR;
+const sheetSeason = (generated as { seasonLabel?: string }).seasonLabel ?? SEASON_YEAR;
+
+/*
+ * The sheet names its season "2026/2"; the site shows the year alone. Both
+ * ligas played in a year are that year's season to a visitor, and every other
+ * title on the site already reads "Hockey Liga 2026". Taking the year off the
+ * sheet's own name rather than off SEASON_START keeps a rollover a sheet edit:
+ * "2027/1" shows as 2027 with no code change.
+ */
+const seasonLabel = sheetSeason.split("/")[0]!;
 
 /*
  * The season's bounds. `start` and `end` are load-bearing, not decoration:
@@ -23,10 +32,10 @@ const seasonLabel = (generated as { seasonLabel?: string }).seasonLabel ?? SEASO
  * `start`'s year onto them, and the validator rejects fixtures outside the
  * window. `year` is derived from them so no view hardcodes a season.
  *
- * `label` is the season's own name ("2026/2"), which is not derivable from
- * the dates: it comes from HELPER!B1 in the sheet, through the generated
- * fixtures file, so a rollover changes it there rather than here. `year`
- * stays the calendar year because that is what stamps the year-less dates.
+ * `label` is what a visitor sees — the year, taken off the season name in
+ * HELPER!B1 so a rollover changes it in the sheet rather than here. `year`
+ * stays derived from the dates because that is what stamps the year-less ones:
+ * the two agree today, but only `year` may be trusted for stamping.
  */
 export const SEASON = {
   year: SEASON_YEAR,

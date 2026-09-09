@@ -11,6 +11,43 @@ were wrong. The visitor-facing release notes shown in the site's footer live in
 
 Versions before 0.6.0 were assigned retroactively; see that document for how.
 
+## 0.9.1 — 2026-09-09
+
+**The season reads as its year again**
+
+- 0.9.0 put the sheet's own season name in the footer and the page titles, so the
+  live season read `2026/2` while `__root.tsx`, `index.tsx` and `ligas.tsx` all
+  still said `Hockey Liga 2026`. Two halves of a year presented as one thing was
+  the problem it set out to fix; showing one label in some places and another in
+  the rest replaced it with a worse one.
+- `SEASON.label` now takes the year off the sheet's season name — `"2026/2"` to
+  `2026` — rather than off `SEASON_START`. The 0.9.0 plumbing is what makes that
+  work: `HELPER!B1` still supplies the name, so `2027/1` shows as 2027 without a
+  code change, which a hardcoded label could not do.
+- `SEASON.year` is unchanged and still derives from the dates. It stamps the
+  sheet's year-less dates, so it may not follow a label the sheet controls.
+- The archived liga's title takes `ARCHIVE_SEASON.year` for the same reason.
+  `ARCHIVE_SEASON.label` stays `"2026/1"` — it names a sheet tab, and
+  `validate-archive-fixtures.ts` reports against that name.
+
+**Notes grammar**
+
+- Stated the game length. The grammar never said one, so an audit run converting
+  `26 minutes left to play` guessed 70 minutes; every hockey liga game is 50.
+- Added `Suspended midway (<h>-<a>)` for a note that records a score but no
+  minute, replacing an instruction to stop and ask.
+- Specified `<source>` in a bracket clause as a pattern rather than five
+  literals, and let a seed name its round: `3rd of R1`, `R<n>` being the round
+  shorthand.
+- `SEED_PAIR_NOTE` accepts that qualifier on both seeds. It is read and
+  discarded — the reference pointing back (`6th/7th play-in`) names no round, so
+  pairings still match on the seed numbers alone. Without this, `6th of R1 vs
+  7th of R1` would have failed the anchored match and silently stopped resolving
+  the row to `PLAY-IN`.
+- Recorded which clauses the parser actually reads, and that a note's `R1` is not
+  a Round column value: a play-in filed under `R1` in the column is never
+  promoted, because only bare digits qualify.
+
 ## 0.9.0 — 2026-09-09
 
 **The live season is named by the sheet**
