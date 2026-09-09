@@ -35,9 +35,12 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
 - Recorded which clauses the parser actually reads, and that a note's `R1` is not
   a Round column value: a play-in filed under `R1` in the column is never
   promoted, because only bare digits qualify.
-- Nothing on the site changes until the audit runs against the live tab and the
-  approved rewrites land in the sheet. The grammar and the parser are in place
-  first so that pass has something to conform to.
+- The audit ran against the live tab and the approved rewrites are in the sheet,
+  so the refresh at `604fac1` carried them onto the site. Every note now parses:
+  no `postpon` in note text, no `shifted`/`timing`, no am/pm times, no ordinal
+  dates, no "minutes left to play". `Moved from 10 Oct 18:00`,
+  `Suspended at 9 min (1-0). Reason: lightning` and `6th vs 8th. Time changed`
+  are what a visitor reads now.
 
 ## 0.9.1 — 2026-09-09
 
