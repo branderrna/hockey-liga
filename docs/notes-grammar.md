@@ -38,22 +38,29 @@ clause.
 | 6     | Reason                                                           | `Reason: <reason>`                      | `Reason: haze`                     |
 | 7     | Result qualifier                                                 | `Walkover to <TEAM>`                    | `Walkover to ORA`                  |
 
-`<source>` in a bracket clause is one of: `<n>th`, `Winner of QF1`,
-`Loser of SF2`, `Winner of 6th/7th play-in`, `Loser of 8th/9th play-in`.
+`<source>` in a bracket clause is a pattern, not a fixed list:
+
+- `<n>th of <ROUND>` — a seed carried out of a round, e.g. `3rd of R1`
+- `Winner of <ROUND>` / `Loser of <ROUND>` — e.g. `Winner of SF1`, `Loser of QF2`
+- `Winner of <n>th/<n>th play-in` / `Loser of <n>th/<n>th play-in`
+
+`<ROUND>` is a round code: `R1`, `QF1`, `SF2`, `FINAL`. `R<n>` is the shorthand
+for numbered round `<n>`. Where the round a seed came out of is not recoverable,
+bare `<n>th` is the legal short form.
 
 `<reason>` is a closed list: `haze`, `lightning`, `weather`, `pitch unavailable`,
 `team withdrawal`, `insufficient players`, or `other: <free text>`.
 
 ## Atoms
 
-| Atom         | Format                                              | Good                  | Bad                                  |
-| ------------ | --------------------------------------------------- | --------------------- | ------------------------------------ |
-| Date         | `D MMM`, no ordinal suffix, no year, 3-letter month | `2 Aug`, `13 Oct`     | `13th Oct`, `23rd August`, `02/08`   |
-| Time         | `HH:MM`, 24-hour                                    | `18:00`, `09:00`      | `6pm`, `5 pm`, `1800`                |
-| Score        | `<h>-<a>`, no spaces                                | `1-0`                 | `1 - 0`, `1–0`                       |
-| Minutes      | elapsed, `<n> min`                                  | `9 min`, `24 min`     | `26 minutes left to play`, `24 mins` |
-| Team / venue | the code as it appears in its own column, uppercase | `ORA`, `CCAB`         | `Ora`, `Delta`                       |
-| Round        | uppercase, no space                                 | `QF1`, `SF2`, `FINAL` | `qf1`, `QF 1`                        |
+| Atom         | Format                                              | Good                 | Bad                                  |
+| ------------ | --------------------------------------------------- | -------------------- | ------------------------------------ |
+| Date         | `D MMM`, no ordinal suffix, no year, 3-letter month | `2 Aug`, `13 Oct`    | `13th Oct`, `23rd August`, `02/08`   |
+| Time         | `HH:MM`, 24-hour                                    | `18:00`, `09:00`     | `6pm`, `5 pm`, `1800`                |
+| Score        | `<h>-<a>`, no spaces                                | `1-0`                | `1 - 0`, `1–0`                       |
+| Minutes      | elapsed, `<n> min`                                  | `9 min`, `24 min`    | `26 minutes left to play`, `24 mins` |
+| Team / venue | the code as it appears in its own column, uppercase | `ORA`, `CCAB`        | `Ora`, `Delta`                       |
+| Round        | uppercase, no space                                 | `R1`, `QF1`, `FINAL` | `qf1`, `QF 1`, `R 1`                 |
 
 Elapsed, never remaining. **Every hockey liga game is 50 minutes**, so a note
 recording time remaining converts by subtraction: `26 minutes left to play`
@@ -73,7 +80,13 @@ remaining minute, write `Suspended midway (<h>-<a>)` — never invent a number.
 3. **Sentence case.** Only team codes, venue codes and round codes are uppercase.
    `Venue changed`, not `Venue Changed`.
 4. **`vs`, lowercase, no period.** Not `Vs`, `vs.`, or `v`.
-5. **Always keep the provenance clause.** It looks redundant while `Home` and
+5. **A seed-pairing clause stays bare.** `6th vs 7th` takes no round qualifier
+   and no extra words inside the clause. The parser's play-in match is anchored
+   to the whole clause, so `6th of R1 vs 7th of R1` silently stops resolving that
+   row to `PLAY-IN`. Qualify seeds only in a bracket-source clause —
+   `3rd of R1 vs Winner of 6th/7th play-in` — where the match is unanchored and
+   unaffected.
+6. **Always keep the provenance clause.** It looks redundant while `Home` and
    `Away` still read `6TH` and `8TH`, but those cells get overwritten with the
    real team names as soon as the seeding is known. The note is then the only
    surviving record that this fixture was the 6th-vs-8th game. Write it when the
@@ -99,6 +112,8 @@ remaining minute, write `Suspended midway (<h>-<a>)` — never invent a number.
 | `9 min played, lightning alert, Game shifted to 23rd August, 6pm (1-0 before Postponed)` | `Moved to 23 Aug 18:00. Suspended at 9 min (1-0). Reason: lightning` |
 | `6th vs 8th. Timing changed, venue remains`                                              | `6th vs 8th. Time changed`                                           |
 | `Walkover`                                                                               | `Walkover to ORA`                                                    |
+| `Winner of Semi Final 1 vs Winner of Semi Final 2`                                       | `Winner of SF1 vs Winner of SF2`                                     |
+| `3rd vs Winner of 6th/7th play-in`                                                       | `3rd of R1 vs Winner of 6th/7th play-in`                             |
 
 `Time changed to <time>` and `Moved to <date>` (without a time) are legal short
 forms of their templates when the from-value or the time is genuinely unknown.
@@ -129,3 +144,16 @@ pairing against the note's **first clause**, so hard rules 2 and 5 hold together
 That used to be anchored to the whole note, which would have silently dropped the
 pairing the first time an operational clause was appended to a seeded fixture. The
 case is covered by `scripts/fixture-parser.test.ts`.
+
+### What the parser reads, and what it ignores
+
+| Clause                                      | Parser                                            |
+| ------------------------------------------- | ------------------------------------------------- |
+| `<n>th vs <n>th` as the **first** clause    | **Load-bearing** — resolves that row to `PLAY-IN` |
+| `<n>th/<n>th play-in`, anywhere in the note | **Load-bearing** — marks that pair as referenced  |
+| every other clause                          | ignored — human-facing text only                  |
+
+So `Winner of SF1 vs Winner of SF2` is never parsed: reformatting a bracket-source
+clause is cosmetic and safe. The two load-bearing forms decide which rows leave a
+round's table and join the bracket, so changing one changes the site's standings.
+Rewrite those only deliberately, and run the contract tests after.
