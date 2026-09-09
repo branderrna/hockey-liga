@@ -24,19 +24,19 @@ clause.
 
 ## Clause templates
 
-| Order | Clause                                    | Template                                | Example                            |
-| ----- | ----------------------------------------- | --------------------------------------- | ---------------------------------- |
-| 1     | Seed pairing                              | `<n>th vs <n>th`                        | `6th vs 7th`                       |
-| 1     | Bracket source                            | `<source> vs <source>`                  | `Winner of QF1 vs Loser of SF2`    |
-| 2     | Moved out (this row is the `PP` original) | `Moved to <date> <time>`                | `Moved to 13 Oct 17:00`            |
-| 2     | Moved in (this row is the replacement)    | `Moved from <date> <time>`              | `Moved from 2 Aug 15:00`           |
-| 3     | Time change, same date                    | `Time changed from <time> to <time>`    | `Time changed from 18:00 to 16:00` |
-| 4     | Venue change, same date                   | `Venue changed from <VENUE> to <VENUE>` | `Venue changed from CCAB to DELTA` |
-| 5     | Stopped mid-game                          | `Suspended at <n> min (<h>-<a>)`        | `Suspended at 9 min (1-0)`         |
-| 5     | Stopped mid-game, minute unknown          | `Suspended midway (<h>-<a>)`            | `Suspended midway (1-0)`           |
-| 5     | Remainder played later                    | `Resumed from <date>`                   | `Resumed from 2 Aug`               |
-| 6     | Reason                                    | `Reason: <reason>`                      | `Reason: haze`                     |
-| 7     | Result qualifier                          | `Walkover to <TEAM>`                    | `Walkover to ORA`                  |
+| Order | Clause                                                           | Template                                | Example                            |
+| ----- | ---------------------------------------------------------------- | --------------------------------------- | ---------------------------------- |
+| 1     | Seed pairing                                                     | `<n>th vs <n>th`                        | `6th vs 7th`                       |
+| 1     | Bracket source                                                   | `<source> vs <source>`                  | `Winner of QF1 vs Loser of SF2`    |
+| 2     | Moved out (this row is the `PP` original)                        | `Moved to <date> <time>`                | `Moved to 13 Oct 17:00`            |
+| 2     | Moved in (this row is the replacement)                           | `Moved from <date> <time>`              | `Moved from 2 Aug 15:00`           |
+| 3     | Time change, same date                                           | `Time changed from <time> to <time>`    | `Time changed from 18:00 to 16:00` |
+| 4     | Venue change, same date                                          | `Venue changed from <VENUE> to <VENUE>` | `Venue changed from CCAB to DELTA` |
+| 5     | Stopped mid-game (this row is the `PP` original)                 | `Suspended at <n> min (<h>-<a>)`        | `Suspended at 9 min (1-0)`         |
+| 5     | Stopped mid-game, minute unknown (this row is the `PP` original) | `Suspended midway (<h>-<a>)`            | `Suspended midway (1-0)`           |
+| 5     | Remainder played (this row is the replacement)                   | `Resumed from <date>`                   | `Resumed from 2 Aug`               |
+| 6     | Reason                                                           | `Reason: <reason>`                      | `Reason: haze`                     |
+| 7     | Result qualifier                                                 | `Walkover to <TEAM>`                    | `Walkover to ORA`                  |
 
 `<source>` in a bracket clause is one of: `<n>th`, `Winner of QF1`,
 `Loser of SF2`, `Winner of 6th/7th play-in`, `Loser of 8th/9th play-in`.
