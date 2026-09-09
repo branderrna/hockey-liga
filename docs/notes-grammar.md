@@ -24,19 +24,19 @@ clause.
 
 ## Clause templates
 
-| Order | Clause                                                           | Template                                | Example                            |
-| ----- | ---------------------------------------------------------------- | --------------------------------------- | ---------------------------------- |
-| 1     | Seed pairing                                                     | `<n>th vs <n>th`                        | `6th vs 7th`                       |
-| 1     | Bracket source                                                   | `<source> vs <source>`                  | `Winner of QF1 vs Loser of SF2`    |
-| 2     | Moved out (this row is the `PP` original)                        | `Moved to <date> <time>`                | `Moved to 13 Oct 17:00`            |
-| 2     | Moved in (this row is the replacement)                           | `Moved from <date> <time>`              | `Moved from 2 Aug 15:00`           |
-| 3     | Time change, same date                                           | `Time changed from <time> to <time>`    | `Time changed from 18:00 to 16:00` |
-| 4     | Venue change, same date                                          | `Venue changed from <VENUE> to <VENUE>` | `Venue changed from CCAB to DELTA` |
-| 5     | Stopped mid-game (this row is the `PP` original)                 | `Suspended at <n> min (<h>-<a>)`        | `Suspended at 9 min (1-0)`         |
-| 5     | Stopped mid-game, minute unknown (this row is the `PP` original) | `Suspended midway (<h>-<a>)`            | `Suspended midway (1-0)`           |
-| 5     | Remainder played (this row is the replacement)                   | `Resumed from <date>`                   | `Resumed from 2 Aug`               |
-| 6     | Reason                                                           | `Reason: <reason>`                      | `Reason: haze`                     |
-| 7     | Result qualifier                                                 | `Walkover to <TEAM>`                    | `Walkover to ORA`                  |
+| Order | Clause                                                           | Template                                            | Example                                |
+| ----- | ---------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------- |
+| 1     | Seed pairing                                                     | `<n>th vs <n>th`, each seed optionally `of <ROUND>` | `6th vs 7th`, `6th of R1 vs 7th of R1` |
+| 1     | Bracket source                                                   | `<source> vs <source>`                              | `Winner of QF1 vs Loser of SF2`        |
+| 2     | Moved out (this row is the `PP` original)                        | `Moved to <date> <time>`                            | `Moved to 13 Oct 17:00`                |
+| 2     | Moved in (this row is the replacement)                           | `Moved from <date> <time>`                          | `Moved from 2 Aug 15:00`               |
+| 3     | Time change, same date                                           | `Time changed from <time> to <time>`                | `Time changed from 18:00 to 16:00`     |
+| 4     | Venue change, same date                                          | `Venue changed from <VENUE> to <VENUE>`             | `Venue changed from CCAB to DELTA`     |
+| 5     | Stopped mid-game (this row is the `PP` original)                 | `Suspended at <n> min (<h>-<a>)`                    | `Suspended at 9 min (1-0)`             |
+| 5     | Stopped mid-game, minute unknown (this row is the `PP` original) | `Suspended midway (<h>-<a>)`                        | `Suspended midway (1-0)`               |
+| 5     | Remainder played (this row is the replacement)                   | `Resumed from <date>`                               | `Resumed from 2 Aug`                   |
+| 6     | Reason                                                           | `Reason: <reason>`                                  | `Reason: haze`                         |
+| 7     | Result qualifier                                                 | `Walkover to <TEAM>`                                | `Walkover to ORA`                      |
 
 `<source>` in a bracket clause is a pattern, not a fixed list:
 
@@ -80,12 +80,13 @@ remaining minute, write `Suspended midway (<h>-<a>)` — never invent a number.
 3. **Sentence case.** Only team codes, venue codes and round codes are uppercase.
    `Venue changed`, not `Venue Changed`.
 4. **`vs`, lowercase, no period.** Not `Vs`, `vs.`, or `v`.
-5. **A seed-pairing clause stays bare.** `6th vs 7th` takes no round qualifier
-   and no extra words inside the clause. The parser's play-in match is anchored
-   to the whole clause, so `6th of R1 vs 7th of R1` silently stops resolving that
-   row to `PLAY-IN`. Qualify seeds only in a bracket-source clause —
-   `3rd of R1 vs Winner of 6th/7th play-in` — where the match is unanchored and
-   unaffected.
+5. **A seed-pairing clause carries only the pairing.** `6th vs 7th` and
+   `6th of R1 vs 7th of R1` both parse, so a seed may name its round here just as
+   it does in a bracket source. Nothing else fits inside the clause —
+   `6th vs 7th, rescheduled` does not parse, because the match is anchored to the
+   whole clause. The round qualifier is read and discarded: pairings match on the
+   seed numbers alone, since the play-in reference pointing back at the row
+   (`6th/7th play-in`) names no round.
 6. **Always keep the provenance clause.** It looks redundant while `Home` and
    `Away` still read `6TH` and `8TH`, but those cells get overwritten with the
    real team names as soon as the seeding is known. The note is then the only
@@ -147,11 +148,11 @@ case is covered by `scripts/fixture-parser.test.ts`.
 
 ### What the parser reads, and what it ignores
 
-| Clause                                      | Parser                                            |
-| ------------------------------------------- | ------------------------------------------------- |
-| `<n>th vs <n>th` as the **first** clause    | **Load-bearing** — resolves that row to `PLAY-IN` |
-| `<n>th/<n>th play-in`, anywhere in the note | **Load-bearing** — marks that pair as referenced  |
-| every other clause                          | ignored — human-facing text only                  |
+| Clause                                                             | Parser                                            |
+| ------------------------------------------------------------------ | ------------------------------------------------- |
+| `<n>th vs <n>th` as the **first** clause, round qualifier optional | **Load-bearing** — resolves that row to `PLAY-IN` |
+| `<n>th/<n>th play-in`, anywhere in the note                        | **Load-bearing** — marks that pair as referenced  |
+| every other clause                                                 | ignored — human-facing text only                  |
 
 So `Winner of SF1 vs Winner of SF2` is never parsed: reformatting a bracket-source
 clause is cosmetic and safe. The two load-bearing forms decide which rows leave a

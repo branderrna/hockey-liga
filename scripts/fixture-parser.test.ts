@@ -146,6 +146,27 @@ test("promotes a seeding play-off to a play-in when a knockout row points back a
   );
 });
 
+test("reads a seed pairing that names the round each seed came out of", () => {
+  const rows = parseCsv(
+    [
+      "No.,Day & Date,Venue,Time,Category,Round,Home,Score,Away,Shootout Score,PP,Notes",
+      '1,"Saturday,_09 May",DELTA,1800,SOCIAL,2,OLDHAM,4 - 0,HYPERNOVAS,,,6th of R1 vs 7th of R1',
+      '2,"Saturday,_16 May",DELTA,1900,SOCIAL,QF3,BARKERITES,2 - 1,OLDHAM,,,3rd of R1 vs Winner of 6th/7th play-in',
+    ].join("\n"),
+  );
+
+  const parsed = parseFixtureRows(rows, {
+    seasonYear: "2026",
+    categoryToDivision: { SOCIAL: "social" },
+    resolveTeamId: (divisionId, name) => `${divisionId}--${name.toLowerCase()}`,
+  });
+
+  assert.deepEqual(
+    parsed.matches.map((match) => match.round),
+    ["PLAY-IN", "QF3"],
+  );
+});
+
 test("still finds the seed pairing when an operational clause follows it", () => {
   const rows = parseCsv(
     [

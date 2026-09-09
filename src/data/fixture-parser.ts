@@ -147,8 +147,15 @@ export function parseRound(value: string): string | undefined {
     .replace(/\s*-\s*/g, "-");
 }
 
-/** A play-in row's note names the two seeds it decides between, e.g. "6th vs 7th". */
-const SEED_PAIR_NOTE = /^(\d+)(?:ST|ND|RD|TH)?\s+VS?\.?\s+(\d+)(?:ST|ND|RD|TH)?$/i;
+/**
+ * A play-in row's note names the two seeds it decides between, e.g. "6th vs 7th".
+ * Each seed may name the round it came out of — "6th of R1 vs 7th of R1" — to match
+ * the bracket-source form ("Winner of SF1"). That qualifier is read and discarded:
+ * the play-in reference pointing back here ("6th/7th play-in") names no round, so
+ * pairings are matched on the seed numbers alone.
+ */
+const SEED_PAIR_NOTE =
+  /^(\d+)(?:ST|ND|RD|TH)?(?:\s+OF\s+R\d+)?\s+VS?\.?\s+(\d+)(?:ST|ND|RD|TH)?(?:\s+OF\s+R\d+)?$/i;
 
 /**
  * A note is one or more clauses separated by ". ", with the seed pairing first
