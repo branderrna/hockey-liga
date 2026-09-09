@@ -22,12 +22,20 @@ type Release = {
  * cannot disagree with the newest entry in the history behind it.
  */
 const CURRENT: Release = {
+  version: "0.10.0",
+  date: "2026-09-09",
+  notes: [
+    "Match notes now follow one format, so a postponement, a moved game or a game stopped early reads the same way wherever you meet it.",
+  ],
+};
+
+const PREVIOUS: Release = {
   version: "0.9.1",
   date: "2026-09-09",
   notes: ["The season is shown as its year again — both of a year's ligas are that year."],
 };
 
-const PREVIOUS: Release = {
+const OLDER_0_9_0: Release = {
   version: "0.9.0",
   date: "2026-09-09",
   notes: [
@@ -61,6 +69,7 @@ export const CURRENT_VERSION = CURRENT.version;
 export const releases: Release[] = [
   CURRENT,
   PREVIOUS,
+  OLDER_0_9_0,
   OLDER_0_8_1,
   OLDER_0_8_0,
   {

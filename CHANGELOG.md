@@ -11,6 +11,34 @@ were wrong. The visitor-facing release notes shown in the site's footer live in
 
 Versions before 0.6.0 were assigned retroactively; see that document for how.
 
+## 0.10.0 — 2026-09-09
+
+**A grammar for the Notes column, and an agent that audits it**
+
+- The Notes column is read by two audiences that free text serves badly: visitors,
+  who see it verbatim beside a fixture, and `resolvePlayInRounds`, which recovers
+  play-in rounds from it. [docs/notes-grammar.md](docs/notes-grammar.md) is the
+  fixed grammar both can rely on; [docs/notes-audit-agent.md](docs/notes-audit-agent.md)
+  is the prompt of record for the daily agent that checks the sheet against it and
+  applies nothing without approval.
+- Stated the game length. The grammar never said one, so an audit run converting
+  `26 minutes left to play` guessed 70 minutes; every hockey liga game is 50.
+- Added `Suspended midway (<h>-<a>)` for a note that records a score but no
+  minute, replacing an instruction to stop and ask.
+- Specified `<source>` in a bracket clause as a pattern rather than five literals,
+  and let a seed name its round: `3rd of R1`, `R<n>` being the round shorthand.
+- `SEED_PAIR_NOTE` accepts that qualifier on both seeds. It is read and discarded
+  — the reference pointing back (`6th/7th play-in`) names no round, so pairings
+  still match on the seed numbers alone. Without this, `6th of R1 vs 7th of R1`
+  would have failed the anchored match and silently stopped resolving the row to
+  `PLAY-IN`.
+- Recorded which clauses the parser actually reads, and that a note's `R1` is not
+  a Round column value: a play-in filed under `R1` in the column is never
+  promoted, because only bare digits qualify.
+- Nothing on the site changes until the audit runs against the live tab and the
+  approved rewrites land in the sheet. The grammar and the parser are in place
+  first so that pass has something to conform to.
+
 ## 0.9.1 — 2026-09-09
 
 **The season reads as its year again**
@@ -29,24 +57,6 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
 - The archived liga's title takes `ARCHIVE_SEASON.year` for the same reason.
   `ARCHIVE_SEASON.label` stays `"2026/1"` — it names a sheet tab, and
   `validate-archive-fixtures.ts` reports against that name.
-
-**Notes grammar**
-
-- Stated the game length. The grammar never said one, so an audit run converting
-  `26 minutes left to play` guessed 70 minutes; every hockey liga game is 50.
-- Added `Suspended midway (<h>-<a>)` for a note that records a score but no
-  minute, replacing an instruction to stop and ask.
-- Specified `<source>` in a bracket clause as a pattern rather than five
-  literals, and let a seed name its round: `3rd of R1`, `R<n>` being the round
-  shorthand.
-- `SEED_PAIR_NOTE` accepts that qualifier on both seeds. It is read and
-  discarded — the reference pointing back (`6th/7th play-in`) names no round, so
-  pairings still match on the seed numbers alone. Without this, `6th of R1 vs
-  7th of R1` would have failed the anchored match and silently stopped resolving
-  the row to `PLAY-IN`.
-- Recorded which clauses the parser actually reads, and that a note's `R1` is not
-  a Round column value: a play-in filed under `R1` in the column is never
-  promoted, because only bare digits qualify.
 
 ## 0.9.0 — 2026-09-09
 
