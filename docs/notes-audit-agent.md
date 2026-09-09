@@ -50,8 +50,10 @@ Post one message:
 1. Per tab: cells checked, clean, flagged.
 2. Flagged rows on the live tab: `row | current | proposed | rules broken`.
 3. Flagged rows on other tabs, labelled **findings only, no edits proposed**.
-4. Cells you cannot confidently rewrite, as questions. A note like
-   `1-0 before postpone` records no minute anywhere — ask, do not invent one.
+4. Cells you cannot confidently rewrite, as questions. A note recording a score
+   but no minute is not a question — write `Suspended midway (1-0)`. Ask when a
+   clause names a fact the grammar has no template for, or when a
+   `Resumed from` note has no recoverable date.
 
 Then **wait**. Do not edit, stage, or proceed on silence. Approval is a reply
 naming rows. Bare approval with no rows means every live-tab row in your table.

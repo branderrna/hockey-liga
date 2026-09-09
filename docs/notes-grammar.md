@@ -33,6 +33,7 @@ clause.
 | 3     | Time change, same date                    | `Time changed from <time> to <time>`    | `Time changed from 18:00 to 16:00` |
 | 4     | Venue change, same date                   | `Venue changed from <VENUE> to <VENUE>` | `Venue changed from CCAB to DELTA` |
 | 5     | Stopped mid-game                          | `Suspended at <n> min (<h>-<a>)`        | `Suspended at 9 min (1-0)`         |
+| 5     | Stopped mid-game, minute unknown          | `Suspended midway (<h>-<a>)`            | `Suspended midway (1-0)`           |
 | 5     | Remainder played later                    | `Resumed from <date>`                   | `Resumed from 2 Aug`               |
 | 6     | Reason                                    | `Reason: <reason>`                      | `Reason: haze`                     |
 | 7     | Result qualifier                          | `Walkover to <TEAM>`                    | `Walkover to ORA`                  |
@@ -45,17 +46,19 @@ clause.
 
 ## Atoms
 
-| Atom         | Format                                              | Good                  | Bad                                |
-| ------------ | --------------------------------------------------- | --------------------- | ---------------------------------- |
-| Date         | `D MMM`, no ordinal suffix, no year, 3-letter month | `2 Aug`, `13 Oct`     | `13th Oct`, `23rd August`, `02/08` |
-| Time         | `HH:MM`, 24-hour                                    | `18:00`, `09:00`      | `6pm`, `5 pm`, `1800`              |
-| Score        | `<h>-<a>`, no spaces                                | `1-0`                 | `1 - 0`, `1–0`                     |
-| Minutes      | elapsed, `<n> min`                                  | `9 min`               | `26 minutes left to play`          |
-| Team / venue | the code as it appears in its own column, uppercase | `ORA`, `CCAB`         | `Ora`, `Delta`                     |
-| Round        | uppercase, no space                                 | `QF1`, `SF2`, `FINAL` | `qf1`, `QF 1`                      |
+| Atom         | Format                                              | Good                  | Bad                                  |
+| ------------ | --------------------------------------------------- | --------------------- | ------------------------------------ |
+| Date         | `D MMM`, no ordinal suffix, no year, 3-letter month | `2 Aug`, `13 Oct`     | `13th Oct`, `23rd August`, `02/08`   |
+| Time         | `HH:MM`, 24-hour                                    | `18:00`, `09:00`      | `6pm`, `5 pm`, `1800`                |
+| Score        | `<h>-<a>`, no spaces                                | `1-0`                 | `1 - 0`, `1–0`                       |
+| Minutes      | elapsed, `<n> min`                                  | `9 min`, `24 min`     | `26 minutes left to play`, `24 mins` |
+| Team / venue | the code as it appears in its own column, uppercase | `ORA`, `CCAB`         | `Ora`, `Delta`                       |
+| Round        | uppercase, no space                                 | `QF1`, `SF2`, `FINAL` | `qf1`, `QF 1`                        |
 
-Elapsed, never remaining. Remaining is derivable from the game length; two
-reference frames in one column is not.
+Elapsed, never remaining. **Every hockey liga game is 50 minutes**, so a note
+recording time remaining converts by subtraction: `26 minutes left to play`
+becomes `Suspended at 24 min`. If the note gives neither an elapsed nor a
+remaining minute, write `Suspended midway (<h>-<a>)` — never invent a number.
 
 ## Hard rules
 
@@ -90,9 +93,9 @@ reference frames in one column is not.
 | `Postponed due to haze`                                                                  | `Reason: haze`                                                       |
 | `Timing changed to 8pm, Postponed due to haze`                                           | `Time changed to 20:00. Reason: haze`                                |
 | `15 min played`                                                                          | `Suspended at 15 min`                                                |
-| `0 - 1, 26 minutes left to play`                                                         | `Suspended at 44 min (0-1)`                                          |
+| `0 - 1, 26 minutes left to play`                                                         | `Suspended at 24 min (0-1)`                                          |
 | `Remaining 26 minutes played`                                                            | `Resumed from 12 Apr`                                                |
-| `1-0 before postpone`                                                                    | `Suspended at ? min (1-0)` — fill the minute in                      |
+| `1-0 before postpone`                                                                    | `Suspended midway (1-0)`                                             |
 | `9 min played, lightning alert, Game shifted to 23rd August, 6pm (1-0 before Postponed)` | `Moved to 23 Aug 18:00. Suspended at 9 min (1-0). Reason: lightning` |
 | `6th vs 8th. Timing changed, venue remains`                                              | `6th vs 8th. Time changed`                                           |
 | `Walkover`                                                                               | `Walkover to ORA`                                                    |
