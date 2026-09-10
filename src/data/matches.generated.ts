@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-09-09T11:36:19.359Z";
+export const fixturesUpdatedAt = "2026-09-10T17:16:19.102Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -1354,8 +1354,8 @@ export const matches: Match[] = [
     "awayName": "JANSENITES",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Game shifted to 13th Sept, 7pm",
     "round": "1"
   },
   {
@@ -1369,6 +1369,23 @@ export const matches: Match[] = [
     "awayId": "premier--sg-masters",
     "homeName": "BALESTIER LIONS",
     "awayName": "SG MASTERS",
+    "homeGoals": null,
+    "awayGoals": null,
+    "postponed": false,
+    "note": null,
+    "round": "1"
+  },
+  {
+    "id": "m-2026-09-13-1000-ccab-republic-polytechnic-aha-dc",
+    "no": 5,
+    "divisionId": "u21-girls",
+    "date": "2026-09-13",
+    "time": "10:00",
+    "venue": "CCAB",
+    "homeId": "u21-girls--republic-polytechnic",
+    "awayId": "u21-girls--aha-dc",
+    "homeName": "REPUBLIC POLYTECHNIC",
+    "awayName": "AHA DC",
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
@@ -1508,7 +1525,24 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Moved from 2 Aug 16:00. Resumed from 2 Aug",
+    "note": "Game postponed to 13th Sept, 10am, CCAB",
+    "round": "1"
+  },
+  {
+    "id": "m-2026-09-13-1900-delta-team-h-i-jansenites",
+    "no": 76,
+    "divisionId": "premier",
+    "date": "2026-09-13",
+    "time": "19:00",
+    "venue": "DELTA",
+    "homeId": "premier--team-h-i",
+    "awayId": "premier--jansenites",
+    "homeName": "TEAM H.I.",
+    "awayName": "JANSENITES",
+    "homeGoals": null,
+    "awayGoals": null,
+    "postponed": false,
+    "note": "Game shifted from 12th Sept, 7pm",
     "round": "1"
   },
   {
