@@ -448,27 +448,23 @@ const columns = [
   { key: "l", label: "L", onMobile: false, muted: false },
   { key: "gf", label: "GF", onMobile: false, muted: true },
   { key: "ga", label: "GA", onMobile: false, muted: true },
-  { key: "gd", label: "GD", onMobile: false, muted: false },
+  { key: "gd", label: "GD", onMobile: true, muted: false },
 ] as const;
 
 const FORM_SLOTS = 5;
-const MOBILE_FORM_SLOTS = 3;
 
 function FormRun({ form }: { form: Standing["form"] }) {
-  const mobileFrom = Math.max(0, form.length - MOBILE_FORM_SLOTS);
-
   return (
     <span className="flex gap-1">
       {Array.from({ length: FORM_SLOTS }, (_, index) => {
         const result = form[index];
-        const onMobile = index >= mobileFrom && index < mobileFrom + MOBILE_FORM_SLOTS;
         return (
           <span
             key={index}
             title={result ? formLabel[result] : "Not played"}
-            className={`size-5 place-items-center rounded-sm text-[10px] font-medium ${
+            className={`grid size-5 place-items-center rounded-sm text-[10px] font-medium ${
               result ? formFill[result] : "border border-border"
-            } ${onMobile ? "grid" : "hidden sm:grid"}`}
+            }`}
           >
             {result ?? ""}
           </span>
@@ -506,7 +502,7 @@ function StandingsTable({
             </th>
           ))}
           <th className="label-eyebrow w-12 py-2 text-center font-normal">Pts</th>
-          <th className="label-eyebrow w-20 py-2 pl-2 text-left font-normal sm:w-32 sm:pl-4">
+          <th className="label-eyebrow hidden w-32 py-2 pl-4 text-left font-normal sm:table-cell">
             Form
           </th>
         </tr>
@@ -532,7 +528,7 @@ function StandingsTable({
               </td>
             ))}
             <td className="py-3 text-center font-medium tabular-nums">{row.pts}</td>
-            <td className="py-3 pl-2 sm:pl-4">
+            <td className="hidden py-3 pl-4 sm:table-cell">
               <FormRun form={row.form} />
             </td>
           </tr>
@@ -554,11 +550,8 @@ function StandingsKey({ continues }: { continues?: string }) {
         </p>
       ) : null}
       <p>W/D/L = 3/1/0 pts · Sorted Pts &gt; GD &gt; GF</p>
-      <p>
-        Form runs left to right, oldest to most recent —{" "}
-        <span className="sm:hidden">last 3 games</span>
-        <span className="hidden sm:inline">last 5 games</span>
-        {" · empty = not played"}
+      <p className="hidden sm:block">
+        Form runs left to right, oldest to most recent — last 5 games · empty = not played
       </p>
       <p className="sm:hidden">Rotate your phone for the full table</p>
     </div>
