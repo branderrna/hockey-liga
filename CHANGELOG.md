@@ -11,6 +11,23 @@ were wrong. The visitor-facing release notes shown in the site's footer live in
 
 Versions before 0.6.0 were assigned retroactively; see that document for how.
 
+## 0.10.1 — 2026-09-13
+
+**Goal difference replaces the form run on a narrow league table**
+
+- On a phone the standings had room for GP, Pts and the form run, and dropped
+  W/D/L, GF, GA and GD. That is backwards for reading a table: the sort is
+  Pts > GD > GF, so GD is what separates the sides level on points, while the
+  form run answers a question nobody asked of a table. The `gd` column is now
+  `onMobile`, and the Form column is `hidden sm:table-cell` — the same swap for
+  both places `StandingsTable` is used, the league table and the My team
+  excerpt.
+- `FormRun` dropped its `MOBILE_FORM_SLOTS` window. It only rendered three of
+  the five badges below `sm`, and the column it lives in no longer exists there,
+  so every slot now renders unconditionally.
+- The standings key's form line is `hidden sm:block` for the same reason, and no
+  longer switches its own wording between three and five games.
+
 ## 0.10.0 — 2026-09-09
 
 **A grammar for the Notes column, and an agent that audits it**
