@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-09-12T18:39:51.823Z";
+export const fixturesUpdatedAt = "2026-09-13T18:26:18.498Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -1386,6 +1386,23 @@ export const matches: Match[] = [
     "awayId": "u21-girls--aha-dc",
     "homeName": "REPUBLIC POLYTECHNIC",
     "awayName": "AHA DC",
+    "homeGoals": null,
+    "awayGoals": null,
+    "postponed": false,
+    "note": null,
+    "round": "1"
+  },
+  {
+    "id": "m-2026-09-13-1100-ccab-aha-dc-republic-polytechnic",
+    "no": 188,
+    "divisionId": "u21-girls",
+    "date": "2026-09-13",
+    "time": "11:00",
+    "venue": "CCAB",
+    "homeId": "u21-girls--aha-dc",
+    "awayId": "u21-girls--republic-polytechnic",
+    "homeName": "AHA DC",
+    "awayName": "REPUBLIC POLYTECHNIC",
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
@@ -3496,8 +3513,8 @@ export const matches: Match[] = [
     "awayName": "REPUBLIC POLYTECHNIC",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Game shifted to 13th September, 11am",
     "round": "1"
   },
   {
