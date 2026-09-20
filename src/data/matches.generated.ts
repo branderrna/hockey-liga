@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-09-14T05:46:19.863Z";
+export const fixturesUpdatedAt = "2026-09-20T17:56:17.960Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -1575,8 +1575,8 @@ export const matches: Match[] = [
     "awayName": "CRESCENT FIRE HORSE",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1592,8 +1592,8 @@ export const matches: Match[] = [
     "awayName": "UWCSEA DOVER",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1609,8 +1609,8 @@ export const matches: Match[] = [
     "awayName": "TEAM H.I.",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1626,8 +1626,8 @@ export const matches: Match[] = [
     "awayName": "HOLLANDSE",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1643,8 +1643,8 @@ export const matches: Match[] = [
     "awayName": "HYPERNOVAS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1660,8 +1660,8 @@ export const matches: Match[] = [
     "awayName": "SG MASTERS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1677,8 +1677,8 @@ export const matches: Match[] = [
     "awayName": "BALESTIER LIONS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1694,8 +1694,8 @@ export const matches: Match[] = [
     "awayName": "ORA",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1711,8 +1711,8 @@ export const matches: Match[] = [
     "awayName": "SINGAPORE KHALSA ASSOCIATION",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1728,8 +1728,8 @@ export const matches: Match[] = [
     "awayName": "SCC",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1745,8 +1745,8 @@ export const matches: Match[] = [
     "awayName": "LCH YOUNG BOYS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1762,8 +1762,8 @@ export const matches: Match[] = [
     "awayName": "JANSENITES",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1779,8 +1779,8 @@ export const matches: Match[] = [
     "awayName": "ORA",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1796,8 +1796,8 @@ export const matches: Match[] = [
     "awayName": "SILVERSTICKS SENORITAS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1813,8 +1813,8 @@ export const matches: Match[] = [
     "awayName": "SCC",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
@@ -1830,8 +1830,8 @@ export const matches: Match[] = [
     "awayName": "HOLLANDSE",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Postponed due to haze",
     "round": "1"
   },
   {
