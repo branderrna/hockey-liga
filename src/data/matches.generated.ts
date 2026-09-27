@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-09-26T21:51:40.519Z";
+export const fixturesUpdatedAt = "2026-09-27T14:26:18.044Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -1862,8 +1862,8 @@ export const matches: Match[] = [
     "awayId": "women--scc",
     "homeName": "TORNADOS",
     "awayName": "SCC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 2,
+    "awayGoals": 5,
     "postponed": false,
     "note": "Moved from 28 Nov 16:00",
     "round": "1"
@@ -1879,8 +1879,8 @@ export const matches: Match[] = [
     "awayId": "u21-boys--lch-young-boys",
     "homeName": "REPUBLIC POLYTECHNIC",
     "awayName": "LCH YOUNG BOYS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 3,
+    "awayGoals": 8,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -1896,8 +1896,8 @@ export const matches: Match[] = [
     "awayId": "u21-girls--republic-polytechnic",
     "homeName": "JANSENITES",
     "awayName": "REPUBLIC POLYTECHNIC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 8,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -1913,8 +1913,8 @@ export const matches: Match[] = [
     "awayId": "women--theresian-fielders",
     "homeName": "CRESCENT",
     "awayName": "THERESIAN FIELDERS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 2,
+    "awayGoals": 1,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -1930,8 +1930,8 @@ export const matches: Match[] = [
     "awayId": "women--jansenites",
     "homeName": "SG MASTERS",
     "awayName": "JANSENITES",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 5,
+    "awayGoals": 1,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -1947,8 +1947,8 @@ export const matches: Match[] = [
     "awayId": "women--hollandse",
     "homeName": "ORA",
     "awayName": "HOLLANDSE",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 1,
+    "awayGoals": 0,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -1964,8 +1964,8 @@ export const matches: Match[] = [
     "awayId": "premier--balestier-lions",
     "homeName": "JANSENITES",
     "awayName": "BALESTIER LIONS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 6,
+    "awayGoals": 1,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -1981,8 +1981,8 @@ export const matches: Match[] = [
     "awayId": "premier--ora",
     "homeName": "TEAM H.I.",
     "awayName": "ORA",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 2,
+    "awayGoals": 2,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -1998,8 +1998,8 @@ export const matches: Match[] = [
     "awayId": "premier--sg-masters",
     "homeName": "THISISRI",
     "awayName": "SG MASTERS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 4,
+    "awayGoals": 3,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -2034,8 +2034,8 @@ export const matches: Match[] = [
     "awayName": "REPUBLIC POLYTECHNIC",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": "Moved from 5 Sep 15:00",
+    "postponed": true,
+    "note": "Game postponed due to haze",
     "round": "1"
   },
   {
@@ -2051,8 +2051,8 @@ export const matches: Match[] = [
     "awayName": "HYPERNOVAS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Game postponed due to haze",
     "round": "1"
   },
   {
@@ -2068,8 +2068,8 @@ export const matches: Match[] = [
     "awayName": "SCC",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Game postponed due to haze",
     "round": "1"
   },
   {
@@ -2085,8 +2085,8 @@ export const matches: Match[] = [
     "awayName": "SILVERSTICKS SENORITAS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Game postponed due to haze",
     "round": "1"
   },
   {
@@ -2102,8 +2102,8 @@ export const matches: Match[] = [
     "awayName": "SN ALUMNI",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Game postponed due to haze",
     "round": "1"
   },
   {
@@ -2119,8 +2119,8 @@ export const matches: Match[] = [
     "awayName": "OLDHAM",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Game postponed due to haze",
     "round": "1"
   },
   {
@@ -2136,8 +2136,8 @@ export const matches: Match[] = [
     "awayName": "SINGAPORE KHALSA ASSOCIATION",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Game postponed due to haze",
     "round": "1"
   },
   {
