@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-09-27T14:26:18.044Z";
+export const fixturesUpdatedAt = "2026-09-28T03:46:10.028Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -2035,7 +2035,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Game postponed due to haze",
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2052,7 +2052,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Game postponed due to haze",
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2069,7 +2069,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Game postponed due to haze",
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2086,7 +2086,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Game postponed due to haze",
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2103,7 +2103,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Game postponed due to haze",
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2120,7 +2120,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Game postponed due to haze",
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2137,7 +2137,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Game postponed due to haze",
+    "note": "Reason: haze",
     "round": "1"
   },
   {
