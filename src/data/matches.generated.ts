@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-10-18T20:06:22.796Z";
+export const fixturesUpdatedAt = "2026-10-20T06:44:03.280Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -2698,7 +2698,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Moved from 2 Aug 16:00",
+    "note": "Moved from 2 Aug 16:00. Reason: haze",
     "round": "1"
   },
   {
@@ -2715,7 +2715,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null,
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2732,7 +2732,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null,
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2749,7 +2749,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null,
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2766,7 +2766,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null,
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2783,7 +2783,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Venue changed",
+    "note": "Venue changed. Reason: haze",
     "round": "1"
   },
   {
@@ -2800,7 +2800,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "2nd vs 3rd. Venue changed",
+    "note": "2nd vs 3rd. Venue changed. Reason: haze",
     "round": "2"
   },
   {
@@ -2817,7 +2817,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "7th vs 9th",
+    "note": "7th vs 9th. Reason: haze",
     "round": "2"
   },
   {
@@ -2834,7 +2834,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "1st vs 5th",
+    "note": "1st vs 5th. Reason: haze",
     "round": "2"
   },
   {
@@ -2851,7 +2851,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null,
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2868,7 +2868,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null,
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2885,7 +2885,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null,
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2902,7 +2902,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null,
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2919,7 +2919,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Moved to 22 Nov 15:00",
+    "note": "Moved to 22 Nov 15:00. Reason: haze",
     "round": "1"
   },
   {
@@ -2936,7 +2936,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Moved from 31 Oct 18:00",
+    "note": "Moved from 31 Oct 18:00. Reason: haze",
     "round": "1"
   },
   {
@@ -2953,7 +2953,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": null,
+    "note": "Reason: haze",
     "round": "1"
   },
   {
@@ -2970,7 +2970,7 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
-    "note": "Moved to 22 Aug 17:00",
+    "note": "Moved to 22 Aug 17:00. Reason: haze",
     "round": "1"
   },
   {
