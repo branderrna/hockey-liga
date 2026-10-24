@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-10-20T06:44:03.280Z";
+export const fixturesUpdatedAt = "2026-10-24T17:46:19.339Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -2984,8 +2984,8 @@ export const matches: Match[] = [
     "awayId": "u21-boys--singapore-polytechnic",
     "homeName": "ORA",
     "awayName": "SINGAPORE POLYTECHNIC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 3,
+    "awayGoals": 0,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3001,8 +3001,8 @@ export const matches: Match[] = [
     "awayId": "u21-girls--republic-polytechnic",
     "homeName": "EJC TANNIBELLIES",
     "awayName": "REPUBLIC POLYTECHNIC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 13,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3018,8 +3018,8 @@ export const matches: Match[] = [
     "awayId": "u21-girls--aha-dc",
     "homeName": "UWCSEA DOVER",
     "awayName": "AHA DC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 12,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3035,8 +3035,8 @@ export const matches: Match[] = [
     "awayId": "women--theresian-fielders",
     "homeName": "LION CITY HOCKEY CLUB",
     "awayName": "THERESIAN FIELDERS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 1,
+    "awayGoals": 3,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3052,8 +3052,8 @@ export const matches: Match[] = [
     "awayId": "women--team-h-i",
     "homeName": "HYPERNOVAS",
     "awayName": "TEAM H.I.",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 1,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3088,9 +3088,26 @@ export const matches: Match[] = [
     "awayName": "9TH",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": "6th vs 9th",
     "round": "2"
+  },
+  {
+    "id": "m-2026-10-24-1900-delta-team-h-i-balestier-lions",
+    "no": 88,
+    "divisionId": "premier",
+    "date": "2026-10-24",
+    "time": "19:00",
+    "venue": "DELTA",
+    "homeId": "premier--team-h-i",
+    "awayId": "premier--balestier-lions",
+    "homeName": "TEAM H.I.",
+    "awayName": "BALESTIER LIONS",
+    "homeGoals": 4,
+    "awayGoals": 0,
+    "postponed": false,
+    "note": null,
+    "round": "1"
   },
   {
     "id": "m-2026-10-24-1900-delta-1st-4th",
@@ -3105,7 +3122,7 @@ export const matches: Match[] = [
     "awayName": "4TH",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": "1st vs 4th",
     "round": "2"
   },
@@ -3122,7 +3139,7 @@ export const matches: Match[] = [
     "awayName": "5TH",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": "2nd vs 5th",
     "round": "2"
   },
