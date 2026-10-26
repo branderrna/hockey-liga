@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-10-25T00:46:22.207Z";
+export const fixturesUpdatedAt = "2026-10-26T03:06:18.012Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -3154,8 +3154,8 @@ export const matches: Match[] = [
     "awayId": "u21-girls--scc",
     "homeName": "EJC TANNIBELLIES",
     "awayName": "SCC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 1,
+    "awayGoals": 7,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3171,8 +3171,8 @@ export const matches: Match[] = [
     "awayId": "u21-boys--ora",
     "homeName": "LCH YOUNG BOYS",
     "awayName": "ORA",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 3,
+    "awayGoals": 2,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3205,8 +3205,8 @@ export const matches: Match[] = [
     "awayId": "women--hollandse",
     "homeName": "SINGAPORE POLYTECHNIC",
     "awayName": "HOLLANDSE",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 2,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3224,7 +3224,7 @@ export const matches: Match[] = [
     "awayName": "SILVERSTICKS SENORITAS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": null,
     "round": "1"
   },
@@ -3241,7 +3241,7 @@ export const matches: Match[] = [
     "awayName": "OLDHAM",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": null,
     "round": "1"
   },
