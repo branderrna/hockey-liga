@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-10-26T03:06:18.012Z";
+export const fixturesUpdatedAt = "2026-11-01T05:39:51.552Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -3242,6 +3242,40 @@ export const matches: Match[] = [
     "homeGoals": null,
     "awayGoals": null,
     "postponed": true,
+    "note": null,
+    "round": "1"
+  },
+  {
+    "id": "m-2026-10-29-1700-ccab-crescent-fire-horse-ejc-tannibellies",
+    "no": 33,
+    "divisionId": "u21-girls",
+    "date": "2026-10-29",
+    "time": "17:00",
+    "venue": "CCAB",
+    "homeId": "u21-girls--crescent-fire-horse",
+    "awayId": "u21-girls--ejc-tannibellies",
+    "homeName": "CRESCENT FIRE HORSE",
+    "awayName": "EJC TANNIBELLIES",
+    "homeGoals": 2,
+    "awayGoals": 0,
+    "postponed": false,
+    "note": null,
+    "round": "1"
+  },
+  {
+    "id": "m-2026-10-30-2000-ccab-singapore-khalsa-association-sg-masters",
+    "no": 120,
+    "divisionId": "premier",
+    "date": "2026-10-30",
+    "time": "20:00",
+    "venue": "CCAB",
+    "homeId": "premier--singapore-khalsa-association",
+    "awayId": "premier--sg-masters",
+    "homeName": "SINGAPORE KHALSA ASSOCIATION",
+    "awayName": "SG MASTERS",
+    "homeGoals": 2,
+    "awayGoals": 1,
+    "postponed": false,
     "note": null,
     "round": "1"
   },
