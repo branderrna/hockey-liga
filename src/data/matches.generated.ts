@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-01T05:46:18.538Z";
+export const fixturesUpdatedAt = "2026-11-01T17:26:19.068Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -3462,7 +3462,7 @@ export const matches: Match[] = [
     "awayName": "LCH YOUNG BOYS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": null,
     "round": "1"
   },
@@ -3477,8 +3477,8 @@ export const matches: Match[] = [
     "awayId": "women--sg-masters",
     "homeName": "SILVERSTICKS SENORITAS",
     "awayName": "SG MASTERS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 3,
+    "awayGoals": 1,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3494,8 +3494,8 @@ export const matches: Match[] = [
     "awayId": "u21-girls--jansenites",
     "homeName": "EJC TANNIBELLIES",
     "awayName": "JANSENITES",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 0,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3511,8 +3511,8 @@ export const matches: Match[] = [
     "awayId": "women--singapore-polytechnic",
     "homeName": "SN ALUMNI",
     "awayName": "SINGAPORE POLYTECHNIC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 4,
+    "awayGoals": 0,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3528,8 +3528,8 @@ export const matches: Match[] = [
     "awayId": "women--tornados",
     "homeName": "HYPERNOVAS",
     "awayName": "TORNADOS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 2,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3545,8 +3545,8 @@ export const matches: Match[] = [
     "awayId": "u21-boys--republic-polytechnic",
     "homeName": "ORA",
     "awayName": "REPUBLIC POLYTECHNIC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 3,
+    "awayGoals": 4,
     "postponed": false,
     "note": "Moved from 2 Aug 15:00",
     "round": "1"
@@ -3564,9 +3564,43 @@ export const matches: Match[] = [
     "awayName": "5TH",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": "3rd vs 5th. Time changed",
     "round": "2"
+  },
+  {
+    "id": "m-2026-11-01-1900-delta-thisisri-singapore-khalsa-association",
+    "no": 92,
+    "divisionId": "premier",
+    "date": "2026-11-01",
+    "time": "19:00",
+    "venue": "DELTA",
+    "homeId": "premier--thisisri",
+    "awayId": "premier--singapore-khalsa-association",
+    "homeName": "THISISRI",
+    "awayName": "SINGAPORE KHALSA ASSOCIATION",
+    "homeGoals": null,
+    "awayGoals": null,
+    "postponed": false,
+    "note": null,
+    "round": "1"
+  },
+  {
+    "id": "m-2026-11-01-2000-delta-sg-masters-ora",
+    "no": 91,
+    "divisionId": "premier",
+    "date": "2026-11-01",
+    "time": "20:00",
+    "venue": "DELTA",
+    "homeId": "premier--sg-masters",
+    "awayId": "premier--ora",
+    "homeName": "SG MASTERS",
+    "awayName": "ORA",
+    "homeGoals": null,
+    "awayGoals": null,
+    "postponed": false,
+    "note": null,
+    "round": "1"
   },
   {
     "id": "m-2026-11-14-1500-ccab-republic-polytechnic-ora",
