@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-01T17:26:19.068Z";
+export const fixturesUpdatedAt = "2026-11-01T17:29:53.700Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -3535,6 +3535,23 @@ export const matches: Match[] = [
     "round": "1"
   },
   {
+    "id": "m-2026-11-01-1800-ccab-jansenites-tornados",
+    "no": 123,
+    "divisionId": "premier",
+    "date": "2026-11-01",
+    "time": "18:00",
+    "venue": "CCAB",
+    "homeId": "premier--jansenites",
+    "awayId": "premier--tornados",
+    "homeName": "JANSENITES",
+    "awayName": "TORNADOS",
+    "homeGoals": 5,
+    "awayGoals": 0,
+    "postponed": false,
+    "note": null,
+    "round": "1"
+  },
+  {
     "id": "m-2026-11-01-1800-delta-ora-republic-polytechnic",
     "no": 4,
     "divisionId": "u21-boys",
@@ -3579,8 +3596,8 @@ export const matches: Match[] = [
     "awayId": "premier--singapore-khalsa-association",
     "homeName": "THISISRI",
     "awayName": "SINGAPORE KHALSA ASSOCIATION",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 1,
+    "awayGoals": 1,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3596,8 +3613,8 @@ export const matches: Match[] = [
     "awayId": "premier--ora",
     "homeName": "SG MASTERS",
     "awayName": "ORA",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 1,
+    "awayGoals": 2,
     "postponed": false,
     "note": null,
     "round": "1"
