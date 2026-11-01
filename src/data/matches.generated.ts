@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-01T05:39:51.552Z";
+export const fixturesUpdatedAt = "2026-11-01T05:46:18.538Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -3290,8 +3290,8 @@ export const matches: Match[] = [
     "awayId": "u21-boys--republic-polytechnic",
     "homeName": "ORA",
     "awayName": "REPUBLIC POLYTECHNIC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 4,
+    "awayGoals": 0,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3307,8 +3307,8 @@ export const matches: Match[] = [
     "awayId": "u21-girls--ejc-tannibellies",
     "homeName": "REPUBLIC POLYTECHNIC",
     "awayName": "EJC TANNIBELLIES",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 9,
+    "awayGoals": 0,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3326,6 +3326,23 @@ export const matches: Match[] = [
     "awayName": "SCC",
     "homeGoals": null,
     "awayGoals": null,
+    "postponed": true,
+    "note": null,
+    "round": "1"
+  },
+  {
+    "id": "m-2026-10-31-1700-ccab-theresian-fielders-hollandse",
+    "no": 89,
+    "divisionId": "women",
+    "date": "2026-10-31",
+    "time": "17:00",
+    "venue": "CCAB",
+    "homeId": "women--theresian-fielders",
+    "awayId": "women--hollandse",
+    "homeName": "THERESIAN FIELDERS",
+    "awayName": "HOLLANDSE",
+    "homeGoals": 3,
+    "awayGoals": 3,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3341,8 +3358,8 @@ export const matches: Match[] = [
     "awayId": "women--oldham",
     "homeName": "TEAM H.I.",
     "awayName": "OLDHAM",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 4,
+    "awayGoals": 0,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3358,8 +3375,8 @@ export const matches: Match[] = [
     "awayId": "women--lion-city-hockey-club",
     "homeName": "CRESCENT",
     "awayName": "LION CITY HOCKEY CLUB",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 2,
+    "awayGoals": 1,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3392,8 +3409,8 @@ export const matches: Match[] = [
     "awayId": "women--jansenites",
     "homeName": "HYPERNOVAS",
     "awayName": "JANSENITES",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 2,
+    "awayGoals": 1,
     "postponed": false,
     "note": "Moved from 23 Aug 18:00",
     "round": "1"
@@ -3411,7 +3428,7 @@ export const matches: Match[] = [
     "awayName": "8TH",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": "7th vs 8th",
     "round": "2"
   },
@@ -3428,7 +3445,7 @@ export const matches: Match[] = [
     "awayName": "4TH",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": "2nd vs 4th",
     "round": "2"
   },
