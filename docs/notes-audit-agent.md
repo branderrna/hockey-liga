@@ -37,11 +37,18 @@ columns by name — positions vary.
 
 ### 2. Check
 
+Audit Notes text against the grammar. Do not inspect or cross-check physical
+columns K or L (currently `PP` and `PP Score` on the live tab), and do not
+report PP-role or other cross-field findings based on those columns. This
+exclusion applies even when a Notes clause such as `Moved to` could imply a PP
+status; treat K/L as out of scope. This changes only checks involving K/L;
+retain the existing Notes grammar checks and other audit checks.
+
 For each non-empty Notes cell, apply every rule in the grammar: clause order,
 clause separator, atom formats, the hard rules, the closed reason list. Also flag
 misspellings of the fixed keywords and doubled spaces.
 
-Record: tab, row number, current text, every rule broken.
+Record: tab, row number, current text, every in-scope rule broken.
 
 ### 3. Report, then stop
 
@@ -80,8 +87,9 @@ excerpt and stop. Do not attempt a second round of edits.
 
 - Edit any tab other than the one named in `HELPER!B1`. Completed seasons are read
   live by the site with no build gate, and their notes are load-bearing.
-- Write "postponed" into a note. The `PP` column carries that, and the parser
-  fails the refresh on the mismatch.
+- Write "postponed" into a note; the grammar forbids that wording. The Notes
+  audit must not inspect columns K or L or validate PP status; parser-status
+  checks are outside this Notes audit.
 - Delete a note. Propose the deletion and let the human decide.
 - Apply an edit that was not approved.
 
