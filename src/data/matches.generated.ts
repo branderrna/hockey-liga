@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-10T04:09:53.404Z";
+export const fixturesUpdatedAt = "2026-11-11T17:29:52.254Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -3768,6 +3768,23 @@ export const matches: Match[] = [
     "awayName": "OLDHAM",
     "homeGoals": 5,
     "awayGoals": 0,
+    "postponed": false,
+    "note": null,
+    "round": "1"
+  },
+  {
+    "id": "m-2026-11-11-2100-ccab-tornados-hollandse",
+    "no": 99,
+    "divisionId": "premier",
+    "date": "2026-11-11",
+    "time": "21:00",
+    "venue": "CCAB",
+    "homeId": "premier--tornados",
+    "awayId": "premier--hollandse",
+    "homeName": "TORNADOS",
+    "awayName": "HOLLANDSE",
+    "homeGoals": 0,
+    "awayGoals": 3,
     "postponed": false,
     "note": null,
     "round": "1"
