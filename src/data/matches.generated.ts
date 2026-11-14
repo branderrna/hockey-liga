@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-11T18:26:18.722Z";
+export const fixturesUpdatedAt = "2026-11-14T00:11:46.984Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -1529,12 +1529,12 @@ export const matches: Match[] = [
     "round": "1"
   },
   {
-    "id": "m-2026-09-13-1900-delta-republic-polytechnic-aha-dc",
+    "id": "m-2026-09-13-1900-ccab-republic-polytechnic-aha-dc",
     "no": 5,
     "divisionId": "u21-girls",
     "date": "2026-09-13",
     "time": "19:00",
-    "venue": "DELTA",
+    "venue": "CCAB",
     "homeId": "u21-girls--republic-polytechnic",
     "awayId": "u21-girls--aha-dc",
     "homeName": "REPUBLIC POLYTECHNIC",
