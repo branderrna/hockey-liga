@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-14T00:11:46.984Z";
+export const fixturesUpdatedAt = "2026-11-14T14:39:54.813Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -3834,6 +3834,23 @@ export const matches: Match[] = [
     "awayId": "u21-boys--ora",
     "homeName": "REPUBLIC POLYTECHNIC",
     "awayName": "ORA",
+    "homeGoals": null,
+    "awayGoals": null,
+    "postponed": false,
+    "note": null,
+    "round": "1"
+  },
+  {
+    "id": "m-2026-11-14-1600-ccab-singapore-polytechnic-republic-polytechnic",
+    "no": 52,
+    "divisionId": "u21-boys",
+    "date": "2026-11-14",
+    "time": "16:00",
+    "venue": "CCAB",
+    "homeId": "u21-boys--singapore-polytechnic",
+    "awayId": "u21-boys--republic-polytechnic",
+    "homeName": "SINGAPORE POLYTECHNIC",
+    "awayName": "REPUBLIC POLYTECHNIC",
     "homeGoals": null,
     "awayGoals": null,
     "postponed": false,
