@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-14T14:39:54.813Z";
+export const fixturesUpdatedAt = "2026-11-14T14:46:18.522Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -3960,6 +3960,23 @@ export const matches: Match[] = [
     "round": "2"
   },
   {
+    "id": "m-2026-11-14-1900-delta-balestier-lions-hollandse",
+    "no": 60,
+    "divisionId": "premier",
+    "date": "2026-11-14",
+    "time": "19:00",
+    "venue": "DELTA",
+    "homeId": "premier--balestier-lions",
+    "awayId": "premier--hollandse",
+    "homeName": "BALESTIER LIONS",
+    "awayName": "HOLLANDSE",
+    "homeGoals": 0,
+    "awayGoals": 11,
+    "postponed": false,
+    "note": null,
+    "round": "1"
+  },
+  {
     "id": "m-2026-11-14-1900-delta-3rd-4th",
     "no": 194,
     "divisionId": "premier",
@@ -3975,6 +3992,23 @@ export const matches: Match[] = [
     "postponed": false,
     "note": "3rd vs 4th",
     "round": "2"
+  },
+  {
+    "id": "m-2026-11-14-2000-delta-tornados-singapore-khalsa-association",
+    "no": 115,
+    "divisionId": "premier",
+    "date": "2026-11-14",
+    "time": "20:00",
+    "venue": "DELTA",
+    "homeId": "premier--tornados",
+    "awayId": "premier--singapore-khalsa-association",
+    "homeName": "TORNADOS",
+    "awayName": "SINGAPORE KHALSA ASSOCIATION",
+    "homeGoals": 8,
+    "awayGoals": 4,
+    "postponed": false,
+    "note": null,
+    "round": "1"
   },
   {
     "id": "m-2026-11-14-2000-delta-6th-7th",
