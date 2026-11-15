@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-14T14:46:18.522Z";
+export const fixturesUpdatedAt = "2026-11-15T16:36:22.820Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -3834,8 +3834,8 @@ export const matches: Match[] = [
     "awayId": "u21-boys--ora",
     "homeName": "REPUBLIC POLYTECHNIC",
     "awayName": "ORA",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 5,
+    "awayGoals": 2,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3851,8 +3851,8 @@ export const matches: Match[] = [
     "awayId": "u21-boys--republic-polytechnic",
     "homeName": "SINGAPORE POLYTECHNIC",
     "awayName": "REPUBLIC POLYTECHNIC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 1,
+    "awayGoals": 2,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3885,8 +3885,8 @@ export const matches: Match[] = [
     "awayId": "u21-girls--ejc-tannibellies",
     "homeName": "UWCSEA DOVER",
     "awayName": "EJC TANNIBELLIES",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 8,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3902,8 +3902,8 @@ export const matches: Match[] = [
     "awayId": "women--singapore-polytechnic",
     "homeName": "SCC",
     "awayName": "SINGAPORE POLYTECHNIC",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 9,
+    "awayGoals": 0,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3921,8 +3921,8 @@ export const matches: Match[] = [
     "awayName": "THERESIAN FIELDERS",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
-    "note": null,
+    "postponed": true,
+    "note": "Game halted at half-time due to lightning alert",
     "round": "1"
   },
   {
@@ -3936,8 +3936,8 @@ export const matches: Match[] = [
     "awayId": "women--tornados",
     "homeName": "CRESCENT",
     "awayName": "TORNADOS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 5,
+    "awayGoals": 1,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -3955,7 +3955,7 @@ export const matches: Match[] = [
     "awayName": "9TH",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": "8th vs 9th",
     "round": "2"
   },
@@ -3989,7 +3989,7 @@ export const matches: Match[] = [
     "awayName": "4TH",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": "3rd vs 4th",
     "round": "2"
   },
@@ -4023,7 +4023,7 @@ export const matches: Match[] = [
     "awayName": "7TH",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": "6th vs 7th",
     "round": "2"
   },
@@ -4038,8 +4038,8 @@ export const matches: Match[] = [
     "awayId": "u21-boys--ora",
     "homeName": "SINGAPORE POLYTECHNIC",
     "awayName": "ORA",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 2,
+    "awayGoals": 4,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -4074,7 +4074,7 @@ export const matches: Match[] = [
     "awayName": "SCC",
     "homeGoals": null,
     "awayGoals": null,
-    "postponed": false,
+    "postponed": true,
     "note": null,
     "round": "1"
   },
