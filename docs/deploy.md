@@ -204,7 +204,8 @@ Worker, under Settings → Build:
 | Production branch                  | `main`                                                    |
 | Builds for non-production branches | enabled                                                   |
 
-Two of those are load-bearing and should not be changed casually:
+Three settings are load-bearing and should not be changed casually — two in that
+table, one in `package.json`:
 
 - **The build command must stay set.** Without it there is no `.output`, and
   Wrangler falls into its interactive setup wizard, which auto-answers itself in
@@ -216,6 +217,14 @@ Two of those are load-bearing and should not be changed casually:
   makes the production branch build unconditionally, and there is no setting to
   turn that off. GitHub Actions owns production. If this field is ever set back
   to `wrangler deploy`, both systems will deploy `main` and race each other.
+
+- **`packageManager` in `package.json` must stay an exact npm 11 version.** The
+  build image defaults to npm 10.9.2, which reads this npm 11 lockfile as out
+  of sync (`Missing: lru-cache@11.5.3 from lock file`, an optional peer of
+  Nitro's `unstorage`) and fails `npm ci` before building. That broke every
+  preview from 2026-10-17 until it was pinned; `packageManager` is the only
+  way to set Workers Builds' npm version, and it must be exact, not a range.
+  Bump it when the lockfile is regenerated with a newer npm.
 
 A `main` push therefore still runs a Cloudflare build of about a minute that
 deploys nothing. That is the price of there being no way to disable production

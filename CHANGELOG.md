@@ -28,6 +28,13 @@ Versions before 0.6.0 were assigned retroactively; see that document for how.
   optional `today` so the tests can pin the calendar.
 - The schedule arrows are labelled "Previous match day" / "Next match day",
   since not every tab is a weekend any more.
+- Pinned `"packageManager": "npm@11.16.0"`. Cloudflare Workers Builds
+  defaults to npm 10.9.2, which reads our npm 11 lockfile as out of sync
+  (`Missing: lru-cache@11.5.3`, an optional peer of Nitro's `unstorage`) and
+  fails `npm ci` before building. Every branch preview, and most no-op `main`
+  builds, had been failing that way since 2026-10-17; GitHub Actions was never
+  affected because Node 24 there already ships npm 11. `packageManager` is the
+  only way to set Workers Builds' npm version — see docs/deploy.md.
 
 ## 0.10.1 — 2026-09-13
 
