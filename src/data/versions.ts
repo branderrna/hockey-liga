@@ -22,6 +22,14 @@ type Release = {
  * cannot disagree with the newest entry in the history behind it.
  */
 const CURRENT: Release = {
+  version: "0.10.2",
+  date: "2026-11-22",
+  notes: [
+    "A game moved to a weekday now always gets its own date in the schedule, even on the Friday before a weekend or the Monday after one.",
+  ],
+};
+
+const PREVIOUS: Release = {
   version: "0.10.1",
   date: "2026-09-13",
   notes: [
@@ -29,7 +37,7 @@ const CURRENT: Release = {
   ],
 };
 
-const PREVIOUS: Release = {
+const OLDER_0_10_0: Release = {
   version: "0.10.0",
   date: "2026-09-09",
   notes: [
@@ -77,6 +85,7 @@ export const CURRENT_VERSION = CURRENT.version;
 export const releases: Release[] = [
   CURRENT,
   PREVIOUS,
+  OLDER_0_10_0,
   OLDER_0_9_1,
   OLDER_0_9_0,
   OLDER_0_8_1,

@@ -223,7 +223,7 @@ function ScheduleView({
     <div>
       <div className="flex items-center gap-2">
         <ArrowButton
-          label="Previous weekend"
+          label="Previous match day"
           disabled={index === 0}
           onClick={() => step(-1)}
           icon={<ChevronLeft className="size-4" />}
@@ -250,7 +250,7 @@ function ScheduleView({
           ))}
         </div>
         <ArrowButton
-          label="Next weekend"
+          label="Next match day"
           disabled={index === weekends.length - 1}
           onClick={() => step(1)}
           icon={<ChevronRight className="size-4" />}

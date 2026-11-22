@@ -11,6 +11,24 @@ were wrong. The visitor-facing release notes shown in the site's footer live in
 
 Versions before 0.6.0 were assigned retroactively; see that document for how.
 
+## 0.10.2 — 2026-11-22
+
+**Weekday games get their own schedule tab**
+
+- `weekendsOf` merged any match dates one calendar day apart into one tab. That
+  was meant to lump each Saturday and Sunday together, but it also swallowed a
+  postponed game replayed on the Friday before a weekend or the Monday after
+  one: Premier's Fri 30 Oct replay sat inside "30 Oct – 1 Nov". Weekday games
+  away from a weekend already had their own tabs, which hid the gap.
+- Only a Saturday followed directly by its Sunday now shares a tab; every other
+  match day stands alone. Tabs are still built from match dates only, so no
+  empty days appear. On the current data only that Premier tab moves.
+- `latestWeekendKey` needed no logic change: it already picks the latest tab to
+  have started, which is now the latest weekday when one is newest. It takes an
+  optional `today` so the tests can pin the calendar.
+- The schedule arrows are labelled "Previous match day" / "Next match day",
+  since not every tab is a weekend any more.
+
 ## 0.10.1 — 2026-09-13
 
 **Goal difference replaces the form run on a narrow league table**
