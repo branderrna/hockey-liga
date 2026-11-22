@@ -63,9 +63,13 @@ function weekendLabel(dates: string[]): string {
       })}`;
 }
 
+const isSaturday = (iso: string) => new Date(`${iso}T00:00:00Z`).getUTCDay() === 6;
+
 /**
- * Groups a liga's fixtures into playing blocks: match days one calendar day
- * apart belong to the same block, which lumps each Sat/Sun weekend together.
+ * Groups a liga's fixtures into tabs. Only a Saturday and the Sunday right after
+ * it share one; every other match day stands alone, so a postponed game replayed
+ * midweek gets its own tab even when it falls on the Friday before a weekend or
+ * the Monday after one. Tabs come from match dates only, so no empty days.
  */
 export function weekendsOf(dataset: CompetitionDataset, divisionId: DivisionId): Weekend[] {
   const dates = [...new Set(matchesOf(dataset, divisionId).map((match) => match.date))];
@@ -73,8 +77,9 @@ export function weekendsOf(dataset: CompetitionDataset, divisionId: DivisionId):
   for (const date of dates) {
     const current = blocks[blocks.length - 1];
     const previous = current?.[current.length - 1];
-    if (current && previous && dayOf(date) - dayOf(previous) <= 1) current.push(date);
-    else blocks.push([date]);
+    if (current && previous && isSaturday(previous) && dayOf(date) - dayOf(previous) === 1) {
+      current.push(date);
+    } else blocks.push([date]);
   }
 
   const schedule = matchesOf(dataset, divisionId);
@@ -96,18 +101,19 @@ const SGT_OFFSET_MS = 8 * 60 * 60 * 1000;
 const leagueToday = () => new Date(Date.now() + SGT_OFFSET_MS).toISOString().slice(0, 10);
 
 /**
- * The weekend a visitor most likely wants: the one being played today, else the
- * most recent one to have started. Scores are typed up well after the final
- * whistle, so this follows the calendar instead of waiting for them — on a match
- * day the current weekend wins even while every result is still blank. Before
- * the liga's first fixture there is nothing behind us, so look ahead.
+ * The tab a visitor most likely wants: the one being played today, else the
+ * most recent one to have started — a lone midweek date included. Scores are
+ * typed up well after the final whistle, so this follows the calendar instead
+ * of waiting for them: on a match day the current tab wins even while every
+ * result is still blank. Before the liga's first fixture there is nothing behind
+ * us, so look ahead. `today` is only overridden by tests.
  */
 export function latestWeekendKey(
   dataset: CompetitionDataset,
   divisionId: DivisionId,
+  today: string = leagueToday(),
 ): string | null {
   const weekends = weekendsOf(dataset, divisionId);
-  const today = leagueToday();
   for (let index = weekends.length - 1; index >= 0; index--) {
     const weekend = weekends[index];
     // Keys are the block's first ISO date, so they compare as strings.

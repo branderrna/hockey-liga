@@ -7,9 +7,11 @@ import {
   collapseKnockoutMatches,
   isKnockoutRound,
   knockoutStage,
+  latestWeekendKey,
   numericRoundsOf,
   standingsFor,
   tableRoundsOf,
+  weekendsOf,
   winnerId,
 } from "../src/data/competition.ts";
 import type { CompetitionDataset } from "../src/data/competition.ts";
@@ -292,4 +294,58 @@ test("a round still seeded by finishing position is not offered as a table", () 
   };
   assert.deepEqual(tableRoundsOf(named, "social"), ["1", "2"]);
   assert.equal(standingsFor(named, "social", "2").find((row) => row.team.id === "a")?.gp, 3);
+});
+
+// 30 Oct 2026 is a Friday: Fri 30, Sat 31, Sun 1, Mon 2, Tue 3, Wed 4, Sat 7.
+const calendar: CompetitionDataset = {
+  teams: [team("a", "A"), team("b", "B")],
+  matches: [
+    "2026-10-30",
+    "2026-10-31",
+    "2026-11-01",
+    "2026-11-02",
+    "2026-11-03",
+    "2026-11-04",
+    "2026-11-07",
+    "2026-11-07",
+  ].map((date, index) => match({ id: `m${index}`, no: index + 1, date })),
+};
+
+test("only Saturday and the Sunday after it share a tab; every weekday stands alone", () => {
+  assert.deepEqual(
+    weekendsOf(calendar, "social").map((weekend) => [
+      weekend.key,
+      weekend.label,
+      weekend.matches.length,
+    ]),
+    [
+      ["2026-10-30", "30 Oct", 1],
+      ["2026-10-31", "31 Oct – 1 Nov", 2],
+      ["2026-11-02", "2 Nov", 1],
+      ["2026-11-03", "3 Nov", 1],
+      ["2026-11-04", "4 Nov", 1],
+      ["2026-11-07", "7 Nov", 2],
+    ],
+  );
+});
+
+test("a tab lists only the dates that have games", () => {
+  const sundayOnly: CompetitionDataset = {
+    teams: calendar.teams,
+    matches: [match({ id: "sun", date: "2026-11-01" }), match({ id: "sat", date: "2026-11-07" })],
+  };
+  assert.deepEqual(
+    weekendsOf(sundayOnly, "social").map((weekend) => weekend.dates),
+    [["2026-11-01"], ["2026-11-07"]],
+  );
+});
+
+test("the default tab is the latest match day to have started, midweek included", () => {
+  const latest = (today: string) => latestWeekendKey(calendar, "social", today);
+  assert.equal(latest("2026-10-01"), "2026-10-30"); // before the first game: look ahead
+  assert.equal(latest("2026-10-30"), "2026-10-30"); // the Friday itself
+  assert.equal(latest("2026-11-01"), "2026-10-31"); // Sunday sits in its weekend
+  assert.equal(latest("2026-11-02"), "2026-11-02"); // Monday after a weekend
+  assert.equal(latest("2026-11-05"), "2026-11-04"); // no game today: the last one played
+  assert.equal(latest("2026-12-25"), "2026-11-07");
 });
