@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-17T02:18:38.557Z";
+export const fixturesUpdatedAt = "2026-11-23T14:26:22.753Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -4164,6 +4164,57 @@ export const matches: Match[] = [
     "round": "2"
   },
   {
+    "id": "m-2026-11-18-2000-delta-singapore-khalsa-association-6th-sg-masters-8th",
+    "no": 134,
+    "divisionId": "premier",
+    "date": "2026-11-18",
+    "time": "20:00",
+    "venue": "DELTA",
+    "homeId": null,
+    "awayId": null,
+    "homeName": "SINGAPORE KHALSA ASSOCIATION 6TH",
+    "awayName": "SG MASTERS 8TH",
+    "homeGoals": 7,
+    "awayGoals": 0,
+    "postponed": false,
+    "note": null,
+    "round": "2"
+  },
+  {
+    "id": "m-2026-11-18-2100-delta-tornados-3rd-thisisri-5th",
+    "no": 186,
+    "divisionId": "premier",
+    "date": "2026-11-18",
+    "time": "21:00",
+    "venue": "DELTA",
+    "homeId": null,
+    "awayId": null,
+    "homeName": "TORNADOS 3RD",
+    "awayName": "THISISRI 5TH",
+    "homeGoals": 5,
+    "awayGoals": 3,
+    "postponed": false,
+    "note": null,
+    "round": "2"
+  },
+  {
+    "id": "m-2026-11-19-2000-ccab-lion-city-hockey-club-scc",
+    "no": 98,
+    "divisionId": "women",
+    "date": "2026-11-19",
+    "time": "20:00",
+    "venue": "CCAB",
+    "homeId": "women--lion-city-hockey-club",
+    "awayId": "women--scc",
+    "homeName": "LION CITY HOCKEY CLUB",
+    "awayName": "SCC",
+    "homeGoals": 0,
+    "awayGoals": 8,
+    "postponed": false,
+    "note": null,
+    "round": "1"
+  },
+  {
     "id": "m-2026-11-21-1500-ccab-oldham-lion-city-hockey-club",
     "no": 203,
     "divisionId": "women",
@@ -4174,8 +4225,8 @@ export const matches: Match[] = [
     "awayId": "women--lion-city-hockey-club",
     "homeName": "OLDHAM",
     "awayName": "LION CITY HOCKEY CLUB",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 4,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -4191,8 +4242,8 @@ export const matches: Match[] = [
     "awayId": "women--sn-alumni",
     "homeName": "CRESCENT",
     "awayName": "SN ALUMNI",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 4,
+    "awayGoals": 2,
     "postponed": false,
     "note": null,
     "round": "1"
