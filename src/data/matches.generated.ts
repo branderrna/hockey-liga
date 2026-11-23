@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-23T14:26:22.753Z";
+export const fixturesUpdatedAt = "2026-11-23T14:36:20.176Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -4276,8 +4276,8 @@ export const matches: Match[] = [
     "awayId": "women--theresian-fielders",
     "homeName": "TORNADOS",
     "awayName": "THERESIAN FIELDERS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 2,
+    "awayGoals": 1,
     "postponed": false,
     "note": "Moved from 10 Oct 18:00",
     "round": "1"
@@ -4295,6 +4295,40 @@ export const matches: Match[] = [
     "awayName": "HOLLANDSE",
     "homeGoals": null,
     "awayGoals": null,
+    "postponed": true,
+    "note": null,
+    "round": "1"
+  },
+  {
+    "id": "m-2026-11-21-1700-delta-team-h-i-scc",
+    "no": 153,
+    "divisionId": "women",
+    "date": "2026-11-21",
+    "time": "17:00",
+    "venue": "DELTA",
+    "homeId": "women--team-h-i",
+    "awayId": "women--scc",
+    "homeName": "TEAM H.I.",
+    "awayName": "SCC",
+    "homeGoals": 0,
+    "awayGoals": 4,
+    "postponed": false,
+    "note": null,
+    "round": "1"
+  },
+  {
+    "id": "m-2026-11-21-1800-ccab-crescent-fire-horse-scc",
+    "no": 197,
+    "divisionId": "u21-girls",
+    "date": "2026-11-21",
+    "time": "18:00",
+    "venue": "CCAB",
+    "homeId": "u21-girls--crescent-fire-horse",
+    "awayId": "u21-girls--scc",
+    "homeName": "CRESCENT FIRE HORSE",
+    "awayName": "SCC",
+    "homeGoals": 1,
+    "awayGoals": 12,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -4310,8 +4344,42 @@ export const matches: Match[] = [
     "awayId": "women--silversticks-senoritas",
     "homeName": "SINGAPORE POLYTECHNIC",
     "awayName": "SILVERSTICKS SENORITAS",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 1,
+    "postponed": false,
+    "note": null,
+    "round": "1"
+  },
+  {
+    "id": "m-2026-11-21-1900-delta-thisisri-5th-team-h-i-4th",
+    "no": 137,
+    "divisionId": "premier",
+    "date": "2026-11-21",
+    "time": "19:00",
+    "venue": "DELTA",
+    "homeId": null,
+    "awayId": null,
+    "homeName": "THISISRI 5TH",
+    "awayName": "TEAM H.I. 4TH",
+    "homeGoals": 1,
+    "awayGoals": 10,
+    "postponed": false,
+    "note": null,
+    "round": "2"
+  },
+  {
+    "id": "m-2026-11-21-2000-delta-singapore-polytechnic-lch-young-boys",
+    "no": 181,
+    "divisionId": "u21-boys",
+    "date": "2026-11-21",
+    "time": "20:00",
+    "venue": "DELTA",
+    "homeId": "u21-boys--singapore-polytechnic",
+    "awayId": "u21-boys--lch-young-boys",
+    "homeName": "SINGAPORE POLYTECHNIC",
+    "awayName": "LCH YOUNG BOYS",
+    "homeGoals": 4,
+    "awayGoals": 6,
     "postponed": false,
     "note": null,
     "round": "1"
@@ -4327,8 +4395,8 @@ export const matches: Match[] = [
     "awayId": "women--crescent",
     "homeName": "HYPERNOVAS",
     "awayName": "CRESCENT",
-    "homeGoals": null,
-    "awayGoals": null,
+    "homeGoals": 0,
+    "awayGoals": 1,
     "postponed": false,
     "note": "Moved from 18 Oct 17:00",
     "round": "1"
