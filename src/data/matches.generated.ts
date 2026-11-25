@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-25T15:16:21.447Z";
+export const fixturesUpdatedAt = "2026-11-25T15:26:23.486Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -4181,16 +4181,16 @@ export const matches: Match[] = [
     "round": "2"
   },
   {
-    "id": "m-2026-11-18-2100-delta-tornados-3rd-thisisri-5th",
+    "id": "m-2026-11-18-2100-delta-tornados-thisisri",
     "no": 186,
     "divisionId": "premier",
     "date": "2026-11-18",
     "time": "21:00",
     "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "TORNADOS 3RD",
-    "awayName": "THISISRI 5TH",
+    "homeId": "premier--tornados",
+    "awayId": "premier--thisisri",
+    "homeName": "TORNADOS",
+    "awayName": "THISISRI",
     "homeGoals": 5,
     "awayGoals": 3,
     "postponed": false,
@@ -4351,16 +4351,16 @@ export const matches: Match[] = [
     "round": "1"
   },
   {
-    "id": "m-2026-11-21-1900-delta-thisisri-5th-team-h-i-4th",
+    "id": "m-2026-11-21-1900-delta-thisisri-team-h-i",
     "no": 137,
     "divisionId": "premier",
     "date": "2026-11-21",
     "time": "19:00",
     "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "THISISRI 5TH",
-    "awayName": "TEAM H.I. 4TH",
+    "homeId": "premier--thisisri",
+    "awayId": "premier--team-h-i",
+    "homeName": "THISISRI",
+    "awayName": "TEAM H.I.",
     "homeGoals": 1,
     "awayGoals": 10,
     "postponed": false,
