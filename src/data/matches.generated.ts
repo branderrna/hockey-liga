@@ -5,7 +5,7 @@ import type { Match } from "./types.ts";
 // When the fixtures below last CHANGED — not when the sheet was last checked.
 // See the stamp logic in scripts/refresh-fixtures.ts for why the distinction
 // matters.
-export const fixturesUpdatedAt = "2026-11-23T14:39:54.651Z";
+export const fixturesUpdatedAt = "2026-11-25T15:16:21.447Z";
 
 // The live season, from HELPER!B1. Generated rather than hand-kept so the label
 // on the site follows the sheet through a rollover without a code change.
@@ -4164,16 +4164,16 @@ export const matches: Match[] = [
     "round": "2"
   },
   {
-    "id": "m-2026-11-18-2000-delta-singapore-khalsa-association-6th-sg-masters-8th",
+    "id": "m-2026-11-18-2000-delta-singapore-khalsa-association-sg-masters",
     "no": 134,
     "divisionId": "premier",
     "date": "2026-11-18",
     "time": "20:00",
     "venue": "DELTA",
-    "homeId": null,
-    "awayId": null,
-    "homeName": "SINGAPORE KHALSA ASSOCIATION 6TH",
-    "awayName": "SG MASTERS 8TH",
+    "homeId": "premier--singapore-khalsa-association",
+    "awayId": "premier--sg-masters",
+    "homeName": "SINGAPORE KHALSA ASSOCIATION",
+    "awayName": "SG MASTERS",
     "homeGoals": 7,
     "awayGoals": 0,
     "postponed": false,
