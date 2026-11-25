@@ -82,3 +82,16 @@ something to supply later; the row layouts leave room for a small mark beside
 the name in both views.
 
 **Blocked on:** no logo assets yet.
+
+## Grammar for non-Notes fixture columns
+
+`docs/notes-grammar.md` specifies only the `Notes` field. The other fixture
+columns need a clear source of truth for accepted formats and values,
+blank/optional cases, and cross-column rules, so editors and code do not have to
+infer validity from current rows.
+
+**Blocked on:** league operations agreeing the field-level rules, legacy
+exceptions, and which violations should block a refresh versus be warnings.
+Once settled, document rules by header (not physical column position) and add
+focused validation/tests. Keep the Notes grammar and its Notes-only audit scope
+separate.
